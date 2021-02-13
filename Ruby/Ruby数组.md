@@ -1282,8 +1282,6 @@ p area
 
 
 
-
-
 ## ?arr.each_with_index{ }
 
 ```ruby
@@ -1377,8 +1375,6 @@ arr.reject.with_index{ |v,i|
 
 ```
 
-
-
 ```ruby
 
 ```
@@ -1394,6 +1390,10 @@ arr.reject.with_index{ |v,i|
 ```ruby
 
 ```
+
+
+
+
 
 # 范围
 
@@ -1431,6 +1431,8 @@ p arr
 5
 [1, 2, 3, 4, 5]
 ```
+
+
 
 ## a...b
 
