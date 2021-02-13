@@ -1282,6 +1282,8 @@ p area
 
 
 
+
+
 ## ?arr.each_with_index{ }
 
 ```ruby
@@ -1296,15 +1298,26 @@ array.each_with_index{|item,index| 处理}
 ```
 
 ```ruby
-arr = ["Js","Ruby","PHP"]
+arr = ["赛文奥特曼","杰克奥特曼","艾斯奥特曼"]
 arr.each_with_index{|v,i|
-    p "#{v} is number #{i}"
+p "#{i}.#{v}"
 }
 
 #终端返回的结果：
-"Js is number 0"
-"Ruby is number 1"
-"PHP is number 2"
+"0.赛文奥特曼"
+"1.杰克奥特曼"
+"2.艾斯奥特曼"
+
+
+arr = ["赛文奥特曼","杰克奥特曼","艾斯奥特曼"]
+arr.each_with_index{|v,i|
+p "#{i+1}.#{v}"
+}
+
+#终端返回的结果：
+"1.赛文奥特曼"
+"2.杰克奥特曼"
+"3.艾斯奥特曼"
 ```
 
 
@@ -1375,6 +1388,8 @@ arr.reject.with_index{ |v,i|
 
 ```
 
+
+
 ```ruby
 
 ```
@@ -1390,10 +1405,6 @@ arr.reject.with_index{ |v,i|
 ```ruby
 
 ```
-
-
-
-
 
 # 范围
 
@@ -1431,8 +1442,6 @@ p arr
 5
 [1, 2, 3, 4, 5]
 ```
-
-
 
 ## a...b
 
