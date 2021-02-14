@@ -1343,6 +1343,8 @@ p "#{i+1}.#{v}"
 #终端返回的结果：
 ```
 
+
+
 ## ？.with_index
 
 ```ruby
@@ -1388,8 +1390,6 @@ arr.reject.with_index{ |v,i|
 
 ```
 
-
-
 ```ruby
 
 ```
@@ -1406,82 +1406,5 @@ arr.reject.with_index{ |v,i|
 
 ```
 
-# 范围
 
-## a..b
-
-```ruby
-# 从a~b,包含b
-1..3
-a..d
-```
-
-```ruby
-a = 1..5
-p a.min()
-p a.max()
-
-#终端返回的结果：
-1
-5
-```
-
-```ruby
-arr = []
-(1..5).each{|v|
-    p v 
-    arr << v
-}
-p arr
-
-#终端返回的结果：
-1
-2
-3
-4
-5
-[1, 2, 3, 4, 5]
-```
-
-## a...b
-
-```ruby
-# 从a~b,不包含b
-1..3
-a..d
-```
-
-```ruby
-a = 1...5
-p a.min()
-p a.max()
-
-#终端返回的结果：
-1
-4
-```
-
-```ruby
-res = []
-score = [70,60,40,90]
-score.each{|v|
-    case v
-    when 80..100
-        p "优秀"
-        res << "优秀"
-    when 60...80
-        p "一般"
-        res << "一般"
-    else 
-        p "差"
-        res << "差"
-    end
-}
-p score
-p res
-
-#终端返回的结果：
-[70, 60, 40, 90]
-["一般", "一般", "差", "优秀"]
-```
 
