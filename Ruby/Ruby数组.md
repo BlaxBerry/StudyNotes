@@ -186,7 +186,7 @@ p a.chars
 
 
 
-### str.split( )
+## str.split( )
 
 ```ruby
 # 参数是分隔符
