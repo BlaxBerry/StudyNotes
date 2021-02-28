@@ -22,6 +22,8 @@
 
 ---
 
+### 下载步骤
+
 **1**
 
 利用brew下载NVM
@@ -92,6 +94,8 @@ nvm
 
 
 
+### 问题解决
+
 [Github下载即问题解决 ](https://github.com/nvm-sh/nvm)
 
 >- Since macOS 10.15, the default shell is `zsh` and nvm will look for `.zshrc` to update, none is installed by default. Create one with `touch ~/.zshrc` and run the install script again.
@@ -154,6 +158,16 @@ nvm ls-remote --lts
 
 ```bash
 nvm ls-remote --lts | grep Latest
+```
+
+```js
+~% nvm ls-remote --lts | grep Latest
+         v4.9.1   (Latest LTS: Argon)
+        v6.17.1   (Latest LTS: Boron)
+        v8.17.0   (Latest LTS: Carbon)
+       v10.24.0   (Latest LTS: Dubnium)
+       v12.21.0   (Latest LTS: Erbium)
+->     v14.16.0   (Latest LTS: Fermium)
 ```
 
 

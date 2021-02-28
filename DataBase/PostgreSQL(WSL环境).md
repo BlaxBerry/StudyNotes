@@ -1,21 +1,23 @@
+# Windows Ubuntu
+
+![](https://s3-ap-northeast-1.amazonaws.com/images.programming-beginner-zeroichi.jp/uploads/posdb.jpg)
 
 
-# PostgreSQL环境搭建
+
+# WSL上的环境搭建
 
 ## WSL下载PostgreSQL
 
-```Ubuntu
+```bash
 $ sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 $ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 $ sudo apt update
 $ sudo apt -y install postgresql libpq-dev
 
-下载完毕后，检查PostgreSQL的版本
+#下载完毕后，检查PostgreSQL的版本
 $ psql --version
 psql (PostgreSQL) 12.5 (Ubuntu 12.5-0ubuntu0.20.04.1)  
 ```
-
-
 
 ## WSL启动PostgreSQL
 
@@ -25,7 +27,7 @@ psql (PostgreSQL) 12.5 (Ubuntu 12.5-0ubuntu0.20.04.1)
 
 用 **sudo /etc/init.d/postgresql start** 启动PostgreSQL
 
-```Ubuntu
+```bash
 $ sudo /etc/init.d/postgresql start 
 ```
 
@@ -45,7 +47,7 @@ $ sudo /etc/init.d/postgresql start
 
 即通过 **sudo su psotgres** 切换连接到该role
 
-```Ubuntu
+```bash
 $ sudo su psotgres
 ```
 
@@ -57,12 +59,13 @@ $ sudo su psotgres
 
 - **第一次使用PostgreSQL**
 
-```ubuntu
-DESKTOP-46BRUEO% sudo /etc/init.d/postgresql start
+```bash
+sudo /etc/init.d/postgresql start
 [sudo] password for chen:   
 * Starting PostgreSQL 12 database server                     [ OK ] 
-ESKTOP-46BRUEO% sudo su postgres  
-postgres@DESKTOP-46BRUEO:/home/chen$ psql -l 
+
+sudo su postgres  
+/home/chen$ psql -l 
                               List of databases  
    Name    |  Owner   | Encoding | Collate |  Ctype  |   Access privileges    
 -----------+----------+----------+---------+---------+-----------------------  
@@ -76,19 +79,19 @@ postgres@DESKTOP-46BRUEO:/home/chen$ psql -l
 
 ---
 
-## PostgreSQL的启动步骤
+## 启动步骤
 
-```Ubuntu
-1.切换到数据库管理员账号(必做)
+```bash
+#1.切换到数据库管理员账号(必做)
 sudo su postgres
 
-2.输入本机user密码
-[sudo] password for chen:
+#2.输入本机user密码
+[sudo] password for 用户:
 
-进入了PostgreSQL
+#进入了PostgreSQL
 ```
 
-```Ubuntu
+```bash
 DESKTOP-46BRUEO% sudo su postgres
 [sudo] password for chen:
 postgres@DESKTOP-46BRUEO:/home/chen$ psql l
@@ -110,21 +113,23 @@ postgres@DESKTOP-46BRUEO:/home/chen$
 
 
 
+
+
 # 数据库
 
-```Ubuntu
-1.切换到数据库管理员账号
+```bash
+#1.切换到数据库管理员账号
 sudo su postgres
 
-2.输入本机user密码
+#2.输入本机user密码
 [sudo] password for chen:
 
 进入了PostgreSQL
 
-4.进入数据库
+#4.进入数据库
 psql 数据库名
 
-5.退出数据库
+#5.退出数据库
 \q
 ```
 
