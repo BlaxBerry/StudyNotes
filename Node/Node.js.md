@@ -204,7 +204,7 @@ nvm deactivate  # 解除当前版本绑定
 
 
 
-## 查看Node.js的位置
+## 查看安装位置
 
 nvm会将各个版本的node安装在`~/.nvm/versions/node`目录下
 
@@ -250,7 +250,7 @@ node的 `lib` 中 `node_modules` 文件夹可以看到模块
 
 
 
-## node运行js
+## node环境运行js
 
 ### node交互模式
 
@@ -681,7 +681,7 @@ Uncaught ReferenceError: exports is not defined
 
 
 
-## node中的this指向
+## this指向
 
 ### 交互模式中的this
 
@@ -749,7 +749,7 @@ console.log(this === module.exports); //true
 
 
 
-## Node.js的内置模块简介
+## 内置模块简介
 
 就是Node.js提前准备好的系统模块，
 
@@ -781,9 +781,7 @@ const querystring = require('querystring');
 
 
 
-## path模块
-
-
+## path内置模块
 
 ### 特殊变量  __dirname
 
@@ -794,7 +792,7 @@ console.log(__dirname);
 // /Users/chen/StudyPractice/JS
 ```
 
-
+---
 
 ### 特殊变量  __filename
 
@@ -914,4 +912,469 @@ console.log(fullname);
 console.log(__dirname);
 //  /Users/chen/StudyPractice/JS
 ```
+
+
+
+
+
+## fs内置模块
+
+常用path模块搭配，实现文件的操作
+
+### 同步读取文件
+
+会有阻塞，要等文件读取完毕后才能执行后面的代码
+
+```js
+let content = fs.readFileSync(文件路径,["utf-8"]);
+```
+
+如下：
+
+```js
+// 待读取的文件 01.txt
+hello world
+```
+
+```js
+// js文件
+
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+const content = fs.readFileSync(fullpath);
+console.log(content);
+//  <Buffer 68 65 6c 6c 6f 20 77 6f 72 6c 64>
+//返回的是Buffer数据类型
+console.log(content.toString());
+// hello
+```
+
+或使用utf-8：
+
+```js
+// js文件
+
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+const content = fs.readFileSync(fullpath,"utf-8");
+console.log(content);
+// hello
+```
+
+---
+
+验证同步读取会阻塞：
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+const content = fs.readFileSync(fullpath, 'utf-8');
+console.log(content);
+console.log('-----end');
+
+/*
+hello world
+-----end
+*/
+```
+
+如上，一定是等读取完文件后才会执行后面的代码。
+
+所以一旦文件特别大，读取很耗时，绘制你呢个阻塞等待。
+
+
+
+### 异步读取文件
+
+**重要**
+
+没有阻塞，不用等文件都读取完毕就执行后面的代码
+
+需要借助回调函数，等读取文件信息完毕后执行回调函数。
+
+```js
+fs.readFile(文件路径,["utf-8"],(error,data)=>{  })
+```
+
+如下：
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+fs.readFile(fullpath, (err, data) => {
+    console.log(err);
+    console.log(data);
+    console.log(data.toLocaleString());
+});
+
+// null
+// <Buffer 68 65 6c 6c 6f 20 77 6f 72 6c 64>
+// hello
+```
+
+使用了utf-8：
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+fs.readFile(fullpath, 'utf-8', (err, data) => {
+    console.log(err);
+    console.log(data);
+});
+
+// null
+// hello world
+```
+
+若读取文件时出错：
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+fs.readFile(fullpath, 'utf-8', (err, data) => {
+    console.log(err);
+    console.log(data);
+});
+
+// [Error: ENOENT: no such file or directory, open 	'/Users/chen/StudyPractice/JS/01.txt'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/chen/StudyPractice/JS/01.txt'
+}
+//undefined
+```
+
+---
+
+一般使用异步读取时，都是要判断的，**并用`return`终止**：
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+fs.readFile(fullpath, 'utf-8', (err, data) => {
+    if (err) {
+        console.log('there is error');
+        return
+    }
+    console.log(data);
+});
+
+// there is error
+```
+
+---
+
+验证异步读取不阻塞：
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+fs.readFile(fullpath, 'utf-8', (err, data) => {
+    if (err) {
+        console.log('there is error');
+        return
+    }
+    console.log(data);
+});
+console.log('---end');
+
+/*
+---end
+hello world
+*/
+```
+
+
+
+### 异步写入文件
+
+了解即可，保存只要是保存到数据库
+
+```js
+fs.writeFile(fullpath, content, 'utf-8', (error) => {})
+```
+
+相当于重写文件，是**覆盖**并不是追加
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+let content = 'hello world'
+fs.writeFile(fullpath, content, 'utf-8', (err) => {
+    if (err) {
+        console.log(err);
+        return
+    }
+    console.log('job finished');
+})
+```
+
+---
+
+验证异步写入不阻塞：
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+let content = 'hello world'
+fs.writeFile(fullpath, content, 'utf-8', (err) => {
+    if (err) {
+        console.log(err);
+        return
+    }
+    console.log('job finished');
+})
+console.log('----end');
+
+/*
+----end
+finished
+*/
+```
+
+
+
+### 修改文件名
+
+```js
+fs.renameSync(旧名，新名)
+```
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+fs.renameSync(fullpath, 'hello.txt');
+```
+
+
+
+### 读取当前目录下文件列表
+
+```js
+let fileList = fs.readirSync(__dirname)；
+```
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+let fileList = fs.readdirSync(__dirname);
+console.log(fileList);
+
+// ['01.js', '02.js', '03.js', 'hello.txt' ]
+```
+
+
+
+### 常搭配的字符串方法
+
+```js
+let str = 'hello';
+
+str.endsWidth('llo') //判断结尾是否是指定字符
+//true
+
+str.startsWidth('good')  //判断起始是否是指定字符
+//false
+
+str.substring(2,4) //左闭右开区间截取字符串
+// ll
+
+str.substring(2) //从指定位置开始截取字符串
+// llo
+```
+
+
+
+#### 案例
+
+修改当前目录下的所有文件名，
+
+添加前缀
+
+```js
+const fs = require('fs');
+const path = require('path');
+
+let fileList = fs.readdirSync(__dirname);
+
+changname = 'node-';
+
+fileList.forEach(item => {
+    if (item.endsWith('.js')) {
+        fs.renameSync(item, changname + item);
+    }
+})
+```
+
+删除前缀
+
+```js
+const fs = require('fs');
+const path = require('path');
+
+let fileList = fs.readdirSync(__dirname);
+console.log();
+
+changname = 'node-';
+
+fileList.forEach(item => {
+    if (item.endsWith('.js')) {
+        fs.renameSync(item, item.substring(changname.length))
+    }
+})
+```
+
+
+
+
+
+
+
+
+
+## process
+
+### process.argv
+
+**命令行交互**
+
+收集文件执行时，命令行的所有参数，放入一个数组
+
+```js
+// js文件 03.js
+
+console.log(process.argv);
+```
+
+在终端命令行中运行该文件：
+
+```js
+% node 03.js 
+[
+ '/Users/chen/.nvm/versions/node/v14.16.0/bin/node',
+  '/Users/chen/StudyPractice/JS/03.js'
+]
+```
+
+---
+
+运行时又在命令行中输入其他参数：
+
+```js
+% node 03.js 10 20 30
+[
+  '/Users/chen/.nvm/versions/node/v14.16.0/bin/node',
+  '/Users/chen/StudyPractice/JS/03.js',
+  '10',
+  '20',
+  '30'
+]
+```
+
+---
+
+获取和操作命令行输入的参数：
+
+```js
+//js文件 03.js
+
+console.log(process.argv);
+console.log('--------');
+console.log(`我是在命令行中输入的${process.argv[2]}`);
+console.log(`我是在命令行中输入的${process.argv[3]}`);
+console.log(process.argv[2] + process.argv[3]);
+```
+
+```js
+% node 03.js 10 20
+[
+  '/Users/chen/.nvm/versions/node/v14.16.0/bin/node',
+  '/Users/chen/StudyPractice/JS/03.js',
+  '10',
+  '20'
+]
+--------
+我是在命令行中输入的10
+我是在命令行中输入的20
+1020
+```
+
+---
+
+---
+
+### process.arch
+
+获取系统的位数
+
+```bash
+～% node
+> process.arch
+'x64'
+```
+
+
+
+
+
+## Buffer数据类型
+
+[菜鸟教程 Node.js Buffer](https://www.runoob.com/nodejs/nodejs-buffer.html)
+
+JavaScript 语言自身只有字符串数据类型，没有二进制数据类型。
+
+但在处理像TCP流或文件流时，必须使用到二进制数据。
+
+因此在 Node.js中定义了一个 Buffer 类，
+
+用来创建专门存放二进制数据的缓存区。
+
+![ASCII码表](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic2.zhimg.com%2Fv2-7150b4417cd849b2a00292c4f4d26ac9_b.jpg&refer=http%3A%2F%2Fpic2.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617116217&t=bfb9b4741fd226eceb6bf30188c69088)
+
+---
+
+创建buffer对象，转为字符串数据
+
+```js
+let buf = Buffer.from([97]);
+console.log(buf);
+// <Buffer 61>
+console.log(buf.toString());
+// a
+```
+
+```js
+let buf = Buffer.from('node');
+console.log(buf);
+// <Buffer 6e 6f 64 65>
+console.log(buf.toString());
+// node
+```
+
+
 
