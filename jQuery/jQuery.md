@@ -205,6 +205,10 @@ $(document).ready(function() {})
 jQuery(document).ready(function() {})
 ```
 
+```js
+window.jQuery === window.$ === jQuery
+```
+
 ---
 
 验证` $ === jQuery`，如下：
@@ -244,42 +248,9 @@ window.onload = function() {
 
 
 
-[jQuery中文文档](https://jquery.cuishifeng.cn/)
 
 
-
-## 获取元素
-
-```js
-		$('选择器')
-```
-
-和原生JS获取DOM时的写法一样：
-
-```js
-$(function() {
-
-      var item1 = $('div');   //标签名
-  
-      var item2 = $('.box');  //类名
-  
-      var item3 = $('#box');  //ID
-
-      var item4 = $('ul li'); //子元素
-  
-      var item5 = $('div, .box, #div'); //并集选择器
-  
-  		var item5 = $('li:nth-child(2)'); 
-
-            
-})
-```
-
-
-
-
-
-## DOM对象 与 jQuery对象
+## DOM对象 <=> jQuery对象
 
 DOM对象就是用原生JS方法获得元素。
 
@@ -413,7 +384,105 @@ div.on('click', function() {
 
 
 
+
+
+## 获取元素
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
+
+### 选择器获取
+
+```js
+		$('选择器')
+```
+
+和原生JS获取DOM时的写法一样：
+
+```js
+$(function() {
+
+      var item1 = $('div');   //标签名
+  
+      var item2 = $('.box');  //类名
+  
+      var item3 = $('#box');  //ID
+
+      var item4 = $('ul li'); //子元素
+  
+      var item5 = $('div, .box, #div'); //并集选择器
+  
+  		var item5 = $('li:nth-child(2)'); 
+
+            
+})
+```
+
+
+
+### eq()
+
+**推荐**
+
+获取指定元素中的第N个，返回的是jQuery对象
+
+```js
+jQuery对象.eq(n)
+```
+
+**比选择器获取的方法方便**，尤其是序号不固定，使用变量指定序号的时候
+
+```js
+$('li:nth-child(n)')；
+
+$("li").eq(1)；
+
+var num = 1 + 2；
+$("li").eq(num)
+```
+
+
+
+### slibilings()
+
+**重要**
+
+获取指定元素的**兄弟元素们**
+
+```js
+jQuery对象.sibilings()
+```
+
+主要运用在**排他思想**中：
+
+```js
+$(this).addClass('clicked').siblings().removeClass('clicked');
+```
+
+
+
+
+
+## 获取索引
+
+### index()
+
+获得元素在其兄弟中的索引号，从0开始计数**。
+
+```js
+$("li").on('click',function(){
+  var index = $(this).index();
+  concole.log(index)
+})
+// 返回该元素的序号
+```
+
+
+
+
+
 ## 操作行内样式
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
 
 在jQuery中用**`css() `方法访问、改变元素样式**
 
@@ -438,6 +507,8 @@ console.log(bgColor);
 
 
 ### 修改属性值
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
 
 里面放 **键值对 **的样式属性和属性值
 
@@ -480,7 +551,9 @@ $(function() {
 
 
 
-### 添加类名  删除类名
+### 添加 / 删除 类名
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
 
 ```js
 jQuery对象.addClass('类名 类名 类名 类名')
@@ -539,6 +612,8 @@ jQuery对象.toggleClass('类名 类名 类名 类名')
 
 ## 注册事件
 
+[jQuery文档](https://jquery.cuishifeng.cn/)
+
 ```js
 		jQuery对象.on(事件类型,function(){}) //可注册多个
 
@@ -582,4 +657,290 @@ $('button').on('click', function() {
     $('body').css('background', !flag ? 'black' : '');
     flag = !flag
 })
+```
+
+
+
+
+
+## 动画函数
+
+了解即可，目前C3用的多，jQuery动画不常用
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
+
+---
+
+---
+
+### animate() 自定义动画
+
+```js
+jQuery对象.animate({CSS属性:'值'},[速度曲线],[回调函数])
+```
+
+如下：
+
+```js
+ $('div').animate({
+            left: '+100px'，
+   					height: '200px',
+   					width: '200px'
+        },1000,function(){
+   					console.log('finished')
+ }})
+```
+
+---
+
+---
+
+### jquery.easing.js 插件
+
+是一款jQuery动画效果插件，增加了**速度曲线**的样式
+
+可以实现直线匀速运功、变加速运动、缓冲等丰富的动画效果。
+
+[菜鸟教程 jquery.easing.js  ](https://www.runoob.com/jqueryui/api-easings.html)
+
+---
+
+---
+
+### stop()
+
+停止**动画队列**。
+
+```js
+$('div').stop().fadeToggle();
+$('div').stop().slideToggle();
+```
+
+---
+
+---
+
+### 渐变动画 
+
+淡入淡出效果，透明度从1～0或0～1，**元素还存在不会被删除**
+
+ **`fadeIn()`	`fadeOut()`	`fade Toggle()`**
+
+```js
+jQuery对象.fadeIn([速度曲线],[回调函数])
+
+jQuery对象.fadeOut([速度曲线],[回调函数])
+
+jQuery对象.fadeToggle([速度曲线],[回调函数])
+```
+
+
+
+### 渐变轮播图
+
+![](https://github.com/BlaxBerry/jQuery_Demo/blob/master/slider_pics_fade/images/shortcut.png?raw=true)
+
+[github jq淡入淡出轮播图](https://github.com/BlaxBerry/jQuery_Demo/tree/master/slider_pics_fade)
+
+
+
+
+
+## 获得 / 修改元素属性
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
+
+### attr()
+
+获得 / 修改 自定义属性
+
+**键值对**的形式
+
+```js
+jquery对象.attr({
+  						属性名:'值'，
+  						属性名:'值'
+        })
+
+jquery对象.attr()
+```
+
+```js
+$('li').attr({
+            index: 1,
+            id: 'good'
+        });
+
+cosole.log($('li').arrt('index'))
+```
+
+就是原生JS中的 `setAttribute` 和  `getAttribute`
+
+
+
+## 获得 / 修改 表单属性
+
+### prop()
+
+获得 / 修改 input开关的属性，比如checked 或 disabled
+
+```js
+input jQuery对象.prop(属性名)
+input jQuery对象.value(属性,'值')
+```
+
+如下，设置 **禁用**和**选中**所有页面上的复选框：
+
+```js
+var input = $('input')
+
+$(input).prop("disabled", true);
+
+$(input).prop("checked", true);
+```
+
+---
+
+如下，获取 表单的 选中属性
+
+返回值是`true` 或 `false`
+
+```js
+var input = $('input')
+
+console.log(input.prop('checked'));
+// true  flsae
+```
+
+
+
+
+
+## 获取 / 修改元素内容
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
+
+### text() 
+
+获取 / 修改 元素的文本内容
+
+就是原生JS中的 `innerText`
+
+```js
+jQuery对象.text()
+jQuery对象.text('内容')
+```
+
+---
+
+### val()
+
+获取 / 修改 表单的内容
+
+就是原生JS中的 `value`
+
+```js
+input jQuery对象.value()
+input jQuery对象.value('内容')
+```
+
+```js
+var input = $('input')
+input.val('close')
+
+console.log(input.val());
+```
+
+
+
+
+
+## 动态生成元素
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
+
+### html()
+
+覆盖元素内容
+
+```js
+jQuery对象.html('<tag></tag>')
+```
+
+就是原生JS中的 `innerHTML`
+
+---
+
+### $('<></>')
+
+生成一个指定标签
+
+```js
+$(标签)
+
+$('<div><span><a href="#">哦吼点我</sapn></div>')
+```
+
+就是原生JS中的 `document.createElement(''<tag></tag>'')`
+
+如下，创建一个<li\>
+
+````js
+var content = $('<li></li>')
+````
+
+生成后需要搭配`append()`追加给父级元素
+
+
+
+
+
+## 动态增加元素
+
+[jQuery文档](https://jquery.cuishifeng.cn/)
+
+### append()
+
+```js
+父级jQuery对象.append(子级元素)
+```
+
+就是原生JS中的 `appendChild()`
+
+如下：
+
+```js
+var li = $('<li></li>');
+$('ul').append(li)
+
+$('div').append($('ul'))
+```
+
+
+
+### prepend()
+
+```js
+父级jQuery对象.prepend(子级元素)
+```
+
+就是原生JS中的 `insertBefore()`
+
+如下：
+
+```js
+var li = $('<li></li>');
+$('ul').prepend(li)
+
+$('div').prepend($('ul'))
+```
+
+
+
+
+
+
+
+```js
+
 ```
