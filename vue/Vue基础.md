@@ -214,33 +214,100 @@ var app = new vue({
 
 ### v-text
 
+设置DOM元素的内容，仅识别文本内容
+
+相当于`innerText()`
+
 ```js
 v-text="message"
 ```
 
 ```html
 <div id="app" v-text="message"></div>
-```
 
-
-
-### v-html
-
-```js
-v-html="message"
-```
-
-```html
-<div id="app" v-html="message"></div>
+<script>
+	var app = new vue({
+  el: '选择器'，
+  data：{
+  		message: 'hello'
+	}
+})
+</script>
 ```
 
 
 
 ### {{message}}
 
+v-text 的缩写，可直接写在标签内容
+
 ```html
 <div id ="app">{{message}}</div>
 ```
+
+```html
+<div id="app">{{message}} {{num}}</div>
+
+<script>
+	var app = new vue({
+  el: '选择器'，
+  data：{
+  		message: 'hello',
+    	num: 100
+	}
+})
+</script>
+```
+
+可写表达式
+
+```html
+<div id="app">
+ 	 <div>{{message + 'Andy'}}</div>
+   <div>{{num +100}}</div>
+</div>
+
+<script>
+	var app = new vue({
+  el: '选择器'，
+  data：{
+  		message: 'hello',
+    	num: 100
+	}
+})
+</script>
+```
+
+
+
+
+
+### v-html
+
+设置DOM元素的内容，可解析标签
+
+相当于`innerHTML()`
+
+若是纯文本，则效果等同于` v-text=“”`
+
+```js
+v-html="message"
+```
+
+```html
+<div id="app" v-html="link"></div>
+
+<script>
+	var app = new vue({
+  el: '选择器'，
+  data：{
+  		link: '<a href="#">my GitHub</a>'
+	}
+})
+</script>
+```
+
+
 
 
 
@@ -253,12 +320,34 @@ v-on:click="sayHello"
 ```
 
 ```html
-<div id ="app" v-on:click="sayHello"></div>
+<div id ="app">
+  	<div v-on:click="say_1"></div>
+    <div v-on:mouseenter="say_2"></div>
+    <div v-on:dblclick="say_3"></div>
+</div>
+
+<script>
+var app = new vue({
+  el: '选择器'，
+  methods: {
+  	 say_1: function(){
+   		alert('111')
+		},
+  	 say_2: function(){
+   		alert('222')
+		},
+    say_3: function(){
+      alert('333')
+    }
+	}
+})</script>
 ```
 
 
 
 ### @
+
+v-on：写法的省略 
 
 ```js
 @click="sayHello"
@@ -266,6 +355,16 @@ v-on:click="sayHello"
 
 ```html
 <div id ="app" @click="sayHello"></div>
+
+<script>
+var app = new vue({
+  el: '选择器'，
+  methods: {
+    sayHello: function(){
+      alert('333')
+    }
+	}
+})</script>
 ```
 
 
@@ -274,9 +373,9 @@ v-on:click="sayHello"
 
 ## 隐藏 和 显示元素
 
+有仅仅是CSS样式display属性的隐藏，和彻底从DOM树移除
+
 比如遮罩层、广告。。。。
-
-
 
 ### v-show
 
@@ -537,27 +636,248 @@ v-bind: 属性名=表达式
 
 
 
+## v-for
+
+遍历data中设定的一个数组，  **根据数组元素的个数 ** 
+
+响应式生成动态**生成DOM元素**，多用于生成 **<li\>**标签
+
+### 遍历数组
+
+```js
+v-for="(item,index) in 数据"
+```
+
+---
+
+- 循环生成数组元素个数的DOM元素
+
+如下，循环生成3个<li\>，包含原来的页面中一共3个
+
+```html
+<div id='app'>
+  <ul>
+    <li v-for="item in arr"></li>
+  </ul>
+</div>
+
+<script>
+	var app = new Vue({
+  		el: '#app',
+  		data: {
+    			arr: [1,2,3]
+  		}
+	})
+</script>
+```
+
+---
+
+- 元素的内容或内部子元素也会一起循环生成
+
+如下，<li\>标签中的内容也会随着循环生成
+
+```html
+<div id='app'>
+  <ul>
+		<li v-for="item in arr">
+   			<span>hello</span><a href="#"></a>
+		</li>
+  </ul>
+</div>
+
+<script>
+	var app = new Vue({
+  		el: '#app',
+  		data: {
+    			arr: [1,2,3]
+  		}
+	})
+</script>
+```
 
 
 
+### item
+
+可把数组元素写入标签内部
+
+item表示数组的每一个元素
+
+可在该标签内使用数组item元素
+
+```html
+<li v-for="item in arr">{{item}}</li>
+```
+
+如下，循环生成3个<li\>，
+
+且3个<li\>内容是分别是顺序的数组元素1，2，3
+
+```html
+<div id='app'>
+  <ul>
+    <li v-for="item in arr">{{item}}</li>
+  </ul>
+</div>
+
+<script>
+		var app = new Vue({
+  				el: '#app',
+  				data: {
+   						 arr: [1,2,3]
+ 					 }
+		})
+</script>
+```
 
 
 
+### index
+
+可把数组的序号写入标签内部
+
+index表示数组的每一个序号
+
+在标签中写入如下，就可在该标签内使用数组index序号
+
+```js
+v-for="(item,index) in arr"
+```
+
+如下，生成3 个 < li \>，
+
+< li \>的子元素的内容分别是数组的序号和元素
+
+```html
+<div id='app'>
+  <ul>
+    <li v-for="(item,index) in arr">
+        <span>{{index +1}}</span>
+      	<span>{{item}}</span>
+    </li>
+  </ul>
+</div>
+
+<script>
+		var app = new Vue({
+  				el: '#app',
+  				data: {
+   						 arr: [1,2,3]
+ 					 }
+		})
+</script>
+```
 
 
 
+### 数组元素是对象
+
+数组元素为复杂数据类型时，比如对象，如下：
+
+```js
+var app = new Vue({
+            el: "#app",
+            data: {
+                arr: [{
+                    name: 'andy'
+                }, {
+                    name: 'red'
+                }, {
+                    name: 'james'
+                }]
+            }
+```
+
+ 因为数组的元素是个对象，所以此时`{{item}}`获得的也是对象
+
+```html
+   <li v-for="item in arr">{{item}}</li>
+```
+
+---
+
+若要获得对象的属性，要. **`{{item.属性}}`**
 
 
 
+```html
+  <li v-for="item in arr">{{item.name}}</li>
+```
+
+如下：循环生成3 个 < li \>， 
+
+并把作为数组元素的对象的属性值也写入
+
+```html
+<ul>
+	<li v-for="(item,index) in arr">
+      <span>{{index}}</span>
+   		<span>{{item.name}}</span>
+	</li>
+</ul>
+
+<script>
+			var app = new Vue({
+            el: "#app",
+            data: {
+                arr: [
+                  {name: 'andy'}, 
+                  {name: 'red'}, 
+                  {name: 'james'}
+                ]
+       }
+</script>
+```
 
 
 
+### 响应式增减DOM元素
 
-## this
+v-for是响应式生成DOM元素。
 
-vue组件或实例中，不管是生命周期函数还是自定义的方法中，this均指向当前vue实例
+**数组长度变化时，要生成的元素个数也随之变化**
 
+如下，
 
+点击按钮会增删数组元素，生成的 <li\> 标签数量也随之改变
 
+若一直触发remove方法，数组元素会一直减少直到为0，
 
+则此时页面中的 <li\> 也为 0个
+
+```html
+<div id="app">
+        <ul>
+            <li v-for="(item,index) in arr">
+              	<span>{{item.name}}</span>
+          	</li>
+        </ul>
+        <button @click="add">add</button>
+        <button @click="remove">remove</button>
+</div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                arr: [{
+                    name: 'hambuger'
+                }, {
+                    name: 'taco'
+                }]
+            },
+            methods: {
+                add: function() {
+                    this.arr.push({
+                        name: 'beer'
+                    })
+                },
+                remove: function() {
+                    this.arr.pop()
+                }
+            }
+        })
+    </script>
+```
 

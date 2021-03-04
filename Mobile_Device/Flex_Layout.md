@@ -760,7 +760,9 @@ flex容器不设高度时，容器大小由项目撑开
 .container item { flex: number; }
 ```
 
-### flex: 1;
+### flex: 1; 
+
+`flex: 1;  `占满一行
 
 指定子元素一个人占1份，即一个人占满全部剩余空间
 
@@ -780,17 +782,70 @@ flex容器中所有子元素都占1份，即平分剩余空间
 
 ---
 
-flex：2，把占剩余空间中的两份
+`flex：2`，把占剩余空间中的两份
+
+如下，第一个项目占一行的3分之2，第二个项目占3分之1
 
 ```css
 .container item:nth-child(1) {
   		flex: 2;
 }
+.container item:nth-child(2) {
+  		flex: 1;
+}
+```
+
+
+
+### flex: 100 %; 
+
+可以使用百分比，百分比是基于flex容器
+
+如下，每一个项目占flex容器的20%
+
+```css
+.container item {
+  flex：20%;
+}
 ```
 
 ---
 
----
+可以用来**实现换行**
+
+确定一行放几个项目，全部占满是100%，
+
+设定每个项目的百分比，如下：
+
+```html
+<div class="container">
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+  <div>4</div>
+  <div>5</div>
+  <div>6</div>
+  <div>7</div>
+</div>
+```
+
+```css
+.container {
+  display: flex;
+  flex-wrap： wrap；
+}
+.container item {
+  flex：20%;
+}
+```
+
+如上，设定的是`flex：20%`，且所以一行放 5 个，然后换行，
+
+即，上述一行由 5 个项目平均分一行内容，多余的项目换行，
+
+换行的项目依然占满所在的行
+
+
 
 ### 圣杯布局
 
@@ -827,9 +882,7 @@ flex：2，把占剩余空间中的两份
 		}
 ```
 
----
 
----
 
 ### 左右平分，上下平分
 
