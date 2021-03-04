@@ -4,7 +4,7 @@
 
 ## 简介
 
-Vue可以**不通过获取就能操作DOM元素**实现页面效果。
+Vue可以**不通过获取就能操作DOM元素**实现页面效果
 
 
 
@@ -24,13 +24,13 @@ Vue可以**不通过获取就能操作DOM元素**实现页面效果。
 
 ## 使用
 
-首先需要**实例化一个Vue对象**，
+1. 首先需要**实例化一个Vue对象**，
 
-然后通过**el属性**，给指定元素**挂载上Vue**
+2. 然后通过**el属性**，给指定元素**挂载上Vue**
 
-然后通过**data属性**和**methods属性**给实例化的Vue对象**设置各种属性和方法**
+3. 然后通过**data属性**和**methods属性**给实例化的Vue对象**设置各种属性和方法**
 
-然后通过Vue指令，把设定的属性和方法设定绑定给**el挂载的元素和其内部子元素**
+4. 然后通过Vue指令，把设定的属性和方法设定绑定给**el挂载的元素和其内部子元素**
 
 ```html
 <body>
@@ -276,6 +276,16 @@ v-on:click="sayHello"
 
 比如遮罩层、广告。。。。
 
+
+
+### v-show
+
+通过 true / false 控制绑定**元素样式的显示和隐藏**
+
+相当于 **`display：block` **和 **`display：none`**
+
+只是元素的样式的隐藏和显示，元素还存在于html页面中。
+
 ```html
 <div id ="app">
   	<img src='./01.jpg' v-show="false">
@@ -286,11 +296,7 @@ v-on:click="sayHello"
 
 ---
 
-### v-show
-
-相当于display
-
-通过给固定的 **true / false** 控制元素隐藏显示
+- 通过给固定的 **true / false** 控制元素隐藏显示
 
 ```html
 <div id ="app">
@@ -300,7 +306,7 @@ v-on:click="sayHello"
 
 ---
 
-通过赋值了**true / false** 的变量来控制元素
+- 通过赋值了**true / false** 的变量来控制元素
 
 ```html
 <div id ="app">
@@ -320,7 +326,7 @@ var app = new vue({
 
 ---
 
-通过**指定条件**，俩控制元素显示隐藏
+- 通过**指定条件**，俩控制元素显示隐藏
 
 如下，**age >=18** 才会显现
 
@@ -342,7 +348,7 @@ var app = new vue({
 
 ---
 
-通过事件的**布尔值取反**，实现**开关效果**
+- 通过事件的**布尔值取反**，实现**开关效果**
 
 ```html
 <div id ="app">
@@ -369,11 +375,177 @@ var app = new vue({
 
 
 
-
-
 ### v-if
 
-通过操作表达式值的true / false
+通过 true / false 控制绑定**DOM元素在html结构中的显示和隐藏**
+
+**操作的是DOM结构**，相当于jQuery中的`remove()`
+
+是控制元素在html结构中的存在和移除，
+
+```html
+<div id ="app">
+  	<img src='./01.jpg' v-if="false">
+    <img src='./02.jpg' v-if="flag">
+    <img src='./03.jpg' v-if="flag>= 18">
+</div>
+```
+
+频繁切换的话建议使用 v-show，切换的消耗更少
+
+
+
+
+
+
+
+## 操作元素属性
+
+比如 **src 、 title、 class类名**等的属性
+
+
+
+### v-bind
+
+```js
+v-bind: 属性名=表达式
+
+//或省略写法
+属性名=表达式
+```
+
+```html
+ <div id="app">
+        <a v-bind:href='href'></a>
+        <img v-bind:src="src">
+ 
+        <div v-bind:class="isActive?'active':''"></div>
+   		  <div v-bind:class="{active: isActive}"></div>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                href: "https://github.com/BlaxBerry",
+                src: 'https://github.com/BlaxBerry/Demo_CSS/blob/master/slider_pics/images/02.jpeg?raw=true',
+                isActive: false,
+                active: 'active'
+            }
+        })
+```
+
+
+
+### 三元表达式判断class属性
+
+**三元表达式**，判断是否添加class类名属性
+
+如下：根据`isActive`的值，判读是否给<div\>添加`active类`属性
+
+```html
+ <div v-bind:class='isActive?"active":""'></div>
+```
+
+---
+
+利用三元表达式判断 + 点击事件
+
+实现**class类名的切换**
+
+```html
+<style>
+		.active {
+            border: 10px solid black;
+        }
+</style>
+</head>
+
+<body>
+    <div id="app">
+        <img src="./images/02.jpeg" v-bind:class="isActive?'active':''"  @click='toggle'>
+    </div>
+
+<script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                isActive: true,
+                active: 'active'
+            },
+            methods: {
+                toggle: function() {
+                    this.isActive = !this.isActive
+                }
+            }
+        })
+</script>
+```
+
+
+
+### 对象形式判断class属性
+
+**对象**的方式，判断是否添加class类名属性。**推荐**
+
+如下：<div\>是否添加`active类`属性，是取决于`isActive`的值是true / falses
+
+```html
+ <div v-bind:class='{active: isActive}'></div>
+```
+
+---
+
+利用对象的方式判断 + 点击事件
+
+实现**class类名的切换**
+
+```html
+<style>
+		.active {
+            border: 10px solid black;
+        }
+</style>
+</head>
+
+<body>
+    <div id="app">
+        <img src="./images/02.jpeg" v-bind:class="{active: isActive}"  @click='toggle'>
+    </div>
+
+<script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                isActive: true,
+                active: 'active'
+            },
+            methods: {
+                toggle: function() {
+                    this.isActive = !this.isActive
+                }
+            }
+        })
+</script>
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
