@@ -80,7 +80,7 @@ Vue可以**不通过获取就能操作DOM元素**实现页面效果
 ### 实例化Vue对象
 
 ```js
-var app = new vue({})
+var app = new Vue({})
 ```
 
 然后设置好对象的相关属性
@@ -92,7 +92,7 @@ var app = new vue({})
 设置Vue的挂载元素
 
 ```js
-var app = new vue({
+var app = new Vue({
   el: 选择器
 })
 ```
@@ -104,11 +104,11 @@ var app = new vue({
 但是**建议Vue挂载 `ID选择器`**
 
 ```js
-var app_1 = new vue({
+var app_1 = new Vue({
   el: '.className'
 })
 
-var app_2 = new vue({
+var app_2 = new Vue({
   el: '#idName'
 })
 ```
@@ -126,7 +126,7 @@ var app_2 = new vue({
 设定数据对象
 
 ```js
-var app = new vue({
+var app = new Vue({
   el: '选择器'，
   data：{
   		message: 内容
@@ -139,7 +139,7 @@ var app = new vue({
 比如简单类型的文本、数字，或复杂类型的数组、对象
 
 ```js
-var app = new vue({
+var app = new Vue({
   el: '选择器'，
   data：{
   		num: 100,
@@ -182,7 +182,7 @@ var app = new vue({
 如下：
 
 ```js
-var app = new vue({
+var app = new Vue({
   el: '选择器'，
   methods: {
   	click: function(){
@@ -226,7 +226,7 @@ v-text="message"
 <div id="app" v-text="message"></div>
 
 <script>
-	var app = new vue({
+	var app = new Vue({
   el: '选择器'，
   data：{
   		message: 'hello'
@@ -239,7 +239,9 @@ v-text="message"
 
 ### {{message}}
 
-v-text 的缩写，可直接写在标签内容
+v-text 的缩写，仅识别文本内容不能解析标签
+
+可直接写在标签内容
 
 ```html
 <div id ="app">{{message}}</div>
@@ -249,7 +251,7 @@ v-text 的缩写，可直接写在标签内容
 <div id="app">{{message}} {{num}}</div>
 
 <script>
-	var app = new vue({
+	var app = new Vue({
   el: '选择器'，
   data：{
   		message: 'hello',
@@ -268,7 +270,7 @@ v-text 的缩写，可直接写在标签内容
 </div>
 
 <script>
-	var app = new vue({
+	var app = new Vue({
   el: '选择器'，
   data：{
   		message: 'hello',
@@ -277,8 +279,6 @@ v-text 的缩写，可直接写在标签内容
 })
 </script>
 ```
-
-
 
 
 
@@ -298,7 +298,7 @@ v-html="message"
 <div id="app" v-html="link"></div>
 
 <script>
-	var app = new vue({
+	var app = new Vue({
   el: '选择器'，
   data：{
   		link: '<a href="#">my GitHub</a>'
@@ -311,12 +311,32 @@ v-html="message"
 
 
 
-## 绑定事件
+## JS表达式
+
+Vue支持JavaScript的表达式
+
+比如
+
+{{message + "hello"}}
+
+{{num+100}}
+
+{{num>0? message_1 : message_2}}
+
+{{message.split('').reverse().join('')}}
+
+
+
+
+
+## 事件绑定
 
 ### v-on
 
 ```js
-v-on:click="sayHello"
+	v-on:事件类型=“方法名”
+//比如
+	v-on:click="sayHello"
 ```
 
 ```html
@@ -327,7 +347,7 @@ v-on:click="sayHello"
 </div>
 
 <script>
-var app = new vue({
+var app = new Vue({
   el: '选择器'，
   methods: {
   	 say_1: function(){
@@ -350,7 +370,9 @@ var app = new vue({
 v-on：写法的省略 
 
 ```js
-@click="sayHello"
+		@事件类型=“方法名”
+//比如
+		@click="sayHello"
 ```
 
 ```html
@@ -371,6 +393,98 @@ var app = new vue({
 
 
 
+### 事件参数
+
+就是调用函数时的传参，和定义函数时的形参
+
+```js
+// 标签中
+v-on:事件类型=“方法名(参数，参数，参数)”
+
+//Vue实例对象中
+var app = new vue({
+  el: '选择器'，
+  methods: {
+  	方法名: function(参数，参数，参数){},
+  	方法名: function(参数，参数，参数){},
+    方法名: function(参数，参数，参数){}
+	}
+})
+```
+
+如下：传入了字符串作为事件方法的参数
+
+```html
+<div id ="app">
+  	<div v-on:click="sayHello('andy')"></div>
+</div>
+
+<script>
+var app = new Vue({
+  el: '#app'，
+  methods: {
+  	  sayHello: function(a){
+   				alert('hello'+ a)
+		  }
+	}
+})
+</script>
+```
+
+
+
+### 事件修饰符
+
+对事件进行限制
+
+
+
+即，只有在指定的按键才会触发事件并调用方法
+
+```js
+v-事件类型.修饰符=“方法名”
+//比如
+v-on:keyup.enter=“sayHello('Vue')”
+@keyup.enter=“sayHello('Vue')”
+```
+
+如下：设定给input绑定的事件的限定符是分别是
+
+enter、space、control、a键
+
+```html
+<div id="app">
+    <input type="text" @keyup.enter="sayHello('Vue')">
+  
+    <input type="text" @keydown.space="sayHello('JS')">
+  
+    <input type="text" @keydown.control="sayHello('JS')">
+  
+    <input type="text" @keydown.a="sayHello('JS')">
+</div>
+
+<script>
+        var app = new Vue({
+            el: "#app",
+            methods: {
+                sayHello: function(a) {
+                    alert(`hello  ${a}`)
+                }
+            }
+        })
+</script>
+```
+
+
+
+
+
+
+
+
+
+
+
 ## 隐藏 和 显示元素
 
 有仅仅是CSS样式display属性的隐藏，和彻底从DOM树移除
@@ -379,11 +493,18 @@ var app = new vue({
 
 ### v-show
 
-通过 true / false 控制绑定**元素样式的显示和隐藏**
+通过表达式值的 true / false 控制绑定**元素样式的显示和隐藏**
 
 相当于 **`display：block` **和 **`display：none`**
 
 只是元素的样式的隐藏和显示，元素还存在于html页面中。
+
+```js
+v-show='true'
+v-show='false'
+v-show='数据'
+v-show='表达式'
+```
 
 ```html
 <div id ="app">
@@ -482,6 +603,13 @@ var app = new vue({
 
 是控制元素在html结构中的存在和移除，
 
+```js
+v-if='true'
+v-if='false'
+v-if='数据'
+v-if='表达式'
+```
+
 ```html
 <div id ="app">
   	<img src='./01.jpg' v-if="false">
@@ -502,16 +630,23 @@ var app = new vue({
 
 比如 **src 、 title、 class类名**等的属性
 
-
-
 ### v-bind
 
 ```js
 v-bind: 属性名=表达式
 
 //或省略写法
-属性名=表达式
+:属性名=表达式
 ```
+
+```html
+ <div id="app">
+    <a v-bind:href='adtaHref'></a>
+    <a :href='adtaHref'></a>
+</div>
+```
+
+如下，分别设定了href、src、class属性：
 
 ```html
  <div id="app">
@@ -536,11 +671,23 @@ v-bind: 属性名=表达式
 
 
 
-### 三元表达式判断class属性
+## 样式类名绑定
 
-**三元表达式**，判断是否添加class类名属性
+### class属性绑定 — 三元表达式
 
-如下：根据`isActive`的值，判读是否给<div\>添加`active类`属性
+利用三元表达式判断是否添加class类名属性
+
+**若数据或表达式的值为true，则设定class为指定类名，**
+
+**若数据或表达式的值为false，则设定class为空**
+
+```js
+v-bind="数据？类名：‘’"
+```
+
+如下：
+
+根据`isActive`的值，判读是否给<div\>添加`active类`
 
 ```html
  <div v-bind:class='isActive?"active":""'></div>
@@ -583,11 +730,23 @@ v-bind: 属性名=表达式
 
 
 
-### 对象形式判断class属性
+### class属性绑定 — 对象形式
 
-**对象**的方式，判断是否添加class类名属性。**推荐**
+**对象键值对**的方式，判断是否添加class类名属性。**推荐**
 
-如下：<div\>是否添加`active类`属性，是取决于`isActive`的值是true / falses
+如果数据或表达式的值为true ，则添加类名
+
+如果数据或表达式的值为false，则不添加
+
+```js
+v-bind:class='{类名：表达式}'
+```
+
+如下：
+
+元素是否添加`active类`属性，
+
+是取决于`isActive`的值是true / false
 
 ```html
  <div v-bind:class='{active: isActive}'></div>
@@ -628,9 +787,117 @@ v-bind: 属性名=表达式
 </script>
 ```
 
----
 
 
+### 键值对动态绑定多个class类名
+
+用多个键值对的方法，判断数据或表达式的值的true / false
+
+```js
+:class='{类名:数据/表达式, 类名:数据/表达式}'
+```
+
+如下，因为数据值都是true，给p标签设置两个类名
+
+```html
+<style>
+        .red {
+            color: red
+        }
+        
+        .big {
+            font-size: 90px;
+        }
+</style>
+
+<div id="app">
+   <p :class='{red:isRed, big:isBig}'>asd</p>
+</div>
+
+<script>
+        const app = new Vue({
+            el: '#app',
+            data: {
+                isRed: true,
+                isBig: true
+            }
+        })
+</script>
+```
+
+
+
+### 数组形式静态绑定多个class类名
+
+```js
+:class='["类名","类名"]'
+```
+
+如下：
+
+```html
+<style>
+        .red {
+            color: red
+        }
+        
+        .big {
+            font-size: 90px;
+        }
+</style>
+
+<div id="app">
+   <p :class='["red", "big"]'>asd</p>
+</div>
+
+<script>
+        const app = new Vue({
+            el: '#app',
+            data: {
+                isRed: true,
+                isBig: true
+            }
+        })
+</script>
+```
+
+
+
+### 数组形式静态绑定多个class类名
+
+通过**三元表达式**判断是否绑定该类名
+
+```js
+:class='[数据？"类名":"",数据？"类名":""]'
+```
+
+如下：
+
+```html
+<style>
+        .red {
+            color: red
+        }
+        
+        .big {
+            font-size: 90px;
+        }
+</style>
+
+<div id="app">
+   <p :class='["red", "big"]'>asd</p>
+</div>
+
+<script>
+        const app = new Vue({
+            el: '#app',
+            data: {
+                isRed: true,
+                isBig: false
+            }
+        })
+</script>
+```
 
 
 
@@ -881,3 +1148,127 @@ v-for是响应式生成DOM元素。
     </script>
 ```
 
+
+
+
+
+
+
+
+
+## v-model
+
+获取和修改普通盒子的内容是通过 `t-text `或 插入表达式 `{{	}}`
+
+获取和设置**表单元**素的值是通过 `v-model`
+
+相当于原生JS的`value`
+
+```js
+v-model=数据
+```
+
+```html
+<input v-model="message"></input>
+```
+
+
+
+### 同步修改数据
+
+v-model 是**双向数据绑定**
+
+即，数据被修改了<input\> 的值也被同时修改
+
+<input\> 的值被修改了数据也同时被修改
+
+如下：
+
+<input\>的值和<h2\>的内容同步
+
+```html
+<div id="app">
+     <input type="text" v-model="message">
+
+      <h2>{{message}}</h2>
+</div>
+
+<script>
+     var app = new Vue({
+         el: '#app',
+         data: {
+             message: 'hell0'
+         }
+      })
+</script>
+```
+
+
+
+### 获取表单值
+
+如下，
+
+给表单绑定事件，通过`keyup事件`获取表单的输入值
+
+```html
+<div id="app">
+        <input type="text" v-model="message" @keyup='getValue'>
+</div>
+
+<script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: ''
+            },
+            methods: {
+                getValue: function() {
+                    console.log(this.message);
+                }
+            }
+        })
+</script>
+```
+
+
+
+### 修改表单值
+
+如下，
+
+给按钮绑定事件，点击按钮后修改数据，闭同时响应到表单
+
+```html
+<div id="app">
+        <input type="text" v-model="message" @keyup='getValue'>
+        <button @click="change">change content</button>
+</div>
+
+<script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: ''
+            },
+            methods: {
+                getValue: function() {
+                    console.log(this.message);
+                },
+                change: function() {
+                    this.message = 'hello'
+                }
+            }
+        })
+</script>
+```
+
+
+
+
+
+条件
+
+v-if
+
+v-else

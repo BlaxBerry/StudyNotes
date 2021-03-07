@@ -1,4 +1,4 @@
-ES6
+# ECMA Script 6
 
 主要是简化的一些繁琐的写法和新增了一些语句
 
@@ -631,7 +631,16 @@ console.log(a, b, c, d, e);
 
 
 
-## 字符串——模版字符串
+## 字符串 — 模版字符串
+
+作用和字符串的单双引号一样
+
+```js
+let str = ``
+console.log(typeof str); // string
+```
+
+---
 
 ### ES5拼接字符串
 
@@ -650,16 +659,13 @@ div.innerHTML = '<sapn>' + inner + '</sapn>';
 
 拼接字符串比较占用内存
 
+---
 
+### 可以解析锁进和换行
 
-### 模版字符串插入变量
+---
 
-作用和字符串的单双引号一样
-
-```js
-let str = ``
-console.log(typeof str); // string
-```
+### 可以解析变量和表达式
 
 简化了拼接字符串
 
@@ -675,8 +681,11 @@ console.log(typeof str); // string
 let name = 'andy';
 let age = 18;
 
-console.log(`my name is ${name}, my age is ${age}`);
-//my name is andy, my age is 18
+console.log(`my name is ${name}`);
+//my name is andy
+
+console.log(`i was ${age -1} last year`)
+//i was 17 last year
 ```
 
 再比如用在DOM中：

@@ -4,6 +4,20 @@
 
 ## 简介
 
+Nodejs可以实现
+
+- 静态资源服务器
+
+- 路由处理
+
+- 动态网站
+
+- 模版引擎
+
+- get、post参数传递和处理
+
+---
+
 Node.js是机遇chromeV8引擎的JavaScript运行环境。
 
 就是用来运行JS的编译软件。
@@ -235,16 +249,6 @@ which node
 如下：
 
 ![](https://segmentfault.com/img/bVbk8AE)
-
----
-
-node的 `lib` 中 `node_modules` 文件夹可以看到模块 
-
-![](https://segmentfault.com/img/bVbk8AP)
-
-在 nvm下 node 版本管理方式，
-
-安装的模块不是公用的，也就是说在切换版本后需要在切换的版本下重新安装       
 
 
 
@@ -781,7 +785,7 @@ const querystring = require('querystring');
 
 
 
-## path内置模块
+## path 内置模块
 
 ### 特殊变量  __dirname
 
@@ -917,7 +921,7 @@ console.log(__dirname);
 
 
 
-## fs内置模块
+## fs 内置模块
 
 常用path模块搭配，实现文件的操作
 
@@ -1375,6 +1379,202 @@ console.log(buf);
 console.log(buf.toString());
 // node
 ```
+
+
+
+## 包
+
+[npm](./npm.md)
+
+项目需要一个**入口文件**，比如app.js/index.js
+
+还需要有一个**package.json**文件
+
+
+
+### package.json文件
+
+package.json文件必须存放在项目的顶层目录下
+
+```json
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "- public 静态资源文件",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
+```
+
+name： 项目文件目录名
+
+version： 项目版本
+
+main：入口文件
+
+keywords： 关键字，搜索用
+
+dependencies：生产环境的依赖包
+
+devDependencies：开发环境的依赖包
+
+
+
+
+
+## http 服务器
+
+### http.createServer()
+
+两种写法
+
+写法1:
+
+```js
+const http = require('http');
+
+const server = http.createServer();
+server.on('request', (req, res) => {
+
+    res.end('hello')
+})
+
+server.listen(3000);
+console.log('running at localhost:3000');
+```
+
+写法2:
+
+```js
+const http = require('http');
+
+http.createServer((req, res) => {
+
+    res.end('hello ~')
+  
+}).listen(3000, '127.0.0.1', () => {
+    console.log('running at localhost:3000');
+})
+```
+
+
+
+### req.url 
+
+获得请求的路径，
+
+返回的是` localhost:3000`后的内容
+
+如下，
+
+根据请求的路径的不同响应不同文字
+
+```js
+const http = require('http');
+const server = http.createServer();
+server.on('request', (req, res) => {
+
+    if (req.url.startsWith('/index')) {
+
+        res.end('index')
+    } else if (req.url.startsWith('/about')) {
+
+        res.end('about')
+    } else {
+        res.end('no')
+    }
+
+})
+server.listen(3000);
+console.log('running at localhost:3000');
+```
+
+---
+
+根据请求路响应不同（读取）页面的
+
+```js
+const http = require('http');
+const path = require('path');
+const fs = require('fs')
+
+const server = http.createServer();
+server.on('request', (req, res) => {
+    fs.readFile(path.join(__dirname, 'www', req.url), 'utf-8', (err, data) => {
+
+        if (err) {
+            res.writeHead(404, {
+                'Content-Type': 'text/plain; charset=utf-8'
+            })
+            res.end('404 no such file')
+        } else {
+            res.end(data)
+        }
+    })
+
+})
+server.listen(3000);
+console.log('running at localhost:3000');
+```
+
+
+
+### res.end()
+
+用于结束页面响应，必须
+
+还可以用来在页面中写仅一行
+
+
+
+### res.write()
+
+可以在页面中写多行
+
+```js
+const http = require('http');
+const server = http.createServer();
+server.on('request', (req, res) => {
+
+	  res.write('111');
+    res.write('222');
+    res.write('333');
+    res.end()
+})
+server.listen(3000);
+console.log('running at localhost:3000');
+```
+
+
+
+### res.writeHead()
+
+设置响应头
+
+#### Content-Type
+
+响应类型，根据读取的文件决定要响应的类型
+
+建议下载使用第三方模块mime
+
+---
+
+#### charset=utf-8
+
+文本的话，必须设定utf-8字符集
+
+
 
 
 

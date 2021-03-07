@@ -460,6 +460,16 @@ $(this).addClass('clicked').siblings().removeClass('clicked');
 
 
 
+### children()
+
+```js
+$('').children();
+
+$('').children().eq(0)
+```
+
+
+
 
 
 ## 获取索引
@@ -623,7 +633,7 @@ jQuery对象.toggleClass('类名 类名 类名 类名')
 
 ---
 
-#### click开关灯案例
+### click 开关灯案例
 
 如下：
 
@@ -658,6 +668,18 @@ $('button').on('click', function() {
     flag = !flag
 })
 ```
+
+
+
+给当前元素注册事件
+
+
+
+### 利用事件委托
+
+给父元素注册事件
+
+
 
 
 
@@ -916,6 +938,21 @@ $('ul').append(li)
 $('div').append($('ul'))
 ```
 
+如下，变量数组，生成数组长度的元素，并渲染到页面
+
+```html
+<ul></ul>
+
+<script>
+   let arr = [1, 2, 3, 4, 5, 6];
+
+    arr.forEach((item, index) => {
+        let li = $(`<li>${item}</li>`);
+         $('ul').append(li);
+    }
+</script>
+```
+
 
 
 ### prepend()
@@ -937,10 +974,56 @@ $('div').prepend($('ul'))
 
 
 
-
+## 删除元素
 
 
 
 ```js
+jQuery对象.remove()
+```
 
+如下，
+
+每次删除第一个<li\>
+
+```html
+   <button>click</button>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
+        <li>6</li>
+        <li>7</li>
+        <li>8</li>
+    </ul>
+
+<script>
+        $('button').on('click', () => {
+            $('ul li:first-child').remove()
+        })
+    </script>
+```
+
+或利用 `children()` 和 `eq()`
+
+```html
+    <button>click</button>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
+        <li>6</li>
+        <li>7</li>
+        <li>8</li>
+    </ul>
+
+<script>
+        $('button').on('click', () => {
+            $('ul').children().eq(0).remove()
+        })
+</script>
 ```
