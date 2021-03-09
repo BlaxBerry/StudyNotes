@@ -126,85 +126,6 @@ body背景色变为是yellow
 
 
 
-## em 和 rem
-
-![](https://www.pc-koubou.jp/magazine/wp-content/uploads/2019/10/css_rem_image04.png)
-
-em 和 rem 都是单位
-
-em 是以当前元素的**父元素**的**字体大小**为基准
-
-如下： 结果是子元素高宽为100px：
-
-```css
-.father {
-  font-size: 10px;
-}
-.son {
-  height: 10em;
-  width: 10em;
-}
-```
-
----
-
-rem是 以**<html\>元素**的**字体大小**为基准
-
-如下，盒子的高宽为100px：
-
-```css
-html {
-  font-size: 10px
-}
-div {
-  height: 10rem;
-  width: 10rem
-}
-```
-
-
-
-
-
-## 媒体查询 + rem 实现元素变化
-
-```html
-<style>
-        @media screen and (min-width: 320px) {
-            html {
-                font-size: 20px;
-              }
-        }
-        
-        @media screen and (min-width: 700px) {
-            html {
-                font-size: 50px;
-              }
-        }
-        
-        @media screen and (min-width: 1000px) {
-            html {
-                font-size: 100px;
-              }
-        }
-        
-        p {
-            height: 1rem;
-            font-size: .5rem;
-            line-height: 1rem;
-            text-align: center;
-            background-color: crimson;
-        }
-    </style>
-</head>
-
-<body>
-    <p>hello</p>
-</body>
-```
-
-
-
 ## 引入资源
 
 [三星官网的响应式页面](https://www.samsungeshop.com.cn/)
@@ -248,4 +169,89 @@ div {
 ```
 
 
+
+
+
+
+
+
+
+## em 和 rem
+
+![](https://www.pc-koubou.jp/magazine/wp-content/uploads/2019/10/css_rem_image04.png)
+
+em 和 rem 都是单位
+
+em 是以当前元素的**父元素**的**字体大小**为基准
+
+如下： 结果是子元素高宽为100px：
+
+```css
+.father {
+  font-size: 10px;
+}
+.son {
+  height: 10em;
+  width: 10em;
+}
+```
+
+---
+
+rem是 以**<html\>元素**的**字体大小**为基准
+
+如下，盒子的高宽为100px：
+
+```css
+html {
+  font-size: 10px
+}
+div {
+  height: 10rem;
+  width: 10rem
+}
+```
+
+
+
+## 媒体查询 + rem 实现元素变化
+
+```html
+<style>
+        @media screen and (min-width: 320px) {
+            html {
+                font-size: 20px;
+              }
+        }
+        
+        @media screen and (min-width: 700px) {
+            html {
+                font-size: 50px;
+              }
+        }
+        
+        @media screen and (min-width: 1000px) {
+            html {
+                font-size: 100px;
+              }
+        }
+        
+        p {
+            height: 1rem;
+            font-size: .5rem;
+            line-height: 1rem;
+            text-align: center;
+            background-color: crimson;
+        }
+    </style>
+</head>
+
+<body>
+    <p>hello</p>
+</body>
+```
+
+
+
+## 媒体查询 + rem 适配方案 
 

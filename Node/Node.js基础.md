@@ -454,7 +454,7 @@ console.log(a); //20
 
 ### 模块分类
 
-Node.js系统内置模块、自己写的模块（文件）、第三方模块
+Node.js**系统内置模块**、**自定义模块**（文件）、**第三方模块**
 
 ---
 
@@ -462,9 +462,11 @@ Node.js系统内置模块、自己写的模块（文件）、第三方模块
 
 不同于ES6的模块化规范，
 
-Node.js 采用`CommonJS 的 Modules`规范，
+Node.js 采用 **CommonJS** 的 Modules规范，
 
-用`exports`和`moudule.export`导出，`require`导入接口
+用`exports`和`moudule.export`导出，
+
+用`require`导入接口
 
 
 
@@ -1428,151 +1430,6 @@ keywords： 关键字，搜索用
 dependencies：生产环境的依赖包
 
 devDependencies：开发环境的依赖包
-
-
-
-
-
-## http 服务器
-
-### http.createServer()
-
-两种写法
-
-写法1:
-
-```js
-const http = require('http');
-
-const server = http.createServer();
-server.on('request', (req, res) => {
-
-    res.end('hello')
-})
-
-server.listen(3000);
-console.log('running at localhost:3000');
-```
-
-写法2:
-
-```js
-const http = require('http');
-
-http.createServer((req, res) => {
-
-    res.end('hello ~')
-  
-}).listen(3000, '127.0.0.1', () => {
-    console.log('running at localhost:3000');
-})
-```
-
-
-
-### req.url 
-
-获得请求的路径，
-
-返回的是` localhost:3000`后的内容
-
-如下，
-
-根据请求的路径的不同响应不同文字
-
-```js
-const http = require('http');
-const server = http.createServer();
-server.on('request', (req, res) => {
-
-    if (req.url.startsWith('/index')) {
-
-        res.end('index')
-    } else if (req.url.startsWith('/about')) {
-
-        res.end('about')
-    } else {
-        res.end('no')
-    }
-
-})
-server.listen(3000);
-console.log('running at localhost:3000');
-```
-
----
-
-根据请求路响应不同（读取）页面的
-
-```js
-const http = require('http');
-const path = require('path');
-const fs = require('fs')
-
-const server = http.createServer();
-server.on('request', (req, res) => {
-    fs.readFile(path.join(__dirname, 'www', req.url), 'utf-8', (err, data) => {
-
-        if (err) {
-            res.writeHead(404, {
-                'Content-Type': 'text/plain; charset=utf-8'
-            })
-            res.end('404 no such file')
-        } else {
-            res.end(data)
-        }
-    })
-
-})
-server.listen(3000);
-console.log('running at localhost:3000');
-```
-
-
-
-### res.end()
-
-用于结束页面响应，必须
-
-还可以用来在页面中写仅一行
-
-
-
-### res.write()
-
-可以在页面中写多行
-
-```js
-const http = require('http');
-const server = http.createServer();
-server.on('request', (req, res) => {
-
-	  res.write('111');
-    res.write('222');
-    res.write('333');
-    res.end()
-})
-server.listen(3000);
-console.log('running at localhost:3000');
-```
-
-
-
-### res.writeHead()
-
-设置响应头
-
-#### Content-Type
-
-响应类型，根据读取的文件决定要响应的类型
-
-建议下载使用第三方模块mime
-
----
-
-#### charset=utf-8
-
-文本的话，必须设定utf-8字符集
 
 
 
