@@ -2,7 +2,7 @@
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png)
 
-包安装
+模块包的安装管理工具
 
 node.js自带npm
 
@@ -316,7 +316,13 @@ npm install XXX@lastest --save
 npm install XXX@lastest --save-dev
 ```
 
----
 
-### 
+
+## 下载的包列表
+
+查看当前目录下安装的包的列表
+
+```bash
+npm list
+```
 

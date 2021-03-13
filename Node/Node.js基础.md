@@ -925,90 +925,206 @@ console.log(__dirname);
 
 ## fs 内置模块
 
+文件操作
+
 常用path模块搭配，实现文件的操作
 
-### 同步读取文件
+---
 
-会有阻塞，要等文件读取完毕后才能执行后面的代码
+### 检查是文件还是目录
+
+#### fs.stat()
 
 ```js
-let content = fs.readFileSync(文件路径,["utf-8"]);
+fs.stat(PATH,(er,data)=>{})
 ```
 
-如下：
+回调函数有 err 和 data 参数
+
+若路径是文件，err是个空，data是文件对象；
+
+若路径是个文件夹，err返回错误对象，data是undefined
+
+如下，根据参数err是否是空打印不同结果
 
 ```js
-// 待读取的文件 01.txt
-hello world
-```
-
-```js
-// js文件
-
 const fs = require('fs');
-const path = require('path');
-let fullpath = path.join(__dirname, '01.txt');
 
-const content = fs.readFileSync(fullpath);
-console.log(content);
-//  <Buffer 68 65 6c 6c 6f 20 77 6f 72 6c 64>
-//返回的是Buffer数据类型
-console.log(content.toString());
-// hello
-```
+fs.stat('../03', (err, data) => {
+    if (err) {
+        console.log(err);
+        console.log('it`s dir');
+        return;
+    }
 
-或使用utf-8：
-
-```js
-// js文件
-
-const fs = require('fs');
-const path = require('path');
-let fullpath = path.join(__dirname, '01.txt');
-
-const content = fs.readFileSync(fullpath,"utf-8");
-console.log(content);
-// hello
+    console.log('it`s file');
+})
 ```
 
 ---
 
-验证同步读取会阻塞：
+---
+
+### 创建目录
+
+#### fs.mkdir()
+
+**常用**
+
+```js
+fs.mkdir(PATH/NAME,(err)=>{})
+```
+
+如果文件已经存在，会报错并不会进行操作
+
+若创建成功，回调函数中err参数为空
+
+若创建失败，err是错误对象
+
+如下：根据判读err是否为空得知是否创建成功
+
+```js
+const fs = require('fs');
+
+fs.mkdir('./dir', (err) => {
+    if (err) {
+        console.log(err);
+        return;
+    }
+    console.log('succeed');
+})
+```
+
+
+
+### 写入替换文件
+
+#### fs.writeFile()
+
+了解即可，保存主要是保存到数据库
+
+若文件不存在，则会创建文件并写入
+
+如果文件存在，会**覆盖替换**该文件
+
+```js
+fs.writeFile(PATHNAME, content, 'utf-8', (err) => {})
+```
 
 ```js
 const fs = require('fs');
 const path = require('path');
 let fullpath = path.join(__dirname, '01.txt');
 
-const content = fs.readFileSync(fullpath, 'utf-8');
-console.log(content);
-console.log('-----end');
+let content = 'hello world'
+fs.writeFile(fullpath, content, 'utf-8', (err) => {
+    if (err) {
+        console.log(err);
+        return
+    }
+    console.log('job finished');
+})
+```
+
+---
+
+验证异步写入不阻塞：
+
+```js
+const fs = require('fs');
+const path = require('path');
+let fullpath = path.join(__dirname, '01.txt');
+
+let content = 'hello world'
+fs.writeFile(fullpath, content, 'utf-8', (err) => {
+    if (err) {
+        console.log(err);
+        return
+    }
+    console.log('job finished');
+})
+console.log('----end');
 
 /*
-hello world
------end
+----end
+finished
 */
 ```
 
-如上，一定是等读取完文件后才会执行后面的代码。
 
-所以一旦文件特别大，读取很耗时，绘制你呢个阻塞等待。
+
+### 写入追加文件
+
+#### fs.appendFile()
+
+如果文件存在，会在内容后面追加写入内容
+
+若文件不存在，则会创建文件并写入
+
+```js
+fs.appendFile(PATH/NAME,content,(err)=>{})
+```
+
+如下，运行一次就给文件内容追加一次
+
+```js
+const fs = require('fs');
+
+fs.appendFile('./dir/01.css', 'body{color:red}\n', (err) => {
+    if (err) {
+        console.log(err);
+        return;
+    }
+    console.log('succeed');
+})
+```
+
+
+
+### 读取目录
+
+#### fs.readdir()
+
+返回指定路径下的所有文件和文件夹列表
+
+```js
+fs.readdir(PATH,(err.datd)=>{})
+```
+
+以**数组的形式**返回读取的列表
+
+```js
+const fs = require('fs');
+
+fs.readdir(__dirname, (err, data) => {
+    if (err) {
+        console.log(err);
+    }
+    console.log(data);
+})
+```
+
+```js
+['dir01','dir02','file01.js','file02.js']
+```
 
 
 
 ### 异步读取文件
 
+#### fs.readFile()
+
 **重要**
+
+```js
+fs.readFile(PATH,["utf-8"],(error,data)=>{  })
+```
 
 没有阻塞，不用等文件都读取完毕就执行后面的代码
 
-需要借助回调函数，等读取文件信息完毕后执行回调函数。
+需要借助回调函数等读取文件信息完毕后执行回调函数
 
-```js
-fs.readFile(文件路径,["utf-8"],(error,data)=>{  })
-```
-
-如下：
+**获得的是个buffer数据**，需要加utf-8字符集如下：
 
 ```js
 const fs = require('fs');
@@ -1044,23 +1160,15 @@ fs.readFile(fullpath, 'utf-8', (err, data) => {
 
 若读取文件时出错：
 
-```js
-const fs = require('fs');
-const path = require('path');
-let fullpath = path.join(__dirname, '01.txt');
-
-fs.readFile(fullpath, 'utf-8', (err, data) => {
-    console.log(err);
-    console.log(data);
-});
-
-// [Error: ENOENT: no such file or directory, open 	'/Users/chen/StudyPractice/JS/01.txt'] {
+```bash
+[Error: ENOENT: no such file or directory, open 	'/Users/chen/StudyPractice/JS/01.txt'] {
   errno: -2,
   code: 'ENOENT',
   syscall: 'open',
   path: '/Users/chen/StudyPractice/JS/01.txt'
 }
-//undefined
+
+undefined
 ```
 
 ---
@@ -1109,126 +1217,184 @@ hello world
 
 
 
-### 异步写入文件
+### 重命名 移动文件
 
-了解即可，保存只要是保存到数据库
+#### fs.rename()
 
 ```js
-fs.writeFile(fullpath, content, 'utf-8', (error) => {})
+fs.renameSync(oldPATH/NAME，newPATH/NAME,()=>{}
 ```
 
-相当于重写文件，是**覆盖**并不是追加
+- **重命名**
+
+路径不变，文件名改变：
 
 ```js
 const fs = require('fs');
-const path = require('path');
-let fullpath = path.join(__dirname, '01.txt');
 
-let content = 'hello world'
-fs.writeFile(fullpath, content, 'utf-8', (err) => {
+fs.rename('./dir/01.css', './dir/02.css', (err) => {
     if (err) {
+        console.log('failed');
         console.log(err);
-        return
     }
-    console.log('job finished');
+    console.log('succeed');
 })
 ```
 
----
+- **移动**
 
-验证异步写入不阻塞：
+路径改变，文件名不变：
 
 ```js
 const fs = require('fs');
-const path = require('path');
-let fullpath = path.join(__dirname, '01.txt');
 
-let content = 'hello world'
-fs.writeFile(fullpath, content, 'utf-8', (err) => {
+fs.rename('./01.css', './dir/01.css', (err) => {
+    if (err) {
+        console.log('failed');
+        console.log(err);
+    }
+    console.log('succeed');
+})
+```
+
+- **移动 + 重命名** 
+
+路径不变，文件名改变：
+
+```js
+const fs = require('fs');
+
+fs.rename('./01.css', './dir/02.css', (err) => {
+    if (err) {
+        console.log('failed');
+        console.log(err);
+    }
+    console.log('succeed');
+})
+```
+
+
+
+### 删除目录
+
+#### fs.rmdir()
+
+```js
+fs.rmdir(PATH,(err)=>{})
+```
+
+**如果目录下有文件，则目录不会被删除**
+
+**应该先删除该目录下的所有文件后，才能删除该目录**
+
+如下，使用方便理解的回调地狱：
+
+```js
+const fs = require('fs');
+
+fs.readdir('./dir', (err, data) => {
+    if (err) {
+        return;
+    }；
+
+    data.forEach(item => {
+        fs.unlink('./dir/' + item, err => {
+            if (err) {
+                return;
+            }；
+
+            fs.rmdir('./dir', err => {
+                if (err) {
+                    return;
+                }；
+                console.log('succedd');
+            })
+        })
+    })
+})
+```
+
+
+
+### 删除文件
+
+#### fs.unlink()
+
+```js
+fs.unlink(PATH/NAME,(err)=>{})
+```
+
+```js
+const fs = require('fs');
+
+fs.readdir('./01.css', (err) => {
+   if (err) {
+        console.log('failed');
+        console.log(err);
+    }
+    console.log('succeed');
+})
+```
+
+
+
+
+
+### 案例练习
+
+1. **判断服务器中过是否有某文件，**
+
+   **如果没有就创建，没如果有就不做操作**
+
+利用 `fs.readdir`  +  `arr.includes()`  +  `fs.mkdir()`
+
+比如，判断是否有upload文件夹：
+
+```js
+const fs = require('fs');
+
+fs.readdir(__dirname, (err, data) => {
     if (err) {
         console.log(err);
-        return
+        return;
     }
-    console.log('job finished');
+
+    if (data.indexOf('upload') == -1) {
+        fs.mkdir('./upload', (err) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            console.log('created a directoy');
+        })
+    } else {
+        console.log('directory is already here');
+    }
 })
-console.log('----end');
-
-/*
-----end
-finished
-*/
 ```
 
+2. 整理归类目录和文件
 
+   **异步处理**
 
-### 修改文件名
+比如：把01目录下的所有目录放入一个数组，所有文件放入另一个数组
 
 ```js
-fs.renameSync(旧名，新名)
-```
 
-```js
-const fs = require('fs');
-const path = require('path');
-let fullpath = path.join(__dirname, '01.txt');
-
-fs.renameSync(fullpath, 'hello.txt');
 ```
 
 
 
-### 读取当前目录下文件列表
+3. **修改当前目录下的所有文件名**
 
-```js
-let fileList = fs.readirSync(__dirname)；
-```
+- 添加前缀
 
 ```js
 const fs = require('fs');
 const path = require('path');
-let fullpath = path.join(__dirname, '01.txt');
-
-let fileList = fs.readdirSync(__dirname);
-console.log(fileList);
-
-// ['01.js', '02.js', '03.js', 'hello.txt' ]
-```
-
-
-
-### 常搭配的字符串方法
-
-```js
-let str = 'hello';
-
-str.endsWidth('llo') //判断结尾是否是指定字符
-//true
-
-str.startsWidth('good')  //判断起始是否是指定字符
-//false
-
-str.substring(2,4) //左闭右开区间截取字符串
-// ll
-
-str.substring(2) //从指定位置开始截取字符串
-// llo
-```
-
-
-
-#### 案例
-
-修改当前目录下的所有文件名，
-
-添加前缀
-
-```js
-const fs = require('fs');
-const path = require('path');
-
-let fileList = fs.readdirSync(__dirname);
 
 changname = 'node-';
+let fileList = fs.readdirSync(__dirname);
 
 fileList.forEach(item => {
     if (item.endsWith('.js')) {
@@ -1237,7 +1403,7 @@ fileList.forEach(item => {
 })
 ```
 
-删除前缀
+- 删除前缀
 
 ```js
 const fs = require('fs');
@@ -1254,6 +1420,106 @@ fileList.forEach(item => {
     }
 })
 ```
+
+
+
+
+
+
+
+### 从文件流中读取数据
+
+#### fs.createReadStream()
+
+
+
+异步
+
+## Async，await、promise
+
+```js
+const fs = require('fs')
+
+var dirs = [];
+var files = [];
+fs.readdir(__dirname, (err, data) => {
+    if (err) {
+        console.log(err);
+        return;
+    }
+
+    data.forEach(item => {
+        fs.stat(item, (err, data) => {
+            if (err) {
+
+                dirs.push(item)
+            } else {
+
+                files.push(item)
+            }
+
+        })
+        console.log(dirs);
+        console.log(files);
+    })
+})
+```
+
+
+
+
+
+```js
+var p = new Promise(function(resolve, reject) {
+    setTimeout(function() {
+        let num = 100;
+        resolve(num)
+    }, 1000)
+})
+p.then(function(a) {
+    console.log(a);
+})
+```
+
+```js
+function getTimer(resolve, reject) {
+
+    setTimeout(function() {
+        let num = 100;;
+        resolve(num);
+    }, 1000);
+};
+
+var p = new Promise(getTimer);
+
+p.then(function(a) {
+    console.log(a);
+})
+```
+
+
+
+
+
+
+
+async
+
+让方法变成异步
+
+
+
+await
+
+等待一个异步方法执行的完成
+
+
+
+
+
+
+
+
 
 
 
@@ -1392,9 +1658,11 @@ console.log(buf.toString());
 
 还需要有一个**package.json**文件
 
-
+---
 
 ### package.json文件
+
+存放了当前项目所需的各种模块信息
 
 package.json文件必须存放在项目的顶层目录下
 
@@ -1431,7 +1699,11 @@ dependencies：生产环境的依赖包
 
 devDependencies：开发环境的依赖包
 
+^ : 第一位版本号不变，后面两位取最新
 
+~ : 前面两位不变，后面一个取最新
 
+*：全部取最新
 
+ 
 
