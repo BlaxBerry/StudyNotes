@@ -6,13 +6,13 @@
 
 是个渐进式框架，根据项目需要逐渐下载需要的东西
 
-这一系列可叫为 **Vue全家桶**
+这一系列Vue组件可叫为 **Vue全家桶**
 
 
 
 使用Vue框架，首先要学会转变思想，不再操作DOM元素，
 
-而是通过操作数组等的数据，去动态控制页面的数据展示
+而是通过操作数组等数据，去动态控制页面的数据展示
 
 ---
 
@@ -913,19 +913,157 @@ v-else-if v-else必须和v-if的标签连用，两个标签中间不有其他标
 
 
 
-## 动态循环生成
+## 动态循环生成 v-for
 
-### v-for
+### 遍历数组
 
-数组
+根据 **数组元素个数 **，**动态响应式生成**DOM元素
 
-item是数组中的各项元素
+元素的内容或内部子元素也会一起循环生成
 
-index是数组中的下标序号
+多用于生成 **<li\>**标签
 
+```js
+v-for="(item,index) in 数据"
 ```
 
+如下：
+
+Vue对象内设定的数组中共有3个元素，循环生成3个<li\>
+
+包含原来的页面中一共3个
+
+```html
+<div id='app'>
+  <ul>
+    <li v-for="item in arr"></li>
+  </ul>
+</div>
+
+<script>
+	var app = new Vue({
+  		el: '#app',
+  		data: {
+    			arr: [1,2,3]
+  		}
+	})
+</script>
 ```
+
+如下：元素的内部子的元素也被动态生成
+
+```html
+<div id='app'>
+  <ul>
+		<li v-for="item in arr">
+   			<span>hello</span><a href="#"></a>
+		</li>
+  </ul>
+</div>
+
+<script>
+	var app = new Vue({
+  		el: '#app',
+  		data: {
+    			arr: [1,2,3]
+  		}
+	})
+</script>
+```
+
+---
+
+#### item 和 index
+
+item是数组的各项元素，index是数组的下标序号
+
+如下：
+
+```html
+<div id='app'>
+  <ul>
+    <li v-for="(item,index) in arr">
+        <span>{{index +1}}</span>
+      	<span>{{item}}</span>
+    </li>
+  </ul>
+</div>
+
+<script>
+		var app = new Vue({
+  				el: '#app',
+  				data: {
+   						 arr: [1,2,3]
+ 					 }
+		})
+</script>
+```
+
+---
+
+#### 数组元素是对象
+
+数组元素为复杂数据类型时，比如对象，
+
+`{{item}}`获得的也是对象
+
+若要获得对象的属性，要. **`{{item.属性}}`**
+
+如下：
+
+```html
+<ul>
+   <li v-for="item in arr">{{item}}</li>
+   <li v-for="item in arr">{{item.name}}</li>
+</ul>
+
+<script>
+  new Vue({
+            el: "#app",
+            data: {
+                arr: [{
+                    name: 'andy'
+                }, {
+                    name: 'red'
+                }, {
+                    name: 'james'
+                }]
+            }
+</script>
+```
+
+如下：
+
+循环生成3 个` < li \>`， 
+
+并把作为数组元素的对象的属性值也写入
+
+```html
+<ul>
+	<li v-for="(item,index) in arr">
+      <span>{{index}}</span>
+   		<span>{{item.name}}</span>
+	</li>
+</ul>
+
+<script>
+			var app = new Vue({
+            el: "#app",
+            data: {
+                arr: [
+                  {name: 'andy'}, 
+                  {name: 'red'}, 
+                  {name: 'james'}
+                ]
+       }
+</script>
+```
+
+
+
+
+
+
 
 对象
 
@@ -943,9 +1081,11 @@ key是键值对中的属性名
 
 
 
-## 表单内容数据双向绑定
 
-v-model
+
+## 表单内容数据 v-model
+
+**表单的 v-model** 最能体现Vue的 **双向数据绑定**
 
 ### input表单
 
@@ -1877,66 +2017,6 @@ v-bind:class='{类名：表达式}'
 
 ## v-for
 
-遍历data中设定的一个数组，  **根据数组元素的个数 ** 
-
-响应式生成动态**生成DOM元素**，多用于生成 **<li\>**标签
-
-### 遍历数组
-
-```js
-v-for="(item,index) in 数据"
-```
-
----
-
-- 循环生成数组元素个数的DOM元素
-
-如下，循环生成3个<li\>，包含原来的页面中一共3个
-
-```html
-<div id='app'>
-  <ul>
-    <li v-for="item in arr"></li>
-  </ul>
-</div>
-
-<script>
-	var app = new Vue({
-  		el: '#app',
-  		data: {
-    			arr: [1,2,3]
-  		}
-	})
-</script>
-```
-
----
-
-- 元素的内容或内部子元素也会一起循环生成
-
-如下，<li\>标签中的内容也会随着循环生成
-
-```html
-<div id='app'>
-  <ul>
-		<li v-for="item in arr">
-   			<span>hello</span><a href="#"></a>
-		</li>
-  </ul>
-</div>
-
-<script>
-	var app = new Vue({
-  		el: '#app',
-  		data: {
-    			arr: [1,2,3]
-  		}
-	})
-</script>
-```
-
-
-
 ### item
 
 可把数组元素写入标签内部
@@ -1972,102 +2052,7 @@ item表示数组的每一个元素
 
 
 
-### index
 
-可把数组的序号写入标签内部
-
-index表示数组的每一个序号
-
-在标签中写入如下，就可在该标签内使用数组index序号
-
-```js
-v-for="(item,index) in arr"
-```
-
-如下，生成3 个 < li \>，
-
-< li \>的子元素的内容分别是数组的序号和元素
-
-```html
-<div id='app'>
-  <ul>
-    <li v-for="(item,index) in arr">
-        <span>{{index +1}}</span>
-      	<span>{{item}}</span>
-    </li>
-  </ul>
-</div>
-
-<script>
-		var app = new Vue({
-  				el: '#app',
-  				data: {
-   						 arr: [1,2,3]
- 					 }
-		})
-</script>
-```
-
-
-
-### 数组元素是对象
-
-数组元素为复杂数据类型时，比如对象，如下：
-
-```js
-var app = new Vue({
-            el: "#app",
-            data: {
-                arr: [{
-                    name: 'andy'
-                }, {
-                    name: 'red'
-                }, {
-                    name: 'james'
-                }]
-            }
-```
-
- 因为数组的元素是个对象，所以此时`{{item}}`获得的也是对象
-
-```html
-   <li v-for="item in arr">{{item}}</li>
-```
-
----
-
-若要获得对象的属性，要. **`{{item.属性}}`**
-
-
-
-```html
-  <li v-for="item in arr">{{item.name}}</li>
-```
-
-如下：循环生成3 个 < li \>， 
-
-并把作为数组元素的对象的属性值也写入
-
-```html
-<ul>
-	<li v-for="(item,index) in arr">
-      <span>{{index}}</span>
-   		<span>{{item.name}}</span>
-	</li>
-</ul>
-
-<script>
-			var app = new Vue({
-            el: "#app",
-            data: {
-                arr: [
-                  {name: 'andy'}, 
-                  {name: 'red'}, 
-                  {name: 'james'}
-                ]
-       }
-</script>
-```
 
 
 
@@ -2206,36 +2191,6 @@ v-model 是**双向数据绑定**
 ```
 
 
-
-### 修改表单值
-
-如下，
-
-给按钮绑定事件，点击按钮后修改数据，闭同时响应到表单
-
-```html
-<div id="app">
-        <input type="text" v-model="message" @keyup='getValue'>
-        <button @click="change">change content</button>
-</div>
-
-<script>
-        var app = new Vue({
-            el: '#app',
-            data: {
-                message: ''
-            },
-            methods: {
-                getValue: function() {
-                    console.log(this.message);
-                },
-                change: function() {
-                    this.message = 'hello'
-                }
-            }
-        })
-</script>
-```
 
 
 
