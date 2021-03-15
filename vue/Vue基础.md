@@ -4,47 +4,1148 @@
 
 ## 简介
 
-Vue可以**不通过获取就能操作DOM元素**实现页面效果
+是个渐进式框架，根据项目需要逐渐下载需要的东西
+
+这一系列可叫为 **Vue全家桶**
 
 
 
-## 导入
+使用Vue框架，首先要学会转变思想，不再操作DOM元素，
+
+而是通过操作数组等的数据，去动态控制页面的数据展示
+
+---
+
+Vue的功能特点：
+
+- 解耦数据和视图
+
+- 双向数据绑定
+
+- 可服用插件
+
+- 前段路由
+
+- 状态管理
+
+- 虚拟DOM
+
+
+
+
+
+## MVVM思想
+
+### Model层（模型层/数据层）
+
+就是书写的Vue对象的相关数据部分
+
+### view层（视图层）
+
+就是给用户展示信息的DOM树结构
+
+### ViewModel层（视图模型层）
+
+实现双向数据绑定、监听DOM并及时改变的Vue本身
+
+
+
+
+
+
+
+## 下载与安装
+
+**方式一**：直接CDN引入
+
+会根据请求的IP去取所在地域的服务器
 
 ```html
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-```
 
-```html
 <!-- 生产环境版本，优化了尺寸和速度 -->
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 ```
 
+---
+
+**方式二**：下载官方文件
+
+下载官方的JS文件后引入项目
+
+[Vue文档 安装引入](https://cn.vuejs.org/v2/guide/installation.html#%E7%9B%B4%E6%8E%A5%E7%94%A8-lt-script-gt-%E5%BC%95%E5%85%A5)
+
+---
+
+**方式二**：NPM安装
+
+```bash
+npm install Vue
+```
 
 
-## 使用
+
+
+
+
+
+## 声明和挂载
 
 1. 首先需要**实例化一个Vue对象**，
 
 2. 然后通过**el属性**，给指定元素**挂载上Vue**
 
-3. 然后通过**data属性**和**methods属性**给实例化的Vue对象**设置各种属性和方法**
+3. 然后通过**data属性**和**methods属性**设置各种数据和方法
 
 4. 然后通过Vue指令，把设定的属性和方法设定绑定给**el挂载的元素和其内部子元素**
+
+---
+
+---
+
+### #app
+
+在`body`中用`ID选择器`创建一个div盒子
+
+```html
+<body>
+  <div id="app"></div>
+</body>
+```
+
+---
+
+---
+
+### Vue对象
+
+在`<script>标签`用`new`声明一个`Vue对象`去管理这个`#app`标签
+
+```js
+var app = new Vue({})
+```
+
+---
+
+---
+
+### el
+
+用`el`（element）去绑定**管理**刚刚声明的`#app标签`
+
+即设置Vue对象的挂载元素
+
+```js
+var app = new Vue({
+  el: 选择器
+})
+```
+
+---
+
+可以挂载任何选择器
+
+但是**建议Vue挂载 `ID选择器`**
+
+```js
+var app_1 = new Vue({
+  el: '.className'
+})
+
+var app_2 = new Vue({
+  el: '#idName'
+})
+```
+
+---
+
+**Vue对象不能挂载 body 和 html 标签**
+
+**Vue对象不能挂载单标签**
+
+**建议Vue挂载 `<div></div>`**
+
+---
+
+---
+
+### data
+
+`data` 里存放`#app标签`会使用到的所有**动态数据**
+
+即存放Vue挂载的标签中会用到的数据变量
+
+```html
+    <div id="app"></div>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+        }
+    })
+</script>
+```
+
+如下：
+
+```html
+<div id="app">	
+  <p>{{str}}</p>
+  <p>{{str}} {{str}}</p>
+  <p>{{num + 100}}</p>  
+  <p>{{num}}</p>    
+</div>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+          num: 100,
+          str: "hello Vue"
+        }
+    })
+</script>
+```
+
+可以设定任何数据类型，
+
+比如简单类型的文本、数字，或复杂类型的数组、对象
+
+```js
+var app = new Vue({
+  el: '选择器'，
+  data：{
+  		num: 100,
+  		message: 'text content',
+  		tags: '<a href="https://github.com/BlaxBerry">my GitHub</a>',
+  		arr: [1, 2, 3],
+      obj: {
+          name: 'andy',
+          age: 28
+      } 
+	}
+})
+```
+
+然后通过以下三种方法，把定义的data中的数据设置给元素内容
+
+​		 `v-text = data对象中的属性名` 
+
+​		 `v-html = data对象中的属性名`
+
+​		`{{data对象中的属性}}`
+
+---
+
+---
+
+### methods
+
+存放方法函数
+
+```js
+var app = new vue({
+  el: '选择器'，
+  methods: {
+  	方法名: function(){},
+  	方法名: function(){},
+    方法名: function(){}
+	}
+})
+```
+
+如下：
+
+```js
+var app = new Vue({
+  el: '选择器'，
+  methods: {
+  	click: function(){
+   		alert('单击了')
+		},
+  	mouse: function(){
+   		alert('鼠标经过了')
+		},
+    dblclick: function(){
+      alert('双击了')
+    }
+	}
+})
+```
+
+Vue内部把data内的数据绑定给了声明的Vue对象，
+
+在methods的方法中可以使用`this.变量名`获取这些数据
+
+this指向的是声明的Vue对象。
+
+
+
+然后通过给元素绑定事件，给元素绑定定义的方法
+
+​		`v-on:事件类型=“methods中定义的方法名”`
+
+​		`@事件类型 = ”methods中定义的方法名“`
+
+
+
+
+
+
+
+## 插值表达式  {{ }}
+
+**插值表达式** / **胡子语法**
+
+作为标签的文本内容
+
+```html
+<div id="app">	
+        <p>{{str}}</p>
+</div>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+          str: "hello Vue"
+        }
+    })
+</script>
+```
+
+---
+
+除了可以直接写入数据还可以进行 JS 操作
+
+{{message + "hello"}}
+
+{{num+100}}
+
+{{num>0? message_1 : message_2}}
+
+{{message.split('').reverse().join('')}}
+
+如下：**加减乘除运算**
+
+```html
+<div id="app">	
+        <p>{{num1 + num2}}</p>
+        <p>{{num1 + 100}}</p>
+        <p>{{(num2 + 100) / num1}}</p>
+</div>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+          num1: 100,
+         	num2: 200
+        }
+    })
+</script>
+```
+
+---
+
+如下：**三元表达式** 判断大小
+
+```html
+<div id="app">	
+  		<p>{{num1}}</p>
+  		<p>{{num1>num2?num1:num2}}</p>
+</div>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+          num1: 100,
+         	num2: 200
+        }
+    })
+</script>
+```
+
+---
+
+如下：拼接字符串
+
+```html
+    <div id="app">
+        <p>{{str + str }}</p>
+        <p>{{num + str}}</p>
+    </div>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+          num: 100,
+          str: "hello Vue"
+        }
+    })
+</script>
+```
+
+---
+
+如下：**链式编程反转字符串**
+
+```html
+		<div id="app">
+				<p>{{str}}</p>
+        <p>{{str.split("").reverse().join("")}}</p>
+    </div>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+          num: 100,
+          str: "hello Vue"
+        }
+    })
+</script>
+```
+
+
+
+
+
+
+
+## 绑定属性和样式类
+
+比如 **src 、 title、 class类名**等的属性
+
+### v-bind
+
+```html
+<div v-bind:属性名=“”></div>
+```
+
+v-bind:href=""
+
+v-bind:src=""
+
+---
+
+### :
+
+```html
+<div :属性名=“”></div>
+```
+
+:属性名=“”
+
+:class=""
+
+:href=""
+
+
+
+
+
+
+
+
+
+
+
+## 控制class类名 
+
+**重要**
+
+### **对象方式 键值对**
+
+```html
+<div :class="{类名：布尔值}"></div>
+```
+
+布尔值为真则有该类名，布尔值为false则无该类名
+
+```html
+<style>
+    .active {
+        background-color: crimson;
+        height: 100px;
+        width: 100px;
+    }    
+    .current {
+        color: teal;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <p class="active">{{str}}</p>
+        <p :class="{active:bool_1}">{{str}}</p>
+        <p :class="{current:bool_2}">{{str}}</p>
+        <p :class="{active:bool_2,current:bool_1}">{{str}}</p>
+    </div>
+</body>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            str: "hello Vue",
+            bool_1: true,
+            bool_2: false
+        }
+    })
+</script>
+```
+
+#### tab栏切换
+
+```html
+    <style>
+        .active {
+            color: crimson;
+        }
+        .bd span {
+            display: none;
+        }
+        .current {
+            display: inline-block!important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="hd">
+            <span :class="{active:flag==1}" @click='flag=1'>标题1</span>
+            <span :class="{active:flag==2}" @click='flag=2'>标题1</span>
+            <span :class="{active:flag==3}" @click='flag=3'>标题3</span>
+        </div>
+        <div class="bd">
+            <span :class="{current:flag==1}">内容1</span>
+            <span :class="{current:flag==2}">内容2</span>
+            <span :class="{current:flag==3}">内容3</span>
+        </div>
+    </div>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                flag: 1,
+            }
+        })
+    </script>
+</body>
+```
+
+---
+
+### 数组方式
+
+```html
+<div :class="[‘类名’，‘类名’]"></div>
+```
+
+```html
+<style>
+    .active {
+        background-color: crimson;
+        height: 100px;
+        width: 100px;
+    }
+    .current {
+        color: teal;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <p :class="['active', 'current']">{{str}}</p>
+    </div>
+</body>
+
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            str: "hello Vue",
+            bool_1: true,
+            bool_2: false
+        }
+    })
+</script>
+```
+
+---
+
+### 对象三元表达式
+
+```html
+<div :class="变量?'类名':''"></div>
+```
+
+变量值为真则有该类名，变量值为false则无该类名
+
+```html
+<style>
+    .active {
+        background-color: crimson;
+        height: 100px;
+        width: 100px;
+    }
+    .current {
+        color: teal;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <p :class="bool_1?'active':''"></p>
+        <p :class="bool_2?'active':''"></p>
+    </div>
+</body>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            str: "hello Vue",
+            bool_1: true,
+            bool_2: false
+        }
+    })
+</script>
+```
+
+#### tab栏切换
+
+```html
+  <style>
+        .active {
+            color: crimson;
+        }
+        
+        .bd span {
+            display: none;
+        }
+        
+        .current {
+            display: inline-block!important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="hd">
+            <span :class="flag==1?'active':''" @click='flag=1'>标题1</span>
+            <span :class="flag==2?'active':''" @click='flag=2'>标题2</span>
+            <span :class="flag==3?'active':''" @click='flag=3'>标题3</span>
+        </div>
+        <div class="bd">
+            <span :class="flag==1?'current':''">内容1</span>
+            <span :class="flag==2?'current':''">内容2</span>
+            <span :class="flag==3?'current':''">内容3</span>
+        </div>
+    </div>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                flag: 3,
+            }
+        })
+    </script>
+</body>
+```
+
+
+
+### 数组三元表达式
+
+```html
+<div :class="[变量?'类名1':'', ‘类名2’, 变量?'类名3':'']"></div>
+```
+
+```html
+<style>
+    .active {
+        background-color: crimson;
+        height: 100px;
+        width: 100px;
+    }
+    .current {
+        color: teal;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <p :class="[bool_1?'active':'', 'current']">{{str}}</p>
+    </div>
+</body>
+
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            str: "hello Vue",
+            bool_1: true,
+            bool_2: false
+        }
+    })
+</script>
+```
+
+
+
+
+
+## 直接控制style样式
+
+不常用
+
+```html
+<div :style="{fontSize:'30px'}"></div>
+<div :style="[{fontSize:'30px',background:'red'}]"></div>
+<div :style="[{fontSize:'30px',background:'red'},{color:'blue'}]"></div>
+```
+
+动态控制
+
+```html
+<div :style="{fontSize:变量?'30px':'50px'}"></div>
+```
+
+
+
+
+
+## 绑定事件
+
+### v-on
+
+```js
+v-on:事件类型=“”
+```
+
+```html
+<div v-on:lick="num++">{{num}}</div>
+<div v-on:mouseenter="num += 100">{{num}}</div>
+```
+
+
+
+### 简写 @
+
+```js
+:事件类型=“”
+```
+
+```html
+<div @lick="num++">{{num}}</div>
+<div @mouseenter="num += 100">{{num}}</div>
+```
+
+复杂的函数方法，需要是写在Vue对象内的methods中，然后通过事件类型去调用
+
+
+
+### methods
+
+存放函数
+
+```html
+<script>
+  new Vue({
+    el: "#app",
+    methods: {
+    		方法名:function{},
+        方法名:function(){}
+		}
+  })
+</script>
+```
+
+```html
+ <div id="app">
+        <input type="text" v-model="message" @keyup.enter="send">
+   			<button @click="send">send</button>
+        <ul>
+            <li v-for="(item,index) in list">{{item}}
+                <a href="javascript:;" @click="remov(index)">delete</a>
+            </li>
+        </ul>
+        <button @click='removeall'>clear all</button>
+</div>
+<script>
+        new Vue({
+            el: "#app",
+            data: {
+                message: "",
+                list: [],
+                flag: true
+            },
+            methods: {
+                send: function() {
+                    this.list.push(this.message);
+                    this.message = ''
+                },
+                remov: function(index) {
+                    this.list.splice(index, 1)
+                },
+                removeall: function() {
+                    this.list = [];
+                }
+            }
+        })
+    </script>
+```
+
+
+
+简写
+
+```html
+<script>
+  new Vue({
+    el: "#app",
+    methods: {
+    		方法名{},
+        方法名(){}
+		}
+  })
+</script>
+```
+
+```html
+ <div id="app">
+        <input type="text" v-model="message" @keyup.enter="send">
+   			<button @click="send">send</button>
+        <ul>
+            <li v-for="(item,index) in list">{{item}}
+                <a href="javascript:;" @click="remov(index)">delete</a>
+            </li>
+        </ul>
+        <button @click='removeall'>clear all</button>
+</div>    
+
+<script>
+        new Vue({
+            el: "#app",
+            data: {
+                message: "",
+                list: [],
+                flag: true
+            },
+            methods: {
+                send() {
+                    this.list.push(this.message);
+                    this.message = ''
+                },
+                remov(index) {
+                    this.list.splice(index, 1)
+                },
+                removeall() {
+                    this.list = [];
+                }
+            }
+        })
+</script>
+```
+
+methods中的作用域
+
+this指向Vue对象
+
+Vue内部实现把data内的属性给了Vue对象
+
+this.num
+
+
+
+
+
+## 显示隐藏
+
+### v-show=""
+
+display: none
+
+```html
+<div v-show="flag"></div>
+<div v-show="true"></div>
+<div v-show="false"></div>
+
+```
+
+
+
+
+
+### 条件判断
+
+从DOM树中删除该节点
+
+#### v-if
+
+#### v-else-if
+
+#### v-else
+
+v-else-if v-else必须和v-if的标签连用，两个标签中间不有其他标签
+
+显示效果和v-if正好相反
+
+```html
+<body>
+    <div id="app">
+        <button v-if="flag" @click="flag=!flag">点击收藏</button>
+        <button v-else @click="flag=!flag">取消收藏</button>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                flag: true
+            }
+        })
+    </script>
+</body>
+```
+
+
+
+
+
+
+
+## 动态循环生成
+
+### v-for
+
+数组
+
+item是数组中的各项元素
+
+index是数组中的下标序号
+
+```
+
+```
+
+对象
+
+value是对象键值对中的属性值
+
+key是键值对中的属性名
+
+```html
+
+```
+
+
+
+
+
+
+
+## 表单内容数据双向绑定
+
+v-model
+
+### input表单
+
+```html
+    <div id="app">
+        <input type="text" v-model="value">
+        <h1>{{value}}</h1>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                value: ''
+            }
+        })
+    </script>
+```
+
+### selec表单
+
+```html
+    <div id="app">
+        <select v-model="seValue">
+            <option value="JavaScript">JavaScript</option>
+            <option value="PHP">PHP</option>
+            <option value="Ruby">Ruby</option>
+        </select>
+        <h1>{{seValue}}</h1>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                value: ''
+            }
+        })
+    </script>
+```
+
+
+
+
+
+## 不常用的 插值操作
+
+### v-text
+
+相当于`innerText`，不能解析标签，作用和`{{ }}`一样
+
+```html
+ <div id="app">
+        <div>{{str}}</div>
+        <div v-text="str"></div>
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                str: "<a href='#'>link</a>"
+            }
+        })
+    </script>
+```
+
+
+
+### v-html
+
+等于`innerHTML()`，可解析html标签
+
+```html
+    <div id="app">
+        <div>{{str}}</div>
+        <div v-text="str"></div>
+        <div v-html="str"></div>
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                str: "<a href='#'>link</a>"
+            }
+        })
+    </script>
+```
+
+
+
+### v-pre
+
+**在页面上直接显示`插值表达式`**
+
+即，让浏览器不去解析`{{ }}`
+
+```html
+    <div id="app">
+        <div>{{str}}</div>
+      	<div v-pre="str">{{str}}</div>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                str: "<a href='#'>link</a>"
+            }
+        })
+    </script>
+```
+
+
+
+### v-cloak
+
+**隐藏数据渲染到页面之前的`插值表达式`在页面上的显示**
+
+由于网络的延迟可能会导致Vue加载延时，
+
+会导致用户直接看到Vue的各种插值语法出现在页面上
+
+可以结合属性选择器	`[v-cloak]{display:none;}`
+
+在Vue没有加载成功前先把使用了Vue插值语法的div盒子隐藏，Vue加载后才显示，这样的话用户就看不到了
+
+```html
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<body>
+		<div v-cloak>{{str}}</div>
+  
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                str: "<a href='#'>link</a>"
+            }
+        })
+    </script>
+</body>
+```
+
+
+
+
+
+## key属性
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## -----------------------------
+
+
+
+
+
+
 
 ```html
 <body>
   <div id="app">
-  <h1>{{message}}</h1>
-  <h2 @add='add'>num: {{num}}</h2>
-  <h3 @click='sayHello'>name: {{info.name}}</h3>
-  <h3>age: {{info.age}}</h3>
-  <ul>
-    <li><span>{{lesson[0]}}</span> <span>{{score[0]}}</span></li>
-    <li><span>{{lesson[1]}}</span> <span>{{score[1]}}</span></li>
-    <li><span>{{lesson[2]}}</span> <span>{{score[2]}}</span></li>
-  </ul>
-</div>
+  	<h1>{{message}}</h1>
+  	<h2 @add='add'>num: {{num}}</h2>
+  	<h3 @click='sayHello'>name: {{info.name}}</h3>
+  	<h3>age: {{info.age}}</h3>
+  	<ul>
+   	 	<li><span>{{lesson[0]}}</span> <span>{{score[0]}}</span></li>
+   	 	<li><span>{{lesson[1]}}</span> <span>{{score[1]}}</span></li>
+    	<li><span>{{lesson[2]}}</span> <span>{{score[2]}}</span></li>
+  	</ul>
+	</div>
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -77,82 +1178,11 @@ Vue可以**不通过获取就能操作DOM元素**实现页面效果
 
 
 
-### 实例化Vue对象
-
-```js
-var app = new Vue({})
-```
-
-然后设置好对象的相关属性
 
 
 
-### el属性
 
-设置Vue的挂载元素
-
-```js
-var app = new Vue({
-  el: 选择器
-})
-```
-
----
-
-可以挂载任何选择器
-
-但是**建议Vue挂载 `ID选择器`**
-
-```js
-var app_1 = new Vue({
-  el: '.className'
-})
-
-var app_2 = new Vue({
-  el: '#idName'
-})
-```
-
----
-
-可以挂载**除了 body 和 html 标签外**的任何**双标签**
-
-但是**建议Vue挂载 `<div></div>`**
-
-
-
-### data属性
-
-设定数据对象
-
-```js
-var app = new Vue({
-  el: '选择器'，
-  data：{
-  		message: 内容
-	}
-})
-```
-
-可以设定任何数据类型，
-
-比如简单类型的文本、数字，或复杂类型的数组、对象
-
-```js
-var app = new Vue({
-  el: '选择器'，
-  data：{
-  		num: 100,
-  		message: 'text content',
-  		tags: '<a href="https://github.com/BlaxBerry">my GitHub</a>',
-  		arr: [1, 2, 3],
-      obj: {
-          name: 'andy',
-          age: 28
-      } 
-	}
-})
-```
+## 设置元素内容
 
 然后通过以下三种方法，把定义的data中的数据设置给元素内容
 
@@ -161,56 +1191,6 @@ var app = new Vue({
 ​		 `v-html = data对象中的属性名`
 
 ​		`{{data对象中的属性}}`
-
-
-
-### methods属性
-
-定义方法
-
-```js
-var app = new vue({
-  el: '选择器'，
-  methods: {
-  	方法名: function(){},
-  	方法名: function(){},
-    方法名: function(){}
-	}
-})
-```
-
-如下：
-
-```js
-var app = new Vue({
-  el: '选择器'，
-  methods: {
-  	click: function(){
-   		alert('单击了')
-		},
-  	mouse: function(){
-   		alert('鼠标经过了')
-		},
-    dblclick: function(){
-      alert('双击了')
-    }
-	}
-})
-```
-
-然后通过给元素绑定事件，给元素绑定定义的方法
-
-​		`v-on:事件类型=“methods中定义的方法名”`
-
-​		`@事件类型 = ”methods中定义的方法名“`
-
-
-
-
-
-
-
-## 设置元素内容
 
 ### v-text
 
@@ -237,7 +1217,11 @@ v-text="message"
 
 
 
-### {{message}}
+### {{}}
+
+**插值表达式** / **胡子语法**
+
+
 
 v-text 的缩写，仅识别文本内容不能解析标签
 
@@ -310,20 +1294,6 @@ v-html="message"
 
 
 
-
-## JS表达式
-
-Vue支持JavaScript的表达式
-
-比如
-
-{{message + "hello"}}
-
-{{num+100}}
-
-{{num>0? message_1 : message_2}}
-
-{{message.split('').reverse().join('')}}
 
 
 
@@ -668,6 +1638,8 @@ v-bind: 属性名=表达式
             }
         })
 ```
+
+
 
 
 
