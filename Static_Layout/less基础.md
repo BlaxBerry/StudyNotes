@@ -80,7 +80,7 @@ img {
 
 
 
-## Less 注释
+## 注释
 
 不同于css的`/**/`，Less使用双斜杠`//`注释
 
@@ -90,7 +90,7 @@ img {
 
 
 
-## Less 变量
+## 变量
 
 放入颜色、数值等，**方便统一修改维护**
 
@@ -152,7 +152,7 @@ html页面不识别Less，需要把less文件编译转换为css文件
 
 
 
-## Less 元素嵌套
+## 元素嵌套
 
 ### 子元素
 
@@ -311,7 +311,7 @@ less中的内层选择器直接放到外层选择器中
 
 
 
-## Less 运算
+## 运算
 
 Less中的变量都可以参与运算
 
@@ -394,6 +394,41 @@ img {
 ```css
 img {
   width: 1.64px;
+}
+```
+
+
+
+
+
+## 导入
+
+### @import 
+
+把一个样式文件导入另一个样式文件中
+
+```less
+@import "要导入的less文件名"
+```
+
+如下，在`02.less`中导入公共样式的`common.less`文件：
+
+```less
+// common.less
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+```
+
+```less
+// 02.less
+
+@import "common.less";
+
+a {
+    text-decoration: none;
 }
 ```
 

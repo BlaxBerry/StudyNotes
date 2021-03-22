@@ -1,3 +1,5 @@
+
+
 # Vue基础
 
 ![vue](https://iwatani.tv/wp-content/uploads/2019/12/vuejs-keyvisual-1024x538.png)
@@ -202,7 +204,7 @@ data属性 和 methods属性里面写的内容
 
 
 
-## 事件
+## 事件绑定
 
 ### methods属性
 
@@ -794,6 +796,8 @@ new Vue({
 </script>
 ```
 
+---
+
 ### 局部指令
 
 就是把创建自定义指令的过程写入Vue实例对象中
@@ -1007,18 +1011,113 @@ var vm = new Vue({
 
 ## 侦听器 watch
 
-监听属性
+监听属性watch，是用来**侦听数据的变化**
 
-侦听数据的变化
+数据一旦变化就会触发watch中的对应该数据的方法，执行异步或耗时的复杂操作
 
-数据的变化会触发方法，执行异步或耗时的复杂操作
+**watch属性中的方法名 必须和 要侦听的数据名 一致**
+
+方法中的参数是被侦听的该数据
 
 ```html
 <script>
 new Vue({
-  
+  el:"#app",
+  data:{
+    数据
+  },
+  watch:{
+    数据:function(val){
+      处理数据
+    }
+  }
 })
 </script>
+```
+
+比如：
+
+分别侦听两个数据 firstName 和 lastName，
+
+当数据变化时立刻改变另一个数据 fullName
+
+```html
+<div id="app">
+    firstName: <input type="text" v-model="firstName"> <br> 
+   	lastName: <input type="text" v-model="lastName"> <br>
+    <p>{{fullName}}</p>
+</div>
+
+<script>
+        new Vue({
+            el: "#app",
+            data: {
+                firstName: 'Andy',
+                lastName: 'Red',
+                fullName: 'Andy Red'
+            },
+            watch: {
+                firstName: function(val) {
+                    this.fullName = val + " " + this.lastName
+                },
+                lastName: function(val) {
+                    this.fullName = this.firstName + " " + val
+                }
+            }
+        })
+</script>
+```
+
+---
+
+### 侦听和异步
+
+**用于验证用户名的可用性**
+
+监听变化，一旦变化就用Ajax访问接口
+
+判断后渲染页面内容
+
+如下：
+
+```html
+    <div id="app">
+        <span>User Name: </span>
+        <span><input type="text" v-model.trinm.lazy="uname"></span>
+        <span class="message">{{message}}</span>
+    </div>
+
+    <script>
+        var list = ['Andy', 'Red', 'James', 'Odd'];
+
+        new Vue({
+            el: "#app",
+            data: {
+                uname: "",
+                message: "请输入"
+            },
+            methods: {
+                check(val) {
+                    let that = this;
+
+                    //用定时器模拟 Ajax访问接口的耗时
+                    setTimeout(function() {
+                        if (list.indexOf(val) != -1) {
+                            that.message = "已存在"
+                        } else {
+                            that.message = "可使用"
+                        }
+                    }, 2000)
+                }
+            },
+            watch: {
+                uname: function(val) {
+                    this.check(val);
+                    this.message = "验证中..."
+                }
+            }
+        })
+    </script>
 ```
 
 
@@ -1027,13 +1126,253 @@ new Vue({
 
 
 
-## 过滤器
+## 过滤器 filter
+
+在数据渲染时处理数据，将处理后的结果展现
+
+**用于 格式化数据**
+
+比如， **字符串首字母大写、日前格式化**
+
+---
+
+### 全局过滤器
+
+使用`Vue.filter()` 设定过滤器函数，
+
+**必须用`return`返回一个值**
+
+其参数`val	`就是要过滤的数值
+
+```html
+<div id="app">
+  <div>{{数据 ｜ 过滤器名称}}</div>
+</div>
+
+<script>
+	Vue.filter("过滤器名称",function(value){
+  //逻辑
+});
+  new Vue({
+    el:"#app",
+    data: {
+     数据
+    }
+  })
+</script>
+```
+
+---
+
+**使用场景**
+
+- **过滤插值表达式**
+
+```html
+<div id="app">
+  <div>{{massage | 过滤器名}}</div>
+</div>
+```
+
+- **过滤属性绑定值** 
+
+```html
+<div id="app">
+  <div :属性名=“数据 ｜ 过滤器”></div>
+</div>
+```
+
+---
+
+**多个过滤器并用**
+
+在前一个过滤后的值的基础上进行过滤
+
+```html
+<div id="app">
+  <div>{{massage | 过滤器名 ｜ 过滤器名}}</div>
+</div>
+```
+
+---
+
+比如：
+
+（表单和数据双向绑定）
+
+将要渲染的数据的首字母大写：
+
+```html
+<div id="app">
+   <input type="text" v-model="message">
+	 <h2>{{message | upper}}</h2>
+</div>
+
+<script>
+        Vue.filter('upper', function(val) {
+            return val.charAt(0).toUpperCase() + val.slice(1)
+        })
+        new Vue({
+            el: "#app",
+            data: {
+                message: ""
+            }
+        })
+</script>
+```
+
+---
+
+### 局部过滤器
+
+仅本组件可用的过滤器
+
+```html
+<script>
+	new Vue({
+    el:"#app",
+    
+    filters:{
+      过滤器名称: function(val){
+        //逻辑
+      },
+      过滤器名称: function(val){
+        //逻辑
+      }
+    }
+	})
+</script>
+```
+
+如下：
+
+```html
+<script>
+	new Vue({
+    el:"#app",
+    filters:{
+      upper: function(val){
+       return val.charAt(0).toUpperCase()+val.splice(1)
+      },
+      lower: function(val){
+        return val.charAt(0).toLowerCase()+val.splice(1)
+      }
+    }
+	})
+</script>
+```
+
+---
+
+### 过滤器参数
+
+使用`Vue.filter()` 设定过滤器函数，
+
+其第一个参数`val	`就是要过滤的数值，
+
+第二个参数开始是调用过滤器时传入的参数
+
+```js
+Vue.filter("过滤器名",function(value,参数,参数..){
+   return /////////////value的处理
+})
+```
+
+```html
+<div>{{数据名 | 过滤器名(参数)}}</div>
+```
+
+如下：
+
+后面的过滤器要过滤的数据是前一个过滤器过滤后的数据，
+
+如下例子，第一个过滤器的传参是逻辑判断依据，第二个过滤器的传参是data中的数据
+
+第二个要过滤的数据是第一个过滤后的数据
+
+```html
+<div id="app">
+        <h2>{{date}}</h2>
+        <h2>{{date | format('yyyy-MM-dd')}}</h2>
+        <hr>
+        <h2>{{date | format('yyyy-MM-dd') | fullDate(date)}}</h2>
+</div>
+
+<script>
+new Vue({
+   el: "#app",
+   data: {
+        date: new Date()
+   },
+   filters: {
+        format: function(val, arg) {
+           if (arg == 'yyyy-MM-dd') {
+                let res = '';
+                res += val.getFullYear() + '-' + (val.getMonth() + 1) + '-' + val.getDate();
+                return res;
+            }
+         },
+        fullDate: function(val, arg) {
+           return val += '-' + arg.getHours() + '-' + arg.getMinutes() + '-' + arg.getSeconds()
+         }
+   }
+})
+ </script>
+```
+
+
 
 
 
 ## 生命周期
 
+1. 挂载
 
+初始化相关属性
+
+2. 更新
+
+页面元素或组件的更新改变
+
+3. 销毁
+
+销毁相关属性施放资源
+
+![](https://cn.vuejs.org/images/lifecycle.png)
+
+
+
+## 数组响应式变化
+
+## Vue.set  app.$set
+
+> Vue.set(要处理的数组, 要处理的数组索引, 要处理成的数组的值)
+>
+>  
+>
+> app.$set(要处理的数组, 要处理的数组索引, 要处理成的数组的值)
+
+```html
+    <div id="app">
+        <ul>
+            <li v-for="item in list">{{item}}</li>
+        </ul>
+    </div>
+
+    <script>
+        let app = new Vue({
+            el: "#app",
+            data: {
+                list: ['Andy', "Tom", "Bob", "James"]
+            }
+        });
+
+        console.log(app.list[0]);
+        app.list[0] = "Red"
+    </script>
+
+<!--页面渲染的内容并不会被修改-->
+```
 
 
 
