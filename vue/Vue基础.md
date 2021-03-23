@@ -477,9 +477,57 @@ new Vue({
 
 ### :key
 
+保证唯一
 
+提高渲染效率
 
+值重新渲染被修改的部分，没修改的不会重新渲染
 
+一般使用
+
+```html
+<!--循环数组元素-->
+<li :key="index" v-for="item,index in arr"></li>
+
+<!--数组元素对象，循环对象的id-->
+<li :key="item.id" v-for="item,index in obj"></li>
+```
+
+```html
+<div id="app">
+  <ul>
+    <li :key="index" v-for="item,index in list"></li>
+  </ul>
+</div>
+
+<script>
+new Vue({
+  el: "#app",
+  data: {
+    list:[]
+  }
+})
+</script>
+```
+
+```html
+<div id="app">
+  <ul>
+    <li :key="item.id" v-for="item,index in list"></li>
+  </ul>
+</div>
+
+<script>
+new Vue({
+  el: "#app",
+  data: {
+    list:[
+      {},{}
+    ]
+  }
+})
+</script>
+```
 
 
 
@@ -1342,15 +1390,21 @@ new Vue({
 
 
 
-## 数组响应式变化
+## 数组的响应式修改
 
-## Vue.set  app.$set
+Vue是数据修改是响应式的，而数组数据的修改并不是,
 
-> Vue.set(要处理的数组, 要处理的数组索引, 要处理成的数组的值)
->
->  
->
-> app.$set(要处理的数组, 要处理的数组索引, 要处理成的数组的值)
+所以会出现在Vue应用外直接通过数组的API修改数据后，
+
+并不会被Vue渲染到页面中
+
+如下：
+
+Vue实例通过Data内部的数组list渲染页面，
+
+在Vue应用外直接修改了数组list的0序号的元素，
+
+但页面的渲染并不会被响应修改
 
 ```html
     <div id="app">
@@ -1363,15 +1417,154 @@ new Vue({
         let app = new Vue({
             el: "#app",
             data: {
-                list: ['Andy', "Tom", "Bob", "James"]
+                list: ['Andy', "Tom", "James"]
             }
         });
 
-        console.log(app.list[0]);
-        app.list[0] = "Red"
+        console.log(app.list[0]); //Andy
+        app.list[0] = "Bob";
+     		console.log(app.list[0]);// Bob
+    </script>
+<!--虽然数组数据被数组API直接修改了-->
+<!--但是页面渲染的内容并不会被修改-->
+```
+
+---
+
+### Vue.set()  和  app.$set()
+
+在Vue应用外修改Vue内部的数组数据，
+
+想把修改的内容响应式渲染到页面需要：
+
+> **Vue.set**(要处理的数组, 要处理的元素索引, 修改为的值)；
+>
+> 或
+>
+> **实例对象名.$set**(要处理的数组, 要处理的元素索引, 修改为的值)
+
+如下：
+
+- Vue.set()
+
+```html
+    <div id="app">
+        <ul>
+            <li v-for="item in list">{{item}}</li>
+        </ul>
+    </div>
+    <script>
+        let app = new Vue({
+            el: "#app",
+            data: {
+                list: ['Andy', "Tom", "James"]
+            }
+        });
+
+        console.log(app.list[0]); //Andy
+
+        Vue.set(app.list, 0, "Bob");
+        
+        console.log(app.list[0]); // Bob
     </script>
 
-<!--页面渲染的内容并不会被修改-->
+```
+
+- **实例对象.$set()**
+
+```html
+    <div id="app">
+        <ul>
+            <li v-for="item in list">{{item}}</li>
+        </ul>
+    </div>
+    <script>
+        let app = new Vue({
+            el: "#app",
+            data: {
+                list: ['Andy', "Tom", "James"]
+            }
+        });
+
+        console.log(app.list[0]); //Andy
+
+        app.$set(app.list, 0, "Bob");
+      
+        console.log(app.list[0]); // Bob
+```
+
+
+
+## 对象的响应式修改
+
+和数组一样，
+
+通过 `Vue.set()` 或 `Vue实例对象.$set()`
+
+响应式修改Vue实例对象的data中的对象数据内容
+
+### Vue.set() 和 app.$set()
+
+> **Vue.set**(要处理的对象, 要处理的属性, 修改为的值)；
+>
+> 或
+>
+> **实例对象名.$set**(要处理的对象, 要处理的属性, 修改为的值)
+
+- **Vue.set()**
+
+```html
+		 <div id="app">
+        <div>name is {{obj.name}}</div>
+        <div v-for='value,key in obj'>{{value}}</div>
+    </div>
+    <script>
+        let app = new Vue({
+            el: "#app",
+            data: {
+                obj: {
+                    name: "Lili",
+                    age: 18,
+                    gender: "female"
+                }
+            }
+        });
+
+        console.log(app.obj.name); //Lili
+
+        Vue.set(app.obj, "name", "Jane");
+      
+        console.log(app.obj.name]); // Jane
+      
+        Vue.set(app.obj, "score", 100);
+```
+
+- **实例对象.$set()**
+
+```html
+		 <div id="app">
+        <div>name is {{obj.name}}</div>
+        <div v-for='value,key in obj'>{{value}}</div>
+    </div>
+    <script>
+        let app = new Vue({
+            el: "#app",
+            data: {
+                obj: {
+                    name: "Lili",
+                    age: 18,
+                    gender: "female"
+                }
+            }
+        });
+
+        console.log(app.obj.name); //Lili
+
+        app.$set(app.obj, "name", "Jane");
+      
+        console.log(app.obj.name]); // Jane
+      
+        app.$set(app.obj, "score", 100);
 ```
 
 
@@ -1380,6 +1573,31 @@ new Vue({
 
 
 
+## Vue 组件化开发
 
+![](https://img10.360buyimg.com/uba/jfs/t17725/89/1051890999/28032/d2a32f5e/5ab8fe1aN70a87b81.png)
 
-## Vue 组件
+尽可能把页面拆成一个个的独立可复用的小组件
+
+```html
+<div id="app">
+  
+		<demo></demo>
+
+    <div>
+       <demo></demo>
+    </div>
+  
+</div>
+
+<script>
+        Vue.component("demo", {
+            template: "<h2>i am H2 tag</h2>"
+        })
+        let app = new Vue({
+            el: "#app",
+
+        })
+</script>
+```
+
