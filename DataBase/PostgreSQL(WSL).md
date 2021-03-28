@@ -94,8 +94,6 @@ sudo su postgres
 ```bash
 DESKTOP-46BRUEO% sudo su postgres
 [sudo] password for chen:
-postgres@DESKTOP-46BRUEO:/home/chen$ psql l
-psql: error: FATAL:  database "l" does not exist
 postgres@DESKTOP-46BRUEO:/home/chen$ psql -l
                               List of databases
    Name    |  Owner   | Encoding | Collate |  Ctype  |   Access privileges
