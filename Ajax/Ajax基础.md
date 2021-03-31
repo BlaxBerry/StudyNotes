@@ -73,4 +73,56 @@ console.log('server running at localhost:3000')
 
 
 
-## 
+## 原理
+
+![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=625365557,280187035&fm=26&gp=0.jpg)
+
+
+
+## 实现步骤
+
+1. 创建Ajax对象
+
+```js
+var xhr = new XMLHttpRequest();
+```
+
+2. 告诉Ajax请求地址和请求方式
+
+```js
+xhr.open('get/post','http://www.example.com')
+```
+
+3. 发送请求
+
+```js
+xhr.send()
+```
+
+4. 获取服务器端给客户端的响应数据
+
+因为网络响应有时间消耗，不能直接写在send方法后，要通过函数获得
+
+```js
+xhr.onload = function(){
+    console.log(xhr.responseText)
+}
+```
+
+
+
+```html
+<body>
+    <script>
+        var xhr = new.XMLHttpREquext();
+        
+        xhr.open('get','http://localhost:3000/first');
+        
+        xhr.send();
+        
+        xhr.onload = function(){
+            console.log(xhr.responseText)
+        }
+	</script>
+</body>
+```
