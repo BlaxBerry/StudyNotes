@@ -1,5 +1,3 @@
-
-
 # Vue基础
 
 ![vue](https://iwatani.tv/wp-content/uploads/2019/12/vuejs-keyvisual-1024x538.png)
@@ -7,6 +5,8 @@
 [Vue文档](https://cn.vuejs.org/v2/guide/)
 
 ## 简介
+
+[TOC]
 
 
 
@@ -156,13 +156,15 @@ data属性 和 methods属性里面写的内容
   console.log(app.data); //undefined
   console.log(app.methods);  //undefined
   
-  
+-----------------------------------------------------  
   console.log(app.$data); //obj
   console.log(app.$methods); //obj
   
   console.log(app.$data.people === data); // true
 </script>
 ```
+
+
 
 
 
@@ -208,6 +210,41 @@ data属性 和 methods属性里面写的内容
 
 ### methods属性
 
+在Vue实例对象的 methods属性中定义要绑定给元素的方法
+
+```js
+var app = new Vue({
+    rel: 选择器,
+    methods:{
+        方法名:function(){},
+        方法名:function(){},
+        //简写：
+        方法名(){},
+        方法名(){},
+    }
+})
+```
+
+用**` v-on `绑定事件**
+
+```js
+v-on:事件类型=“methods中的方法名”
+```
+
+```html
+<button v-on:click="sayHello">click</button>
+```
+
+ **v-on可简写为` @`**
+
+```js
+@事件类型=“methods中的方法名”
+```
+
+```html
+<button @click="sayHello">click</button>
+```
+
 ---
 
 ### 事件修饰符
@@ -220,6 +257,75 @@ data属性 和 methods属性里面写的内容
 - `.left` - 左键事件
 - `.right` - 右键事件
 - `.middle` - 中间滚轮事件
+
+```html
+ <div id="app">
+        <input type="text" @keyup.enter="sayHello('Vue')">
+        <input type="text" @keydown.space="sayHello('JS')">
+        <input type="text" @keydown.control="sayHello('JS')">
+        <input type="text" @keydown.a="sayHello('JS')">
+    </div>
+```
+
+---
+
+### 方法函数参数
+
+```js
+v-on:事件类型="方法名称(参数)"
+
+methods:{
+    方法名(参数){
+        处理逻辑
+    }
+}
+```
+
+```html
+<div id="app">
+        <div v-on:click="sayHello('andy')">click</div>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            methods: {
+                sayHello: function(a) {
+                    alert('hello' + a)
+                }
+            }
+        })
+    </script>
+```
+
+---
+
+### this指向
+
+methods属性里的方法中的this指向的是Vue实例对象
+
+```html
+    <div id="app">
+        <p @click='sayHello'>{{content}}</p>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                content: 'Andy say '
+            },
+            methods: {
+                sayHello: function() {
+                    console.log(this);
+                    console.log(this.content);
+
+                    this.content += ' hello ~ '
+                }
+            }
+        })
+    </script>
+```
 
 
 
@@ -324,7 +430,9 @@ new Vue({
 
 ## 样式绑定
 
-用  `v-bind` 来设置样式属性
+用  **`v-bind：属性名=“”`** 来设置样式属性
+
+简写为  **`:属性名=""`**
 
 ### class 类名
 
@@ -339,7 +447,15 @@ new Vue({
 <div :class="className"></div>
 ```
 
-对象形式
+#### **对象形式** 判断
+
+键值对的形式判断是否设置属性，
+
+键是属性名，值是布尔值或表达式
+
+通过判断键值对的值的true/false，决定是否设置属性
+
+可以设置多个键值对，用逗号隔开
 
 ```html
 <div class="className"></div>
@@ -351,7 +467,13 @@ new Vue({
 <div :class="{className1:true, className2:true}"></div>
 ```
 
-数组形式
+#### **数组形式** 判断
+
+用三元表达式判断是否设置属性
+
+通过判断 ？前表达式的值的true/fals决定是否设定属性
+
+可以设置多个元素，用逗号隔开
 
 ```html
 <div :class="[isclass?'className':'']"></div>
@@ -371,7 +493,7 @@ new Vue({
 
 ### style 内联样式
 
- **`v-bind:style`**直接设置样式
+ **`v-bind:style=“”`**直接设置样式
 
 ```html
 <div id="app">
@@ -379,7 +501,7 @@ new Vue({
 </div>
 ```
 
-- **绑定对象**
+#### **绑定对象**
 
 ```html
 <div id="app">
@@ -399,7 +521,7 @@ new Vue({
 </script>
 ```
 
-- **绑定数组**
+#### **绑定数组**
 
 ```html
 <div id="app">
@@ -430,7 +552,7 @@ new Vue({
 
 ## 循环
 
-使用 `v-for` 绑定数据到数组来渲染（生成）一个列表
+使用 **`v-for`** 绑定数据到**数组**来渲染（生成）一个列表
 
 ### 迭代整数
 
@@ -467,7 +589,7 @@ new Vue({
 <div id="app">
   <ul>
     <li v-for="(value, key, index) in object">
-     {{ index }}. {{ key }} : {{ value }}
+     {{ index }} is {{ key }} : {{ value }}
     </li>
   </ul>
 </div>
@@ -481,9 +603,9 @@ new Vue({
 
 提高渲染效率
 
-值重新渲染被修改的部分，没修改的不会重新渲染
+只重新渲染被修改的部分，没修改的不会重新渲染
 
-一般使用
+一般用于设定数组的唯一的序号和**对象的唯一的id**
 
 ```html
 <!--循环数组元素-->
@@ -492,6 +614,8 @@ new Vue({
 <!--数组元素对象，循环对象的id-->
 <li :key="item.id" v-for="item,index in obj"></li>
 ```
+
+#### 数组的下标
 
 ```html
 <div id="app">
@@ -509,6 +633,8 @@ new Vue({
 })
 </script>
 ```
+
+#### 对象的ID
 
 ```html
 <div id="app">
@@ -531,7 +657,11 @@ new Vue({
 
 
 
+
+
 ## 表单操作
+
+通过**`v-model`**实现数据操作与绑定（双向绑定）
 
 - input 单行文本
 
@@ -547,11 +677,11 @@ new Vue({
 
 ### input
 
-直接通过 `v-model `和  `data`中的数据进行数据的双向绑定
+直接通过 `v-model ` 和  `data`中的数据进行数据的双向绑定
 
 如下：
 
-input的value和data中的uname的值双向绑定
+input的 `value` 和data中的uname的值双向绑定
 
 ```html
 <div id="app">
@@ -705,7 +835,7 @@ new Vue({
 
 文本框textarea的数据绑定和单行文本的input相同
 
-直接通过 `v-model `和  `data中的数据进行数据的双向绑定
+直接通过 `v-model `和  `data`中的数据进行数据的双向绑定
 
 ```html
 <div id="app">
@@ -726,7 +856,7 @@ new Vue({
 
 ### 表单修饰符
 
-- `.lazy`  将input事件转为change事件
+- **`.lazy`  将input事件转为change事件**
 
 > **input事件**是**每次值改变**都会触发，
 >
@@ -734,8 +864,8 @@ new Vue({
 >
 > 验证邮箱时会用
 
-- `.number`  将输入值转为 Number 类型
-- `.trim`  去除输入值的首尾空格
+- **`.number`  将输入value值从String类型转为 Number 类型**
+- **`.trim`  去除输入值的首尾空格**
 
 ```html
 <input type="text" v-model.lazy="value">
@@ -756,7 +886,7 @@ new Vue({
 
 内置指令不满足使用，可以自定义指令
 
-用`Vue.directive()`创建自定义指令，里面写入**钩子函数**
+用**`Vue.directive()`**创建自定义指令，里面写入**钩子函数**
 
 [Vue文档 自定义指令 钩子函数](https://cn.vuejs.org/v2/guide/custom-directive.html#%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0)
 
@@ -846,9 +976,11 @@ new Vue({
 
 ---
 
+---
+
 ### 局部指令
 
-就是把创建自定义指令的过程写入Vue实例对象中
+就是把创建自定义指令的过程写入Vue实例对象中的**`directives`**属性中
 
 局部指令仅能使用在当前组件中
 
@@ -917,10 +1049,6 @@ new Vue({
 
 比如，直接在插值表达式中进行处理会很麻烦
 
-可以把逻辑运算放入一个函数，函数存入计算属性中
-
-使用时直接调用该函数的函数名
-
 ```html
 <div id="app">
   {{ message.split('').reverse().join('') }}
@@ -928,13 +1056,15 @@ new Vue({
 <!--麻烦-->
 ```
 
+可以把逻辑运算放入一个函数，函数存入计算属性中
+
+使用时直接调用该函数的函数名
+
 ---
 
-所以可以通过计算属性
-
-方法里必须有一个return返回值
-
 使用时直接调用computed中的方法名，不需要加括号
+
+计算属性中的方法里必须有一个return返回值
 
 ```html
 <div id=“app”>
@@ -1146,7 +1276,7 @@ new Vue({
             },
             methods: {
                 check(val) {
-                    let that = this;
+                    let that = this;   //<-----------
 
                     //用定时器模拟 Ajax访问接口的耗时
                     setTimeout(function() {
