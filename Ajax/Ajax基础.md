@@ -346,7 +346,9 @@ Ajax中需要自己拼接请求参数，
 
 ### get请求参数
 
-手动把请求参数拼接到请求地址的后面
+get请求的参数是在请求地址的后面
+
+Ajax需要手动把请求参数拼接到请求地址的后面
 
 ```js
 // 请求地址?参数名称=参数值and参数名称=参数值
@@ -423,4 +425,180 @@ app.listen(3000);
 
 console.log('server running at localhost:3000')
 ```
+
+---
+
+---
+
+### post请求参数
+
+post请求的参数在请求体（报文体）中
+
+通过Ajax发送请求的话，
+
+只需要把请求参数放入`send()`中，
+
+并且需要通过`setRequestHeader()`设置请求报文的数据格式
+
+---
+
+### post请求参数的数据格式
+
+#### application/x-www-form-urlencoded
+
+**多个键值对格式**
+
+（传统form表单提交和get请求提交的也是该数据格式）
+
+```js
+xhr.setRequestHeader('Content-type','application/x-www-from-urlencoded');
+xhr.send('name=andy&age=28')
+```
+
+express中需要借助第三方模块 `body-parser`来获取POST参数
+
+并通过`app.use(bodyParser.urlencoded());` 
+
+设定去解析`application/x-www-from-urlencoded`格式的POST参数
+
+如下：
+
+```js
+const express = require('express');
+const path = require('path');
+const app = express();
+
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.post('/post', (req, res) => {
+    res.send(req.body)
+})
+
+app.listen(3000)
+console.log('server running at localhost:3000');
+```
+
+```html
+<!--index.html-->
+<body>
+    <div>name: <br>
+        <input type="text" id='usrname'>
+    </div>
+    <div>age: <br>
+        <input type="text" id='usrage'>
+    </div>
+    <div>
+        <input type="button" value="send" id='btn'>
+    </div>
+
+    <script>
+        var btn = document.getElementById('btn');
+        var usrname = document.getElementById('usrname');
+        var usrage = document.getElementById('usrage')
+
+        btn.onclick = function() {
+
+            var xhr = new XMLHttpRequest();
+
+            var name = usrname.value;
+            var age = usrage.value;
+
+            var params = 'usrname=' + name + '&usrage=' + age;
+
+            xhr.open('post', 'http://localhost:3000/post');
+
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+
+            xhr.send(params);
+
+            xhr.onload = function() {
+                console.log(xhr.responseText);
+            }
+        }
+    </script>
+```
+
+---
+
+#### application/json
+
+**JSON数据格式**
+
+```js
+var JSONObj = {name:'Tom',age:28,sex:'male'}
+var JSONString=JSON.stringify(obj)
+xhr.send(JSONString)
+```
+
+express中需要借助第三方模块 `body-parser`来获取POST参数
+
+并通过`app.use(bodyParser.json());` 
+
+设定去解析`application/json`格式的POST参数
+
+如下：
+
+```js
+const express = require('express');
+const path = require('path');
+const app = express();
+
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.post('/post', (req, res) => {
+    res.send(req.body)
+})
+
+app.listen(3000)
+console.log('server running at localhost:3000');
+```
+
+```html
+<body>
+    <div>name: <br>
+        <input type="text" id='usrname'>
+    </div>
+    <div>age: <br>
+        <input type="text" id='usrage'>
+    </div>
+    <div>
+        <input type="button" value="send" id='btn'>
+    </div>
+
+    <script>
+        var btn = document.getElementById('btn');
+        var usrname = document.getElementById('usrname');
+        var usrage = document.getElementById('usrage')
+
+        btn.onclick = function() {
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('post', 'http://localhost:3000/json');
+
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            var obj = {
+                'usrname': usrname.value,
+                'usrage': usrage.value
+            }
+
+            xhr.send(JSON.stringify(obj));
+
+            xhr.onload = function() {
+                console.log(xhr.responseText);
+            }
+        }
+    </script>
+```
+
+
 
