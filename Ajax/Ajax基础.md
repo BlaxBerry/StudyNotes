@@ -307,3 +307,120 @@ app.listen(3000);
 console.log('server running at localhost:3000')
 ```
 
+
+
+
+
+## 请求参数
+
+传统网站中请求参数都是通过表单的形式发送
+
+通过form表单域 和 submit按钮提交
+
+```html
+<form>
+    <input type="text">
+    <input type="submit">
+</form>
+```
+
+根据请求方式的不同，表单内容会变成请求参数自动添加到对应位置
+
+- **get请求的参数** 被添加到请求地址的后面
+
+- **post请求的参数** 被放到请求体中
+
+---
+
+通过Ajax发送请求的话，
+
+可以不通过form表单域 和 submit按钮提交
+
+Ajax中需要自己拼接请求参数，
+
+然后根据请求方式的不同，把请求参数放到对应位置
+
+参数的格式和传统请求参数的格式一样
+
+---
+
+### get请求参数
+
+手动把请求参数拼接到请求地址的后面
+
+```js
+// 请求地址?参数名称=参数值and参数名称=参数值
+xhr.open('get','http://www.example.com?name=Andy&age=28')
+```
+
+如下：
+
+客户端不通过form表单域 和 submit按钮提交，
+
+给btn按钮绑定点击事件，点击后创建Ajax对象，
+
+手动拼接请求参数，然后发送请求给 `localhost:3000/get`
+
+服务端响应 `req.query` 
+
+控制台打印出 JSON字符串形式的  `req.query` 
+
+验证发送get请求成功
+
+```html
+<!--index.html-->
+<body>
+    <div>name: <br>
+        <input type="text" id='usrname'>
+    </div>
+    <div>age: <br>
+        <input type="text" id='usrage'>
+    </div>
+    <div>
+        <input type="button" value="send" id='btn'>
+    </div>
+
+    <script>
+        var btn = document.getElementById('btn');
+        var usrname = document.getElementById('usrname');
+        var usrage = document.getElementById('usrage')
+
+        btn.onclick = function() {
+
+            var xhr = new XMLHttpRequest();
+
+            var name = usrname.value;
+            var age = usrage.value;
+
+            var params = 'usrname=' + name + '&usrage=' + age;
+
+            xhr.open('get', 'http://localhost:3000/get?' + params);
+
+            xhr.send();
+
+            xhr.onload = function() {
+                console.log(xhr.responseText);
+            }
+        }
+    </script>
+```
+
+```js
+// app.js
+const express = require('express');
+
+const path = require('path');
+
+const app = express();
+
+app.use(express.static(path.join(__dirname,'public')));
+
+app.get('/get',(req,res)=>{
+    res.send(req.query)
+})
+
+app.listen(3000);
+
+console.log('server running at localhost:3000')
+```
+
