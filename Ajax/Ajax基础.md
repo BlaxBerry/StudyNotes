@@ -3,9 +3,35 @@
 ![](https://www.aurigait.com/resources/files/2016/11/ajax_logo.png)
 
 [TOC]
-#目录
-- [Ajax状态码](#Ajax状态码)  
-- 
+
+## 目录
+- [简介](#简介)  
+- [主要作用效果](#主要作用效果)  
+- [运行环境](#运行环境) 
+- [原理](#原理) 
+- [实现步骤](#实现步骤) 
+- [简单步骤实例](#步骤实例) 
+- [响应的数据格式](#响应的数据格式例) 
+- [拼接 JSON对象 和 HTML字符串例](#拼接 JSON对象 和 HTML字符串)
+- [请求参数](#请求参数)  
+  - [get请求参数](#get请求参数) 
+  - [post请求参数](#post请求参数) 
+  - [post请求参数的数据格式](#post请求参数的数据格式) 
+        - [application/x-www-form-urlencoded](#application/x-www-form-urlencoded) 
+        - [application/json](#application/json) 
+- [请求参数的格式](#请求参数的格式)  
+- [Ajax状态码](#Ajax状态码)
+  - [0,1,2,3,4](#01234)   
+  - [获得Ajax状态码](#获得Ajax状态码) 
+  - [onreadystatechange事件](#onreadystatechange事件) 
+  - [监听状态码获取响应数据](#监听状态码获取响应数据) 
+- [获取服务端响应数据的方法](#获取服务端响应数据的方法)  
+- [Ajax错误处理](#Ajax错误处理)
+  - [判断http状态码](#判断http状态码)   
+  - [500](#500) 
+  - [断网](#断网) 
+  - [区分Ajax状态码 和 http状态码](#区分Ajax状态码 和 http状态码) 
+- [IE低版本的缓存问题](#Ajax状态码)  
 
 ## 简介
 
