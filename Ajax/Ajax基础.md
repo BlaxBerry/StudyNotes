@@ -602,3 +602,306 @@ console.log('server running at localhost:3000');
 
 
 
+## 请求参数的格式
+
+- **application/x-www-form-urlencoded**
+
+get 请求和传统表单域请求只能提交该格式的数据
+
+post也可以提交该格式的数据
+
+- **application/json**
+
+post也可以提交该格式的数据
+
+
+
+
+
+## Ajax状态码
+
+**表示Ajax请求的过程的状态**，即走到了哪一个步骤
+
+创建Ajax对象——>配置Ajax对象——>发送请求——>接受服务器端的响应数据
+
+该过程中的每一个步骤都对应一个状态码
+
+请求过程中状态码是在不断变化的
+
+---
+
+### 01234
+
+Ajax状态码共有5个：
+
+- **0** ： 请求未初始化
+
+创建了Ajax对象，但还没调用`open()方法`配置Ajax对象
+
+- **1** ：请求成立，但还没发送
+
+创建并配置了Ajax对象，但是还没调用`send()方法`发送请求
+
+- **2**  :  请求已经发送
+
+- **3** ：请求正在处理中
+
+正在接受服务器端数据，部分数据已经可以使用
+
+- **4** ： 响应已经完成
+
+客户端已经可以使用响应的数据
+
+---
+
+### 获得Ajax状态码
+
+```js
+xhr.readyState
+```
+
+---
+
+### onreadystatechange事件
+
+```js
+xhr.onreadystatechange=function(){
+  console.log(xhr.readystate)
+};
+xht.send();
+```
+
+当Ajax状态码发生变化时触发事件
+
+因为`send()`发送请求后状态码是在不断变化的，2——> 3——> 4
+
+直接使用`readyState` 是看不到效果的，
+
+此时需要在 `send()`发送前通过 `onreadystatechange`事件获得状态码
+
+```html
+    <script>
+        var xhr = new XMLHttpRequest();
+        console.log(xhr.readyState); // 0
+
+        xhr.open('get', 'http:localhost:3000/readyState')
+        console.log(xhr.readyState); // 1
+
+        xhr.onreadystatechange = function() {
+            console.log(xhr.readyState); // 2 3 4
+        };
+        xhr.send();
+    </script>
+```
+
+---
+
+### 监听状态码获取响应数据
+
+不太常用，了解即可
+
+```js
+//判断状态码变化
+xhr.onreadystatechange = function(){
+  //如果状态码==4
+  if(xhr.readyState==4){
+    //打印获取的服务器响应的数据
+    console.log(xhr.responseText)
+  }
+}
+```
+
+对Ajax的状态码进行判断
+
+如果状态码是 4，说明数据已经接受完成了，就可以获取和使用
+
+如下：
+
+判断状态码，然后输出服务器响应的数据
+
+```html
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', 'http://localhost:3000/readyState');
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                console.log(xhr.responseText);
+            }
+        };
+        xhr.send()
+    </script>
+```
+
+
+
+## 获取服务端响应数据的方法
+
+![](https://img-blog.csdnimg.cn/20201028113008111.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI3NTc1OTI1,size_16,color_FFFFFF,t_70#pic_center)
+
+```js
+// onload
+xhr.onload = function() {
+    console.log(xhr.responseText);
+}
+
+// onreadystatechange
+xhr.onreadystatechange = function(){
+  if(xhr.readyState == 4){
+    console.log(xhr.responseText);
+  }
+}
+```
+
+监听状态码`onreadystatechange`的方式不太常用，效率也低，仅项目需要再使用
+
+推荐使用`onload`
+
+
+
+## Ajax错误处理
+
+即Ajax返回的不是预期的结果
+
+![](https://img-blog.csdnimg.cn/2020102814103526.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI3NTc1OTI1,size_16,color_FFFFFF,t_70#pic_center)
+
+
+
+### 判断http状态码
+
+通过Ajxa对象的status属性获取http状态码
+
+正常状态下是200
+
+```js
+xhr.status
+```
+
+然后根据http状态码的数值，对页面进行渲染提示用户
+
+（具体http状态码设定的数值根据项目决定）
+
+```html
+    <script>
+        var btn = document.getElementById('btn');
+        btn.onclick = function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', 'http://localhost:3000/error');
+
+            xhr.send();
+
+            xhr.onload = function() {
+                console.log(xhr.responseText);
+                console.log(xhr.status);
+            }
+        }
+    </script>
+```
+
+---
+
+如下：
+
+故意模拟Ajax过程中的错误，
+
+在服务端将状态码设为400错误，
+
+客户端发送AJax请求后，控制台会提示400错误
+
+```js
+app.get('/error', (req, res) => {
+    res.status(505).send('not OK')
+})
+```
+
+设定http状态码是400时，给用户提示
+
+```html
+    <script>
+        var btn = document.getElementById('btn');
+        btn.onclick = function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', 'http://localhost:3000/error');
+            xhr.send();
+
+            xhr.onload = function() {
+                if(xhr.status==400){
+                  alert('error，不能发送')
+                }
+            }
+        }
+    </script>
+```
+
+
+
+### 404
+
+如果报错提示 `404（Not Found）`，说明请求地址出错
+
+
+
+### 500
+
+如过报错提示  `500 (Internal Server Error)`
+
+代表服务器端错误
+
+
+
+### 断网
+
+网络中断时无法触发 `xhr.onload事件`
+
+网络中断时会自动触发 `xhr.onerror事件`
+
+可通过onerror事件对网络中断的错误进行处理
+
+（可通过F12的network中的offline模拟网络中断）
+
+```html
+<body>
+    <button id="btn">send</button>
+    <script>
+        var btn = document.getElementById('btn');
+        btn.onclick = function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', 'http://localhost:3000/error');
+            xhr.send();
+
+            xhr.onload = function() {
+                console.log(xhr.responseText);
+                console.log(xhr.status);
+
+            }
+          
+            xhr.onerror = function() {
+                console.log('没网络，没法发送');
+            }
+        }
+    </script>
+</body>
+```
+
+---
+
+### 区分Ajax状态码 和 http状态码
+
+Ajax状态码
+
+表示Ajax请求的过程，是Ajax对象返回
+
+
+
+请求的处理结果
+
+表示请求的处理结果，是服务器端返回
+
+
+
+## IE低版本的缓存问题
+
+[IE低版本的缓存问题](https://www.bilibili.com/video/BV1cv411i7GY?p=11&spm_id_from=pageDriver)
+
+
+
