@@ -1703,31 +1703,3 @@ Vue实例通过Data内部的数组list渲染页面，
 
 
 
-## Vue 组件化开发
-
-![](https://img10.360buyimg.com/uba/jfs/t17725/89/1051890999/28032/d2a32f5e/5ab8fe1aN70a87b81.png)
-
-尽可能把页面拆成一个个的独立可复用的小组件
-
-```html
-<div id="app">
-  
-		<demo></demo>
-
-    <div>
-       <demo></demo>
-    </div>
-  
-</div>
-
-<script>
-        Vue.component("demo", {
-            template: "<h2>i am H2 tag</h2>"
-        })
-        let app = new Vue({
-            el: "#app",
-
-        })
-</script>
-```
-
