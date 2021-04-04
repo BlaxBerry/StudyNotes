@@ -584,17 +584,23 @@ new Vue({
 
 #### props属性值 和 模版的自定义属性
 
-1. **把父组件的数据作为自组件的自定义属性，写在子组件标签上**
+1. **子组件标签上通过自定义属性绑定父组件的数据**
 
-2. **然后在子组件内通过props属性获得这个自定义属性**
+   数据有两种：静态和动态，动态数据用 `v-bind`
 
 ```html
-<!--静态数据-->
-<子组件 自定义属性名=‘hello’></子组件>
-
 <!--v-bind绑定动态数据-->
 <子组件 :自定义属性名='数据名'></子组件>
+
+<!--静态数据-->
+<子组件 自定义属性名=‘hello’></子组件>
 ```
+
+2. **然后在子组件对象通过props属性获得这个自定义属性**
+
+   用数组方式获取该自定义属性
+
+   即在子组件内拿到了传入的父组件的数据
 
 ```js
 //局部组件
@@ -614,11 +620,13 @@ Vue.component('组件名',{
 
 如下：
 
-所以，若子组件想使用父组件内的数据str和info，
+若子组件想使用父组件内的数据str和info，
 
-需要先把数据作为子组件child的自定义属性，用v-bind写入标签
+先把数据作为子组件child的自定义属性，用v-bind写入标签
 
-然后再在子组件内通过props属性，用数组方式获取该自定义属性（父组件数据），然后就可以在子组件内使用父组件的数据了
+然后在子组件内通过props属性，用数组方式获取该自定义属性
+
+然后就可以在子组件内使用父组件的数据了
 
 ```html
 <!--局部组件中的父传数据给子-->
@@ -685,8 +693,6 @@ Vue.component('组件名',{
 ---
 
 #### 传递多个数据（属性）
-
-传递的数据有两种：静态的写死的数据 和 绑定到Vue的动态数据
 
 传递时数据可以是多个，作为数组的多个元素即可
 
@@ -809,7 +815,7 @@ props:['自定义属性名','自定义属性名',....]
 
 ### 子组件——>父组件
 
-#### 通过props直接修改数据（不推荐）
+#### 直接修改props获得的数据（不推荐）
 
 子组件可以直接操作父组件的数据，虽然不报错，**但是不推荐**
 
@@ -865,15 +871,19 @@ props:['自定义属性名','自定义属性名',....]
 
 应该通过 `$emit`在子组件内操作父组件的数据
 
----
 
----
 
-#### $emit() 修改数据
+#### $emit() 
 
-若想在子组件内操作父组件的数据
+若想在子组件内操作父组件的数据，需要通过自定义事件，
 
-1. **子组件通过自定义事件向父组件传递信息**
+原理可理解为触发子组件的事件，转换成触发父组件的事件，从而修改父组件的数据，
+
+所以需要通过子组件内的`$emit() `
+
+1. **子组件内注册自定义事件**
+
+   在template中给组件用`v-on `事件去绑定`$emit(自定义事件名)`自定义事件
 
 ```js
 Vue.component('子组件名',{
@@ -881,29 +891,44 @@ Vue.component('子组件名',{
 })
 ```
 
-2. **在父组件内给子组件绑定自定义事件**
+```js
+Vue.component('子组件名',{
+  template:`<子组件 v-on:事件类型='子组件事件名'></子组件>`,
+  methods:{
+    子组件事件名(){
+      this.$emit(自定义事件名)
+    }
+  }
+})
+```
+
+2. **子组件模版通过自定义事件绑定父组件的方法**
+
+   通过`$emit`注册的自定义事件去触发父组件中定义的方法
+
+   从而实现通过自组件触发事件去操作父组件的数据
 
 ```html
 <父组件>
-  <子组件 v-on:自定义事件=‘修改父组件数据的逻辑’></子组件>
+  <子组件 v-on:自定义事件=‘父组件的方法’></子组件>
 </父组件>
 ```
 
 可理解为：
 
-子组件内触发自定义事件——>传递事件给父组件——>父组件内修改数据
+**子组件触发自定义事件——（$emit子组件自定义事件）———父组件事件——修改父组件数据**
+
+**从而实现通过触发子组件自身的事件去执行父组件的事件，从而修改父组件的数据**
 
 如下：
 
-子组件内操作父组件data属性中的数据`fontSize`
-
 用Vue实例对象模拟父子组件，Vue实例对象也是个组件，所以挂载Vue的容器可视为父组件
 
-注册子组件，并通过 `$emit()` 自定义事件传给父组件
+在子组件的 `template` 中通过`v-on:click` 绑定 `$emit()` 自定义事件；
 
-Vue挂载的容器即父组件中，给子组件的模版绑定该自定义事件和父组件的数据
+在父组件中给子组件的模版通过该自定义事件`enlarge-size`绑定修改父组件数据父组件的事件`handle`；
 
-即可通过子组件的自定义事件操作父组件的数据了
+即可通过子组件的自定义事件操作父组件事件从而操作父组件的数据`fontSize`了
 
 ```html
 <body>
@@ -922,6 +947,41 @@ Vue挂载的容器即父组件中，给子组件的模版绑定该自定义事�
         new Vue({
             el: '#app',
             data: {
+              	msg: 'hello',
+                fontSize: 14
+            },
+            methods: {
+                handle() {
+                    this.fontSize += 1
+                }
+            }
+        })
+    </script>
+</body>
+```
+
+```html
+<body>
+    <div id="app">
+        <div :style="{fontSize: fontSize +'px'}">from father---{{msg}}</div>
+        <child @enlarge-size='handle'></child>
+    </div>
+
+    <script>
+        Vue.component('child', {
+            template: `
+						<button @click="fun">click fontSize +1</button>
+						`,
+            methods: {
+                fun() {
+                    this.$emit('enlarge-size')
+                }
+            }
+        });
+
+        new Vue({
+            el: '#app',
+            data: {
                 msg: 'hello',
                 fontSize: 14
             },
@@ -935,29 +995,67 @@ Vue挂载的容器即父组件中，给子组件的模版绑定该自定义事�
 </body>
 ```
 
----
 
-#### $emit() 传递数据
 
-**子组件通过自定义事件的参数向父组件传递数据**
+
+
+
+
+#### $event
+
+ `$emit()` 除了可通过自定义事件去触发父组件事件，还可以通过第二个参数把数据传出，
+
+数据传出后需要传入父组件的事件，从而实现在父组件内操作子组件的数据
+
+过程如下：
+
+1. **子组件通过参数传出数据**
+
+   在template 中通过`$emit(自定义事件名,参数)` 的参数把子组件的数据/或静态固定数据传出
 
 ```js
 Vue.component('子组件名',{
-  template:`<子组件 v-on:事件类型='$emit(“自定义事件”,数据)'></子组件>`
+  template:`<子组件 v-on:事件类型='$emit(“自定义事件”,静态数据)'></子组件>`
 })
 ```
 
-#### $event 接受传递的数据
+```js
+Vue.component('子组件名',{
+  data:function(){
+    return {
+      数据:值
+    }
+  }
+  template:`<子组件 v-on:事件类型='子组件事件名'></子组件>`,
+  methods:{
+    子组件事件名(){
+      this.$emit(自定义事件名, this.数据)
+    }
+  }
+})
+```
 
-父组件中给自组件绑定自定义事件，并通过`$event`接受自组件传递来的数据
+2. **$event 接受传递的数据**
 
-`$event`可作为参数传递给定义在父组件methods中的方法函数
+   给子组件模版通过注册的自定义事件绑定父组件的事件时，
+
+   通过`$event`接受自组件传递来的数据，并作为参数传入父组件事件方法函数，
+
+   即可实现把子组件的数据传入父组件，父组件事件操作子组件数据
 
 ```html
 <父组件>
-  <子组件 v-on:自定义事件=‘修改父组件数据的逻辑($event)’></子组件>
+  <子组件 v-on:自定义事件=‘父组件的事件($event)’></子组件>
 </父组件>
 ```
+
+可理解为：
+
+**子组件触发自定义事件——($emit(自定义事件,数据) 传出数据)——父组件事件——（$event接受数据）——修改父组件数据**
+
+自组件传出数据，并在在通过自定义事件实现子组件事件触发父组件事件时，
+
+把数据传入父组件事件，从而实现子组件数据传入父组件
 
 如下：
 
@@ -971,8 +1069,10 @@ Vue.component('子组件名',{
     <script>
         Vue.component('child', {
             template: `
-						<button @click="$emit('enlarge-size',10)">click fontSize +1</button>
-						<button @click="$emit('enlarge-size',40)">click fontSize +1</button>
+						<div>
+                <button @click="$emit('enlarge-size',1)">click fontSize +1</button>
+						    <button @click="$emit('enlarge-size',10)">click fontSize +10</button>    
+            </div>
 						`
         })
         new Vue({
@@ -982,8 +1082,47 @@ Vue.component('子组件名',{
                 fontSize: 14
             },
             methods: {
-                handle(size) {
-                    this.fontSize += size
+                handle(val) {
+                    this.fontSize = val
+                }
+            }
+        })
+    </script>
+</body>
+
+```
+
+```html
+<body>
+    <div id="app">
+        <div :style="{fontSize: fontSize +'px'}">from father---{{msg}}</div>
+        <child @enlarge-size='handle($event)'></child>
+    </div>
+
+    <script>
+        Vue.component('child', {
+            data: function() {
+                return {
+                    num: 30
+                }
+            },
+            template: `<button @click="fun">click fontSize +1</button>`,
+            methods: {
+                fun() {
+                    this.$emit('enlarge-size', this.num)
+                }
+            }
+        });
+
+        new Vue({
+            el: '#app',
+            data: {
+                msg: 'hello',
+                fontSize: 14
+            },
+            methods: {
+                handle(val) {
+                    this.fontSize = val
                 }
             }
         })
@@ -1126,6 +1265,8 @@ hub.$emit('事件中心监听事件名称'，数据)
 ## 组件插槽
 
 ### 插槽的基本用法
+
+在子组件中定义，在父组件中的自组件位置添加代码修改
 
 #### <slot\></slot\>标签
 
