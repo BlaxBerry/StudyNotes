@@ -564,9 +564,120 @@ new Vue({
 
 ## 父子组件
 
-在实例对象的components属性中定义父组件
+components属性中定义父组件,
 
-在父组件内再定义components属性并在其中定义子组件
+在父组件的components属性再定义子组件，
+
+子组件模版写在父组件的模版中
+
+```js
+components:{
+  'father':{
+    template:`
+              <div>
+		              <h2>i am father</h2>
+		              <child></child>
+              </div>
+		`,
+    components:{
+      'child':{
+        template:'<h3>i am child</h3>'
+      }
+    }
+  }
+}
+```
+
+如下：
+
+```html
+<body>
+    <div id="app">
+        <father></father>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            components: {
+                "father": {
+                    data: function() {
+                        return {
+                            msg: 'i am father'
+                        }
+                    },
+                    template: `
+                    <div>
+                        <h2>{{msg}}</h2>    
+                        <child></child>
+                    </div>
+                    `,
+                    components: {
+                        "child": {
+                            data: function() {
+                                return {
+                                    msg: 'i am child'
+                                }
+                            },
+                            template: '<h2>{{msg}}</h2>'
+                        }
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+```
+
+---
+
+#### <template\></template\>
+
+也可以写入`<template></template>` 标签
+
+`<template></template>` 标签不会在页面中显示
+
+如下：
+
+```html
+<body>
+    <div id="app">
+        <father></father>
+    </div>
+
+    <template id="father">
+        <div>
+            <h2>i am father</h2>
+            <child></child>
+        </div>
+    </template>
+
+    <script>
+        new Vue({
+            el: '#app',
+            components: {
+                "father": {
+                    data: function() {
+                        return {
+                            msg: 'i am father'
+                        }
+                    },
+                    template: '#father',
+                    components: {
+                        "child": {
+                            data: function() {
+                                return {
+                                    msg: 'i am child'
+                                }
+                            },
+                            template: '<h2>{{msg}}</h2>'
+                        }
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+```
 
 
 
@@ -1011,7 +1122,9 @@ Vue.component('子组件名',{
 
 1. **子组件通过参数传出数据**
 
-   在template 中通过`$emit(自定义事件名,参数)` 的参数把子组件的数据/或静态固定数据传出
+   在template 中通过`$emit(自定义事件名,参数)` 触发自定义事件，
+
+   并通过参数把子组件的数据/或静态固定数据传出
 
 ```js
 Vue.component('子组件名',{
@@ -1130,56 +1243,214 @@ Vue.component('子组件名',{
 </body>
 ```
 
+再比如，点击自组件改变父组件字体颜色：
+
+```html
+
+<body>
+    <div id="app">
+        <h2 :style="{color:fontColor}">{{msg}}</h2>
+        <demo @change-color="handle($event)"></demo>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                msg: 'hello',
+                fontColor: 'red'
+            },
+            methods: {
+                handle(val) {
+                   this.fontColor = val
+                }
+            },
+
+            components: {
+                'demo': {
+                    data: function() {
+                        return {
+                            color: 'blue'
+                        }
+                    },
+                    template: '<button @click="fun">change Color to Blue</button>',
+                    methods: {
+                        fun() {
+                            this.$emit('change-color', this.color)
+                        }
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+```
+
 
 
 ### 兄弟组件——>兄弟组件
 
-通过事件中心实现兄弟组件的数据交互
+兄弟组件之间的数据交互需要通过一个**`事件中心`** 来实现
 
 #### 事件中心
+
+通过自定义事件，组件把自己链接到事件中心（监听）
+
+然后通过组件自己的事件，触发同样链接到事件中心的兄弟组件的自定义事件（触发）
+
+在链接（监听）的同时接受数据，并操作自身
+
+实现当前组件操作兄弟组件的数据
 
 ![](https://img-blog.csdnimg.cn/20200920234839544.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0tvbmdLb25nX1JhYw==,size_16,color_FFFFFF,t_70)
 
 
 
-1. 先单独声明一个Vue实例对象，作为事件中心
+1. **声明一个全局事件中心**
+
+   通过new一个单独的Vue实例对象作为事件中心
 
 ```js
 var hub = new Vue()
 ```
 
-2. 用事件中心对自定义事件进行监听和销毁
+2. **用事件中心对组件的自定义事件进行监听**
+
+   在当前组件内的生命周期钩子函数`mounted`中，通过事件中心监听组件自身的自定义事件
+
+   相当于把组件自己的自定义事件存放入事件中心
+
+   第二个参数是个函数，
+
+   函数可通过参数接受兄弟组件传来的兄弟组件的数据，
+
+   在函数内结合获得的来自兄弟组件的数据，对当前组件自身数据进行操作
 
 ```js
-hub.$on('自定义事件名称'，事件函数($emit传递的数据))；
-hub.$off('自定义事件名称'，事件函数($emit传递的数据))；
+mounted:function(){
+  hub.$on('当前组件的自定义事件名'，(兄弟组件传递来的数据)=>{
+    this.数据 //操作逻辑
+	})；
+}
 ```
 
-3. 触发指定组件的自定义事件，传递数据
+3. **通过当前组件的事件触发兄弟组件的自定义事件**
+
+   给当前组件绑定事件，在事件呢通过通过事件中心`$emit()`
+
+   触发被事件中心监听了的兄弟组件的事件名，即存让入事件中心的兄弟组件的自定义事件
+
+   并可通过参数把自身数据传出给兄弟组件
 
 ```js
-hub.$emit('事件中心监听事件名称'，数据)
+template:`<当前组件 v-on:事件类型=“当前组件的事件名”></当前组件>`,
+methods:{
+  当前组件的事件名(){
+    hub.$emit('兄弟组件的自定义事件名'，传递给兄弟组件的this.数据)
+  }
+}
+```
+
+4. 用事件中心对自定义事件进行销毁
+
+   等兄弟组件的自定义事件完成任务后，可在Vue实例对象中通过事件中心对组件的自定义事件进行销毁
+
+```js
+hub.$off('指定组件的自定义事件名称')；
 ```
 
 ---
 
 如下：
 
+分别有 `Tom`， `Jerry `两个组件，
+
+点击各自组件的按钮，操作兄弟组件的数据
+
 1. 声明一个全局事件中心
 
-2. 分别在两个兄弟组件的template模版中绑定自定义事件
+2. 分别在两个兄弟组件中的`mounted`属性中，通过事件中心`hub.$on()`监听自身的自定义事件,
 
-3. 分别在两个兄弟组件中的mounted属性中，通过事件中心监听自身的自定义事件
+   接受兄弟组件传入的数据，并修改自身数据
 
-   并修改数据，修改的是另一个兄弟组件的数据
+3. 分别在两个兄弟组件的template模版中，绑定自身组件的methods属性的事件，
 
 4. 分别在两个兄弟组件中的methods属性中，
 
-   通过事件中心$emit() 触发被事件中心监听的另一个兄弟组件的自定义事件
+   通过事件中心`hub.$emit()`链接触发兄弟组件的自定义事件，并传出数据
 
 5. 该例子把销毁事件定义在Vue实例中，也就是两个子组件的父组件中
 
    销毁两个组件的自定义事件
+
+```html
+<body>
+    <div id="app">
+        <Tom></Tom>
+        <hr>
+        <Jerry></Jerry>
+    </div>
+
+    <script>
+        const hub = new Vue();
+
+        new Vue({
+            el: "#app",
+
+            components: {
+                'Tom': {
+                    data: function() {
+                        return {
+                            num: 0,
+                            addNum: 10
+                        }
+                    },
+                    template: `
+                    <div>
+                        <div>Tom: {{num}}</div>
+                        <button @click="handle">Jerry's number +10</button>
+                    </div>
+                    `,
+                    mounted: function() {
+                        hub.$on('TomsEvent', (val) => {
+                            this.num += val
+                        })
+                    },
+                    methods: {
+                        handle() {
+                            hub.$emit('JerrysEvent', 10)
+                        }
+                    }
+                },
+
+                'Jerry': {
+                    data: function() {
+                        return {
+                            num: 0
+                        }
+                    },
+                    template: `
+                    <div>
+                        <div>Jerry: {{num}}</div>
+                        <button @click="handle">Tom's number +20</button>
+                    </div>
+                    `,
+                    mounted: function() {
+                        hub.$on('JerrysEvent', (val) => {
+                            this.num += val
+                        })
+                    },
+                    methods: {
+                        handle() {
+                            hub.$emit('TomsEvent', 20)
+                        }
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+```
 
 ```html
 <body>
@@ -1264,13 +1535,23 @@ hub.$emit('事件中心监听事件名称'，数据)
 
 ## 组件插槽
 
+组件的结构固定的，
+
+页面中可能多个地方会用到相同布局，但需要显示的内容不同，
+
+此时需要用**插槽 solt** 用来决定组件显示的内容
+
+---
+
 ### 插槽的基本用法
 
-在子组件中定义，在父组件中的自组件位置添加代码修改
+在子组件中定义插槽，在父组件中的子组件位置添加代码修改插槽内容
 
-#### <slot\></slot\>标签
+插槽可理解为一个占位符预留位置
 
-1. **用`<slot\></slot\>`标签定义插槽**
+#### 插槽标签 <slot\></slot\>
+
+1. **用`<slot\></slot\>`标签在组件中定义插槽**
 
    子组件的template中给模版添加`<slot\></slot\>`标签
 
@@ -1286,7 +1567,7 @@ Vue.component('子组件名',{
 })
 ```
 
-2. **父组件中给自组件的标签内添加内容**
+2. **父组件中给子组件的标签内添加内容**
 
    该内容会反映到自组件模版中的`<slot\></slot\>`标签内
 
@@ -1322,7 +1603,9 @@ Vue.component('子组件名',{
 </body>
 ```
 
-- **<slot\></slot\>中可写入默认内容**
+---
+
+#### 插槽默认内容
 
 没在父组件若有给子组件的标签内添加内容，则`<slot\></slot\>`使用默认内容
 
@@ -1358,11 +1641,11 @@ Vue.component('子组件名',{
 
 ### 具名插槽
 
-就是具有名字的插槽，
+就是具有名字的插槽
 
-1. 在子组件模版中可以定义多个插槽，
+1. **用`name`属性给`<slot></slot>`加名称**
 
-   用`name`属性给`<slot></slot>`用加名称
+   在子组件模版中可以定义多个插槽，用name区分
 
 ```js
 Vue.component('子组件名',{
@@ -1458,9 +1741,9 @@ Vue.component('子组件名',{
 
 需要在父组件中通过`<template\></template\>` 
 
----
 
-#### <template\></template\>标签
+
+### <template\></template\>标签
 
 用于包裹多条内容
 
@@ -1478,6 +1761,17 @@ Vue.component('子组件名',{
     </template>  
   </子组件>
 </父组件>
+```
+
+```js
+Vue.component('子组件名',{
+  template:`
+			<div>
+					<slot name="插槽名"></slot>
+					<slot name="插槽名"></slot>
+			</div>
+	`
+})
 ```
 
 如下：
@@ -1520,6 +1814,7 @@ Vue.component('子组件名',{
                 <footer>
                     <slot name="bottom"></slot>
                 </footer>
+
             </div>`
         })
 
@@ -1556,6 +1851,97 @@ Vue.component('子组件名',{
 
 
 
+
+### 作用域插槽
+
+**父组件对子组件内容进行加工处理**
+
+父组件中获得子组件的数据，在父组件中对子组件的模版内容加工处理
+
+
+
+1. **子组件模版的slot插槽中通过`自定义属性` 传出数据**
+
+```js
+template:'<solt :自定义属性名=子组件数据><solt>'
+```
+
+2. **父组件中在`<templat>` 中 通过`slot-scope`属性获得子组件的数据**
+
+```html
+<父组件>
+  <子组件>
+    <template slot-scope="自定名">
+     	slotProps.自定义属性
+    </template>
+  </子组件>
+</父组件>
+```
+
+如下：
+
+子组件获得父组件的数据，`v-for`动态生成模版，
+
+父组件中控制指定的子组件的模版样式，`id==2` 的字体变为红色
+
+子组件通过 `自定义属性="数据"` 把数据每一个对象`item`传出
+
+父组件`template`标签中通过 `slot-scope="slotProps"`获得传出数据
+
+子组件的数据`item`在 `slotProps.自定义属性`中,
+
+即`v-if=“slotProps.info.id==2”`
+
+```html
+<style>
+  .watch {
+    font-weight: 700;
+    color: red;
+  }
+</style>
+
+<body>
+    <div id="app">
+        <demo :list="list">
+            <template slot-scope='slotProps'>
+                <div v-if="slotProps.info.id==2" class="watch">{{slotProps.info.name}}</div>
+            </template>
+        </demo>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                list: [{
+                    id: 1,
+                    name: 'apple'
+                }, {
+                    id: 2,
+                    name: 'orange'
+                }, {
+                    id: 3,
+                    name: 'banana'
+                }]
+            },
+            components: {
+                "demo": {
+                    props: ["list"],
+                    template: `
+                   
+                        <ul>
+                            <li :key="item.id" v-for="item in list">
+                                <slot :info="item">{{item.name}}</slot>
+                            </li>
+                        </ul>    
+                    
+                    `
+                }
+            }
+        })
+    </script>
+</body>
+```
 
 
 
