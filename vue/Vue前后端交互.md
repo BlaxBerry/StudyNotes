@@ -11,3 +11,16 @@
 - **fetch**
 
 - **axios**
+
+
+
+传统Ajax
+
+```js
+$.ajax({
+  url:'http://localhost:3000/data',
+  success:function(data){
+    console.log(data)
+  }
+})
+```
