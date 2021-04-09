@@ -61,14 +61,6 @@ npm install --global vue-cli
 
 
 
-## vue项目
-
-### 目录结构
-
-
-
-
-
 ## 基本使用
 
 每个Vue应用都需要通过 **实例化Vue对象**
@@ -1504,19 +1496,199 @@ new Vue({
 
 ## 生命周期
 
-1. 挂载
+**初始、挂载、运行、销毁**期间的各种的**事件，叫做声明周期**
 
-初始化相关属性
 
-2. 更新
 
-页面元素或组件的更新改变
+### 生命周期钩子函数
 
-3. 销毁
+就是生命周期事件/生命周期函数的别称
 
-销毁相关属性施放资源
+**初始、挂载、运行、销毁 **4个期间各有两个钩子函数
 
-![](https://cn.vuejs.org/images/lifecycle.png)
+
+
+Vue在运行时，到达某一时间时，会自动执行响应的生命周期函数
+
+只需要补啊内容写在响应的生命周期安函数中即可
+
+![](/Users/chen/Desktop/lifecycle.png)
+
+### 初始
+
+就是创建实例对象时调用的函数
+
+---
+
+#### beforeCreate
+
+Vue实例刚在内存中被创建时调用的函数，
+
+`data属性` 和 `method属性 `还未初始化，
+
+访问不到这两个属性的数据和方法
+
+---
+
+#### created
+
+实例已被创建，
+
+ `data属性` 和 `method属性` 已经创建，
+
+可以访问到这两个属性
+
+还未开始编译模版，访问不到DOM
+
+---
+
+如下：
+
+```js
+new Vue({
+  el:'#app',
+  data:{
+    message:'hello'
+  },
+  method:{},
+  beforeCreate(){
+    console.log(this.message); //undefined
+  },
+  created(){
+    console.log(this.message); //hello
+    console.log(document.getElementById("app"));
+  }
+})
+```
+
+
+
+### 编译挂载
+
+编译模版和挂载到页面时调用的函数
+
+---
+
+#### beforeMount
+
+完成了编译，但是还未挂载到页面 时调用的函数
+
+仅把Vue模版语法和指令等转为了浏览器可以识别的内容
+
+---
+
+#### mounted
+
+完成了编译，
+
+且把编译好的模版挂载到了页面中指定的容器中时执行的函数
+
+---
+
+如下：
+
+```html
+    <div id="app">
+        <div id="message">{{msg}}</div>
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                msg: 'hello'
+            },
+            beforeMount() {
+                console.log(document.getElementById('message').innerHTML); //空的
+            },
+            mounted() {
+                console.log(document.getElementById('message').innerHTML); // hello
+            }
+        })
+    </script>
+```
+
+
+
+### 更新
+
+更新数据时时调用的函数
+
+---
+
+#### beforeUpdate
+
+状态/数据更新前执行的函数
+
+data中数据已经被修改，页面上的DOM的数据还是旧的
+
+新的数据并未渲染到DOM上
+
+---
+
+#### updated
+
+状态/数据更新完后调用的函数
+
+data中数据已经被修改，页面上的DOM的数据是被更新后的新数据
+
+新的数据渲染到了DOM上
+
+---
+
+如下：
+
+通过触发修改数据的事件
+
+```html
+<div id="app">
+  <button @click="num+=10">+</button>
+  <span> {{num}} </span>
+  <button @click="num-=10">-</button>  
+</div>
+
+<script>
+  new Vue({
+  el:'#app',
+  data:{
+    message:'hello'
+  },
+  beforeUpdate(){
+    console.log(this.num, document.querySelector("span").innerHTML);
+  },
+  updated(){
+    console.log(this.num, document.querySelector("span").innerHTML);
+  }  
+})
+</script>
+```
+
+
+
+### 销毁
+
+销毁时时调用的函数
+
+---
+
+#### beforeDestory
+
+实例销毁前调用的函数
+
+此时vue实例还可以使用
+
+---
+
+#### destoryed
+
+实例销毁后滴调用的函数
+
+此时Vue实例所指向的所有东西会被解绑，
+
+所有的事件监听器会被移除，子实例也被销毁，
+
+访问不到vue实例中的数据
+
+
 
 
 

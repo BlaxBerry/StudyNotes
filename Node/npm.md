@@ -276,11 +276,40 @@ node .
 
 
 
-### node run 
 
-或者修改package.json文件中的*test*为指定的js文件
 
-然后执行npm run test命令
+### node run XXX
+
+1. 在package.json文件中`scripts` 中设定自定义指令
+
+2. 然后执行`npm run 自定义命令名` 运行该命令
+
+```js
+{
+  "name": "项目",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "自定义指令名": "指令内容"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+```
+
+```bash
+npm run 自定义命令名
+```
+
+如下：
+
+自定义 test 命令为通过node运行项目主文件index.js文件，
+
+然后在终端的该项目目录下，通过自定义命令名执行该命令
+
+即可通过node运行该项目主文件
 
 ```js
 {
