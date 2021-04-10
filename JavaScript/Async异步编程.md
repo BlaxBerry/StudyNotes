@@ -47,7 +47,7 @@ $.ajax({
 
 ## 回调地域
 
-多个异步调用的结果若存在依赖关系，就需要嵌套
+若多个异步调用的结果存在依赖关系，就需要嵌套
 
 但是如果嵌套层数过多，就是**回调地狱**
 
@@ -97,16 +97,16 @@ function fn() {
 console.log(fn());
 
 // 报错
-ReferenceError: num is not defined
+// ReferenceError: num is not defined
 ```
 
 上述，
 
 因为定时器是异步，所以该线程内fn函数里什么操作程序都没有，
 
-所以return返回的num也是不存在与该线程的，
+变量num也是不存在与该线程的，
 
-没有找不到所以undefined
+所以return返回不了，报错
 
 ---
 
@@ -128,9 +128,11 @@ console.log(fn());
 
 因为定时器是异步，所以该线程内fn函数里什么操作程序都没有，
 
-直再加上也没有retrun返回值就结束了，所以函数fn返回值是undefined
+直再加上也没有retrun返回值就结束了，
 
-所以在外部输出调用为undefined
+所以函数执行结果是undefined
+
+所以在外部输出调用函数的结果为undefined
 
 
 
@@ -259,6 +261,26 @@ promise.then(function(a) {
 })
 ```
 
+---
+
+可以封入一个函数
+
+```js
+function 函数名(){
+  return promise = new Promise(function(resolve,reject){
+    // 处理成功时：
+    resolve(数据);
+    // 处理错误时：
+    reject("出错了");
+  })
+};
+函数名().then(function(data){
+  console.log(data) // 获得处理成功时的结果
+})
+```
+
+
+
 
 
 ### Promise处理原生Ajax请求
@@ -335,16 +357,141 @@ then方法参数中的函数的return返回值是上一个Promise对象处理的
 
 
 
+
+
 ### then方法参数中函数的返回值
 
-- 可以返回一个**Promise实例对象**
+#### 返回一个**Promise实例对象**
 
-该实例对象会调用下一个then
+该实例对象会调用下一个then方法，
 
+如下：
 
+多个链式并存时，then的调用者是前面then方法中return的Promise对象
 
-- 可以返回一个**普通值**
+```js
+function queryData(url) {
+  return promise = new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== 4) return;
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                resolve(xhr.responseText)
+            } else {
+                reject('有错误')
+            }
+        };
+        xhr.open('get', url);
+        xhr.send(null);
+    });
+};
+
+queryData('http://localhosot:3000/test01')
+  .then(function(data){
+  	return queryData('http://localhosot:3000/test02')
+	})
+  .then(function(data){
+  	return new Promise(function(resolve,reject){  //<-------
+      settimeout(function(){
+        console.log(123123)
+      },2000)
+    })
+	})
+  .then(function(data){
+  	console.log(data)    //123123
+	})
+```
+
+---
+
+#### 返回一个**普通值**
 
 该普通值会直接传递给下一个then，
 
 下一个then的参数中的函数的参数接受该普通值
+
+如下：
+
+```js
+function queryData(url) {
+  return promise = new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== 4) return;
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                resolve(xhr.responseText)
+            } else {
+                reject('有错误')
+            }
+        };
+        xhr.open('get', url);
+        xhr.send(null);
+    });
+};
+
+queryData('http://localhosot:3000/test01')
+  .then(function(data){
+  	return queryData('http://localhosot:3000/test02')
+	})
+  .then(function(data){
+  	return 'hello Promsie'  // <-----------
+	})
+  .then(function(data){
+  	console.log(data)    //hello Promise
+	})
+```
+
+
+
+### 常用实例APIs
+
+#### 实例对象.then()
+
+获取异步任务的正确结果（和错误信息）
+
+两个函数作为参数，第一个获得正确结果，第二个获得错误结果
+
+---
+
+#### 实例对象.catch()
+
+获取异常信息
+
+**作用等同于.then() 方法中的第二个参数**
+
+就是Promise实例对象中reject()中的结果
+
+---
+
+#### 实例对象.finally()
+
+成功与否都会执行
+
+用于输出提示性信息、或销毁资源
+
+---
+
+```js
+function queryData(){
+  return promise = new Promise(function(resolve,reject){
+    //XXXXXXXX
+    resolve('right');
+    reject('error');
+  })
+};
+
+queryData()
+  .then(function(data){
+  console.log(data)       // right
+	},
+       function(data){
+  console.log(data)       // error
+	})
+  .catch(function(data){
+  console.log(data)       // error
+	})
+  .finally(function(){
+  console.log('mission finished')    // mission finished
+	})
+```
+

@@ -190,21 +190,96 @@ App.vue
 
 
 
+## 更改项目配置 vue.config.js
+
+在vue-cli 脚手架项目目录下（和 `package.json文件`同级）
+
+创建一个**`vue.config.js` 文件**
+
+在里面写 webpack、项目等相关的配置
+
+更改后会覆盖原来的配置
+
+使用CommonJS的写法
 
 
 
+### port 启动端口
+
+比如，更改vue脚手架项目的启动端口：
+
+```js
+module.exports = {
+  devServer:{
+    port: XXXXX
+  }
+}
+```
+
+更改完后，重新启动
+
+```bash
+cd 项目目录
+npm run serve
+```
 
 
 
+### publicPath 公共路径
+
+默认情况下，vue脚手架会默认应用部署在一个域名的根目录上，
+
+比如：`http://www.my-app.com/`
+
+所以如果应用是备部署在一个字路径上时，会导致路径出错
+
+需要手动指定该子路径
+
+比如：`http://www.my-app.com/子路径名/`
+
+所以需要在 **`vue.config.js` 文件** 中修改部署应用包时的基本URL
+
+```js
+module.exports= {
+  publicPath:'/子目录名/'
+}
+```
 
 
 
+但是会导致开发时访问项目，必须要在路径添加上子目录
 
+会写起来麻烦点
 
+可通过**环境变量**判断
 
+node环境变量 process.env,NODE_ENV用来区分开发环境和生存环境
 
+npm run build 的话环境变量是 production
 
+npm run serve 的话环境变量是development
 
+```js
+process.env.NODE_ENV === 'production'?'/子目录名/':'';
+```
+
+```js
+module.exports= {
+  publicPath: process.env.NODE_ENV === 'production'?'/子目录名/':'';
+}
+```
+
+比如用 `npm run build` 打包后的html文件内的导入的CSS、JS文件的路径
+
+需要手动修改文件路径
+
+修改最终的生成的各个文件的依赖地址
+
+```js
+module.exports= {
+  publicPath:'./'
+}
+```
 
 
 

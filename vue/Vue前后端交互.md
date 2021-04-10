@@ -14,7 +14,7 @@
 
 
 
-传统Ajax
+## jQuery的Ajax
 
 ```js
 $.ajax({
@@ -24,3 +24,8 @@ $.ajax({
   }
 })
 ```
+
+
+
+axios
+
