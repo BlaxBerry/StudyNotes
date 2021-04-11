@@ -69,7 +69,7 @@ $ clear
 
 ### 配置提交人姓名
 
-```git
+```bash
 $ git config --global user.name 名字
 
 $ git config --global user.name BlaxBerry
@@ -79,7 +79,7 @@ $ git config --global user.name BlaxBerry
 
 ### 配置提交人邮箱
 
-```git
+```bash
 $ git config --global user.email 邮箱地址
 
 $ git config --global user.email chenjiaxu333@gmail.com
@@ -89,7 +89,7 @@ $ git config --global user.email chenjiaxu333@gmail.com
 
 ### 查看Git配置信息
 
-```git
+```bash
 $ git config --list
 
 返回下列：
@@ -119,7 +119,7 @@ user.email=chenjiaxu333@gmail.com
 
 若想修改配置信息，重新执行一遍上述命令，**覆盖之前的配置**
 
-```git
+```bash
 $ git config --global user.name 新的名字
 $ git config --global user.email 新的邮箱地址
 $ git connfig --list
@@ -133,13 +133,13 @@ $ git connfig --list
 
 ### 初始化Git仓库
 
-```git
+```bash
 $ git init
 ```
 
 即在工作目录下初始化新建一个仓库
 
-```git
+```bash
 $ git init
 Initialized empty Git repository in C:/IT/IT  笔记/Git GitHub/.git/
 说明在该路径下已经初始化新增了一个Git仓库
@@ -151,7 +151,7 @@ Initialized empty Git repository in C:/IT/IT  笔记/Git GitHub/.git/
 
 ### 查看文件状态
 
-```git
+```bash
 $ git status
 ```
 
@@ -159,7 +159,7 @@ $ git status
 
 可获知有哪些文件尚未被Git跟踪管理，即还没被提交到缓存区中
 
-```git
+```bash
 $ git status
 
 On branch master
@@ -176,13 +176,13 @@ nothing added to commit but untracked files present (use "git add" to track)
 
 ### 向暂存区提交文件
 
-```$git
+```bash
 $ git add 文件名
 ```
 
 把文件提交到缓存区，让Git管理给文件
 
-```git
+```bash
 $ git add Git.mad
 $ git status
 
@@ -268,7 +268,7 @@ Date:   Mon Jan 18 20:15:57 2021 +0900
 
 把工作目录下的文件和文件夹全部添加到暂存区
 
-```github
+```bash
 $ git add .
 ```
 

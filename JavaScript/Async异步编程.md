@@ -53,24 +53,28 @@ $.ajax({
 
 ```js
 $.ajax({
-  url:"http://loaclhost:3000/data001",
-  success:function(data){
-    console.log(111);
-    
-    $.ajax({
-      url:"http://loaclhost:3000/data002",
-      success:function(data){
-        console.log(222);
-        
+    url: 'http://localhost:3000/first',
+    success: function(data) {
+        console.log(data)
         $.ajax({
-          url:"http://loaclhost:3000/data003",
-          success:function(data){
-            console.log(333)
-          }
+            url: 'http://localhost:3000/test001',
+            success: function(data) {
+                console.log(data)
+                $.ajax({
+                    url: 'http://localhost:3000/test002',
+                    success: function(data) {
+                        console.log(data)
+                        $.ajax({
+                            url: 'http://localhost:3000/test003',
+                            success: function(data) {
+                                console.log(data)
+                            }
+                        });
+                    }
+                });
+            }
         });
-      }
-    });
-  }
+    }
 });
 ```
 
@@ -293,67 +297,101 @@ function 函数名(){
 
 ```js
 function queryData(url) {
-    var promise = new Promise(function(resolve, reject) {
-
+    return promise = new Promise(function(resolve, reject) {
         var xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function() {
-
             if (xhr.readyState !== 4) return;
-
             if (xhr.readyState == 4 && xhr.status == 200) {
-                resolve(xhr.responseText)
+                resolve(xhr.responseText);
             } else {
-                reject('有错误')
+                reject('出错了')
             }
         };
-
         xhr.open('get', url);
-
         xhr.send(null);
-    });
-
-    return promise;
+    })
 };
 
-queryData('http://localhosot:3000/test').then(
-    function(resolveData) {
-        console.log(resolveData);
-    },
-    function(rejectData) {
-        console.log(rejectData);
-    }
-)
+queryData('http://localhost:3000/test').then(function(data) {
+    console.log(data);
+}, function(data) {
+    console.log(data);
+})
 ```
 
 ---
 
-#### Promise处理多次Ajax请求
+#### Promise处理多次Ajax请求（回调地狱）
+
+处理多个结果依有赖顺序的Ajax请求
 
 通过多个`.then` 链式操作处理多个异步任务
-
-```js
-function queryData(url) {
-    //如上
-};
-queryData("URL地址01")
-    .then(function(resolveData) {
-        console.log(resolveData);
-        return queryData("URL地址02"); //调用一个新的Promise对象
-    })
-    .then(function(resolveData) {  //then的调用者是新的Promise对象
-        console.log(resolveData);
-        return queryData("URL地址03");
-    })
-    .then(function(resolveData) {
-        console.log(resolveData);
-        return queryData("URL地址04");
-    })
-```
 
 then方法参数中的函数的return返回值是上一个Promise对象处理的结果
 
 下一个then的调用者是上一个新的Promise对象
+
+如下:
+
+按顺序依次打印三个请求地址的响应结果
+
+```js
+function queryData(url) {
+    return promise = new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== 4) return;
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                resolve(xhr.responseText);
+            } else {
+                reject('出错了')
+            }
+        };
+        xhr.open('get', url);
+        xhr.send(null);
+    })
+};
+
+queryData('http://localhost:3000/test001').then(function(data) {
+    console.log(data);     
+    return queryData('http://localhost:3000/test002');
+}).then(function(data) {
+    console.log(data);
+    return queryData('http://localhost:3000/test003')
+}).then(function(data) {
+    console.log(data);
+})
+
+// 第一个请求地址的结果
+// 第二个请求地址的结果
+// 第三个请求地址的结果
+```
+
+用定时器模拟响应的耗时，如下：
+
+结果还是依次打印三个结果并且等待耗时
+
+```js
+//服务器端的路由地址
+
+app.use('/test001', (req, res) => {
+    res.send('hello Promise test 01')
+})
+
+app.use('/test002', (req, res) => {
+    setTimeout(function() {
+        res.send('hello Promise test 02')
+    }, 1000)
+})
+
+app.use('/test003', (req, res) => {
+    setTimeout(function() {
+        res.send('hello Promise test 03')
+    }, 1000)
+})
+```
 
 
 
@@ -371,35 +409,34 @@ then方法参数中的函数的return返回值是上一个Promise对象处理的
 
 ```js
 function queryData(url) {
-  return promise = new Promise(function(resolve, reject) {
+    return promise = new Promise(function(resolve, reject) {
         var xhr = new XMLHttpRequest();
+
         xhr.onreadystatechange = function() {
             if (xhr.readyState !== 4) return;
             if (xhr.readyState == 4 && xhr.status == 200) {
-                resolve(xhr.responseText)
+                resolve(xhr.responseText);
             } else {
-                reject('有错误')
+                reject('出错了')
             }
         };
         xhr.open('get', url);
         xhr.send(null);
-    });
+    })
 };
 
-queryData('http://localhosot:3000/test01')
-  .then(function(data){
-  	return queryData('http://localhosot:3000/test02')
-	})
-  .then(function(data){
-  	return new Promise(function(resolve,reject){  //<-------
-      settimeout(function(){
-        console.log(123123)
-      },2000)
+queryData('http://localhost:3000/test001')
+    .then(function(data) {
+        return queryData('http://localhost:3000/test002');
+    }).then(function(data) {
+        return new Promise(function(resolve, reject) {
+            setTimeout(function() {
+                resolve(' new instance Promise object')
+            }, 1000)
+        })
+    }).then(function(data) {
+        console.log(data);     // new instance Promise object
     })
-	})
-  .then(function(data){
-  	console.log(data)    //123123
-	})
 ```
 
 ---
@@ -413,33 +450,35 @@ queryData('http://localhosot:3000/test01')
 如下：
 
 ```js
+
 function queryData(url) {
-  return promise = new Promise(function(resolve, reject) {
+    return promise = new Promise(function(resolve, reject) {
         var xhr = new XMLHttpRequest();
+
         xhr.onreadystatechange = function() {
             if (xhr.readyState !== 4) return;
             if (xhr.readyState == 4 && xhr.status == 200) {
-                resolve(xhr.responseText)
+                resolve(xhr.responseText);
             } else {
-                reject('有错误')
+                reject('出错了')
             }
         };
         xhr.open('get', url);
         xhr.send(null);
-    });
+    })
 };
 
-queryData('http://localhosot:3000/test01')
-  .then(function(data){
-  	return queryData('http://localhosot:3000/test02')
-	})
-  .then(function(data){
-  	return 'hello Promsie'  // <-----------
-	})
-  .then(function(data){
-  	console.log(data)    //hello Promise
-	})
+queryData('http://localhost:3000/test001')
+    .then(function(data) {
+        return queryData('http://localhost:3000/test002')
+    }).then(function(data) {
+        return 'hello just a data'
+    }).then(function(data) {
+        console.log(data);    //hello just a data
+    })
 ```
+
+
 
 
 
@@ -465,11 +504,13 @@ queryData('http://localhosot:3000/test01')
 
 #### 实例对象.finally()
 
-成功与否都会执行
+不论结果成功与否都会执行
 
 用于输出提示性信息、或销毁资源
 
 ---
+
+<img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg2018.cnblogs.com%2Fblog%2F1462173%2F201812%2F1462173-20181221192718414-1334509868.png&refer=http%3A%2F%2Fimg2018.cnblogs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1620703986&t=220af39e7d46e4b163309ce68e77ee0a" style="zoom:50%;" />
 
 ```js
 function queryData(){
@@ -493,5 +534,76 @@ queryData()
   .finally(function(){
   console.log('mission finished')    // mission finished
 	})
+```
+
+
+
+
+
+### 常用对象APIs
+
+#### Promis.all()
+
+并发处理多个异步任务
+
+**所有的任务都完成后才能得到结果**
+
+以数组的形式
+
+```js
+Promise.all([实例对象,实例对象,实例对象...]).then((result)=>{
+  console.log(result)  //[p1返回的结果, p2返回的结果, p3返回的结果]
+})
+```
+
+---
+
+#### Promise.race()
+
+并发处理多个异步任务
+
+**只要有一个任务完成就能得到结果**
+
+```js
+Promise.race([实例对象,实例对象,实例对象...]).then((result)=>{
+  console.log(result)  //第一个返回结果
+})
+```
+
+---
+
+如下：
+
+调用Ajax接口
+
+```js
+function queryData(url) {
+    return promise = new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadyStateChange = function() {
+            if (xhr.readyState !== 4) return;
+            if (xhr.readyState == 4 && shr.status == 200) {
+                resolve(xhr.responeseText)
+            } else {
+                reject('有错误')
+            }
+        };
+        xhr.open('get', url);
+        xhr.send(null)
+    })
+};
+
+var p1 = queryData('http://localhosot:3000/test001');
+var p2 = queryData('http://localhosot:3000/test002');
+var p3 = queryData('http://localhosot:3000/test003');
+
+Promise.all([p1, p2, p3]).then(function(result) {
+    console.log(result);     // [p1返回的结果, p2返回的结果, p3返回的结果]
+})
+
+Promise.race([p1, p2, p3]).then(function(result) {
+    console.log(result);     // p1返回的结果
+})
 ```
 
