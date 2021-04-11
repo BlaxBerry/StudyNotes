@@ -108,8 +108,6 @@ console.log('server running at localhost:3000')
 
 访问html文件应该直接：**域名：端口号/文件名.html**
 
-如下：
-
 > **localhost:3000/index.html**
 
 
