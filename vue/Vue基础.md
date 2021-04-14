@@ -1700,7 +1700,19 @@ data中数据已经被修改，页面上的DOM的数据是被更新后的新数�
 
 **回收全局变量和方法**：写在`destroyed `函数中
 
-
+```js
+new Vue({
+  el:'#app',
+  data:{
+    list:[]
+  }
+  created(){
+    axios.get('URL').then((result)=>{
+      this.list = result.data
+    })
+  }
+})
+```
 
 
 

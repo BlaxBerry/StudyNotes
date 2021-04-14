@@ -751,7 +751,7 @@ axios.get('URL').then(function(result){
 
 如下：
 
-通过参数 `config `获得请求地址，可用来判断请求地址
+通过参数 `config `**获得请求地址**，可用来判断请求地址
 
 ```js
 axios.interceptors.request.use(function(config) {
@@ -768,7 +768,7 @@ axios.get('http://localhost:3000/axios').then(function(result) {
 
 再比如：
 
-在请求发出前设置请求头
+在请求发出前**设置请求头**
 
 ```js
 axios.interceptors.request.use(function(config) {
@@ -780,6 +780,18 @@ axios.interceptors.request.use(function(config) {
 
 axios.get('http://localhost:3000/axios').then(function(result) {
     console.log(result.data);
+})
+```
+
+再比如：
+
+发送请求前**设置token**
+
+token用来给用户做标记
+
+```js
+axios.interceptors.request.use(function(config){
+  config.params.token = 1;
 })
 ```
 
@@ -796,7 +808,7 @@ axios.interceptors.response.use(function(result){
   
   // 设置在请求发出前的信息设置
   
-  return result
+  return result;  //----被then接受
 },function(err){
   // 响应出错时的错误信息
 });
@@ -827,6 +839,39 @@ axios.get('http://localhost:3000/axios').then(function(result) {
 })
 ```
 
-```
 
+
+
+
+
+
+```js
+import axios from 'axios';
+
+const instance = axios.create({
+  	// 接口
+    baseURL: "http://kumanxuan1.f3322.net:8001/index/index",
+    //超时
+  timeout: 5000
+});
+
+// 请求拦截器
+instance.interceptors.request.use(config => {
+    // 每次请求发送前都执行
+  
+    return config;
+}, err => {
+    return Promise.reject(err)
+});
+
+// 响应拦截器
+instance.interceptors.response.use(result => {
+    // 每次接受响应前都执行，然后再执行回调函数then
+  
+    return result;
+}, err => {
+    return Promise.reject(err)
+});
+
+export default instance;
 ```

@@ -1,5 +1,3 @@
-
-
 # Git基础入门
 
 [黑马Git/ Github基础教程](https://www.bilibili.com/video/BV1Mk4y1y7jR?p=4)
@@ -206,7 +204,7 @@ nothing to commit, working tree clean
 
 ### 向Git仓库提交文件
 
-```git
+```bash
 $ git commit -m 提交说明
 ```
 
@@ -214,26 +212,26 @@ $ git commit -m 提交说明
 
 每次提交时**必须写提交说明**
 
-```git
+```bash
 $ git commit -m 文件Git.md第一次提交
 
 [master (root-commit) 1d69d2c] 文件Git.md第一次提交
  1 file changed, 185 insertions(+)
  create mode 100644 Git.md
 
-说明文件向Git仓库提交成功
-并告诉这次有一个问价变化
+#说明文件向Git仓库提交成功
+#并告诉这次有一个问价变化
 ```
 
 ***
 
 ### 查看提交历史记录
 
-```git
+```bash
 $ git log
 ```
 
-```$ git log
+```bash
 $ git log
 
 commit be062c44cd7fe716336899ada3e00f2ba5164e98 (HEAD -> master)
@@ -447,7 +445,7 @@ Date:   Mon Jan 18 20:15:57 2021 +0900
 
 #### 查看分支
 
-```git
+```bash
 $ git branch
 
 * 当前所在分支名
@@ -455,8 +453,8 @@ $ git branch
 
 第一次向Git仓库提交过文件后就自动生成一个默认**主分支**
 
-```git
-$ git commit -m 第一次提交
+```bash
+$ git commit -m "第一次提交"
 
 [master (root-commit) d78c8f8] 第一次提交
  1 file changed, 12 insertions(+)
@@ -465,7 +463,7 @@ $ git commit -m 第一次提交
 $ git branch
 * master
 
-所在分支颜色会变绿，并且前面会多出一个 * 
+#所在分支颜色会变绿，并且前面会多出一个 * 
 ```
 
 ***
@@ -478,7 +476,7 @@ $ git branch 自定义分支名
 
 基于当前所在分支上创建分支(创建副本)
 
-```git
+```bash
 USER@DESKTOP-46BRUEO MINGW64 /c/IT/IT  笔记/Git GitHub (master)
 $ git branch
 * master
@@ -492,8 +490,8 @@ $ git branch
 * master
 
 
-基于master分支创建一个了develop开发分支
-并且当前所在mater分支上
+#基于master分支创建一个了develop开发分支
+#并且当前所在mater分支上
 ```
 
 ***
@@ -581,13 +579,13 @@ $ git checkout 分支
 
 要在合并到的目标分支上执行合并代码，把被合并的分支合并过来
 
-```git
+```bash
 $ git merge 被合并的分支
 ```
 
 如下：在master分支的角度上把develop分支合并过来
 
-```git
+```bash
 $ git merge develop
 
 Updating 9a9e9a9..eab3b7f
@@ -772,11 +770,11 @@ Github也是一个公共远程仓库
 
 复制在Github初次创建远程仓库时提供来的http地址，然后给push提交
 
-```git
+```bash
 $ git push 远程仓库地址 分支名
 ```
 
-```github
+```bash
 $ git push https://github.com/BlaxBerry/jQuery---todoList.git master
 
 Enumerating objects: 9, done.
@@ -805,7 +803,7 @@ $ git remote add 别名 远程仓库地址
 一般是把远程仓库别名定位**origin**
 
 ``` git
-$ git remote add 别名 远程仓库地址 分支名
+$ git remote add 别名 远程仓库地址
 ```
 
 ```git

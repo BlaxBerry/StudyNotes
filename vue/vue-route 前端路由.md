@@ -1,0 +1,152 @@
+## 后端路由
+
+根据**不同的URL请求地址**，响应返回不同的内容
+
+本质：URL请求地址 和 服务器资源 之间的对应关系
+
+过程：浏览器URL请求地址——>后端路由分发给响应服务器资源（路径）——>显示页面
+
+
+
+## 页面渲染的进化
+
+- **后端路由渲染：**
+
+  早期网页渲染多用后端路由渲染
+
+  但是有性能问题，比如：
+
+  频繁的表单提交，会导致页面刷新频繁，体验差
+
+- **Ajax前端渲染**：
+
+  实现页面局部刷新，不用刷新页面
+
+  但是不支持浏览器前进后退，无法保持用户的浏览
+
+- **SPA**：
+
+  网站只有一个页面
+
+  内容的变化通过Ajax局部更新实现
+
+  支持浏览器地址栏的前进后退
+
+  
+
+## SPA 
+
+**单页面应用程序**（**S**ingle **P**age **A**pplication）
+
+基于URL地址的哈希值变化
+
+
+
+## 前端路由
+
+根据**不同的用户事件**，显示不同的页面内容
+
+本质：用户事件 和 事件处理函数 之间的对应关系
+
+过程：用户触发事件——>前端路由监听事件并分发给事件处理函数——>事件函数渲染响应页面
+
+
+
+基于URL中的hash值的变化
+
+```js
+window.onhashchange = function(){
+  console.log(location.hash)
+}
+```
+
+如下：
+
+点击链接标签，浏览器地址变化，
+
+三个链接的URL地址的hash被打印
+
+```html
+<a href="#/item01"></a>
+<a href="#/item02"></a>
+<a href="#/item03"></a>
+
+<script>
+  window.onhashchange = function(){
+    console.log(location.hash)
+  }
+  // #/item01
+  // #/item02
+  // #/item03
+</script>
+```
+
+如下：
+
+通过组件，构建页面DOM模版
+
+通过 `window.onhashchange` 事件判断，点击链接后获得的相应的URL的hash
+
+然后判断hash后，指定页面渲染相应的组件的内容
+
+```html
+<div id="app">
+    <a href="#/English">英语课</a>
+    <a href="#/Maths">数学课</a>
+    <a href="#/Chemistry">化学课</a>
+    <a href="#/Biology">生物课</a>
+
+    <!-- <component :is="'item1'"></component> -->
+
+    <component :is="componentName"></component>
+</div>
+
+<script>
+    const English = {
+        template: `<h1>语文课页面</h1>`
+    };
+    const Maths = {
+        template: `<h1>数学课页面</h1>`
+    };
+    const Chemistry = {
+        template: `<h1>化学课页面</h1>`
+    };
+    const Biology = {
+        template: `<h1>生物课页面</h1>`
+    };
+
+  
+    const vm = new Vue({
+        el: '#app',
+        data: {
+            componentName: 'English'
+        },
+        components: {
+            English,
+            Maths,
+            Chemistry,
+            Biology,
+        }
+    });
+
+  
+    window.onhashchange = function() {
+        console.log(location.hash);
+
+        switch (location.hash.slice(1)) {
+            case '/English':
+                vm.componentName = 'English';
+                break;
+            case '/Maths':
+                vm.componentName = 'Maths';
+                break;
+            case '/Chemistry':
+                vm.componentName = 'Chemistry';
+                break;
+            case '/Biology':
+                vm.componentName = 'Biology';
+                break;
+        }
+    };
+</script>
+```
