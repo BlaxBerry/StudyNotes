@@ -2,8 +2,6 @@
 
 ![](https://www.aurigait.com/resources/files/2016/11/ajax_logo.png)
 
-[TOC]
-
 ## 目录
 - [简介](#简介)  
 - [主要作用效果](#主要作用效果)  
