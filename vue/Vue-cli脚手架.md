@@ -1,4 +1,4 @@
-# Vue-cli
+# Vue-cli（脚手架）
 
 脚手架
 
@@ -6,7 +6,17 @@
 
 [Vue-cli中文文档](https://cli.vuejs.org/zh/)
 
-## 安装脚手架
+## 一、环境配置
+
+确保Node.js 已经被安装
+
+```bash
+node --version
+
+npm --version
+```
+
+### 安装脚cli手架
 
 ```bash
 npm install -g @vue-cli
@@ -19,15 +29,26 @@ vue --version
 
 
 
-创建脚手架项目
+## 二、 项目创建 与 运行
+
+### 1. 创建
+
+在指定的目录下创建项目文件夹
 
 ```bash
-vue create XXX
+cd XXX
+vue create 项目名
 ```
 
+```bash
+vue create web
+```
 
+### 2. 项目配置
 
-配置
+创建项目后回弹出选择配置的界面，
+
+可以自行配置或选择默认 **Default( babel, eslint )**
 
 ```bash
 Vue CLI v4.5.12
@@ -37,18 +58,24 @@ Vue CLI v4.5.12
   Manually select features 
 ```
 
+自行配置时，空格键选择，enter回车键下一步
 
+然后会自动下载相应配置的内容到项目
+
+### 3. 开启服务 运行项目 
 
 按着流程配置完后，
+
+在项目目录下运行下列代码，即可运行项目
 
 ```bash
 cd XXX
 npm run serve
 ```
 
-会提示创建项目成功和提示端口号
+加载编译后会提示创建项目成功，
 
-如下：提示端口号是 localhost：8080
+并提示**项目端口号 `localhost：8080`**
 
 ```bash
  DONE  Compiled successfully in 2739ms                                3:56:10 AM
@@ -63,35 +90,39 @@ npm run serve
 
 ```
 
-访问后会显示界面:
+即表明项目创建成功
 
-![](https://junpeko.com/wp-content/uploads/2018/06/vue_eye.png)
+浏览器访问`http://localhost:8080/`后会显示界面
+
+<img src="https://junpeko.com/wp-content/uploads/2018/06/vue_eye.png" style="zoom: 50%;" />
 
 
 
-## 目录结构
+## 二、目录结构
 
 ```js
 XXX
 |--node_modules
 |--public
-|		|--index.html
+		|--index.html
+		|--favicon.ico
 |--src
-|		|--assets
-|		|--components
+		|--assets
+		|--components
 |--App.vue
 |--main.js
 |--package.json
 |--package-lock.json
 ```
 
+- **public目录**：可以替换favicon图标
 
+- **src目录**：写代码的地方
+  - **assets目录**：存放静态资源（图片）
+  - **components目录**：公用组件
+  - **views目录**：视图组件
 
-**src目录**：写代码的地方
-
-**components目录**：公用组件
-
-**main.js文件**：整个项目的入口文件
+- **main.js文件**：整个项目的入口文件
 
 ```js
 import Vue from 'vue'
@@ -104,45 +135,11 @@ new Vue({
 }).$mount('#app')
 ```
 
+- **App.vue**：顶级组件
 
-
-**App.vue**：**一个单文件组件**
+是个单文件组件
 
 里面包含了`模版 <template\>`，`JS <script>`，`样式 <style\>`
-
-```vue
-<template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <hello-world msg="Welcome to Your Vue.js App"></hello-world>
-  </div>
-</template>
-
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
-
-<style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
-
-```
-
-App.vue
 
 ```vue
 <template>
@@ -153,6 +150,7 @@ App.vue
 
 <script>
   //引入
+  // import XXX from "XXX"
   import 自定义组件名 from "./components/组件文件.vue"
   
   //注册
@@ -311,15 +309,9 @@ moudle.exports = {
 }
 ```
 
+```
 
-
-
-
-
-
-
-
-
+```
 
 
 

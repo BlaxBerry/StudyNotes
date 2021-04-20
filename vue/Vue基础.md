@@ -1158,13 +1158,13 @@ var vm = new Vue({
     url: 'http://www.google.com'
   },
   computed: {
-    site: {
+    数据: {
       // getter
-      get: function () {
+      get() {
         return this.name + ' ' + this.url
       },
       // setter
-      set: function (newValue) {
+      set(newValue) {
         var names = newValue.split(' ')
         this.name = names[0]
         this.url = names[names.length - 1]

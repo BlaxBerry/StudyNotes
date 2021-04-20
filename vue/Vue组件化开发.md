@@ -2047,6 +2047,213 @@ template:'<solt :自定义属性名=子组件的数据 :自定义属性名=子�
 
 
 
+## 单文件组件
+
+后缀名是 **.vue**的文件`XXX.vue`
+
+里面可以同时写入结构、逻辑、样式
+
+**<template\> **标签写结构
+
+**<script\>** 标签写逻辑
+
+**<style\> **标签写样式
+
+template里必须有**一个根节点**
+
+script里的**data**写成函数，return返回一个对象
+
+可是用**import** 导入样式
+
+```vue
+<template>
+	<div id="app"></div>
+</template>
+
+<script>
+  import "./css/base.css"
+  
+  export default {
+    data(){
+      return {
+        
+      }
+    },
+    methods{}
+  }
+</script>
+
+<style>
+  #app {
+    font-size:20px
+  }
+</style>
+```
+
+可通过VSCode的插件**vetur**,
+
+<img src="https://vuejsexpo.com/content/images/2020/02/vetur.png" style="zoom:33%;" />
+
+在文件中仅输入`vue`即可快速生成结构
+
+
+
+### 导入第三方包 与使用
+
+单文件组件导入第三方的包（模块、库）时，
+
+先定位到文件所在目录，然后下载相关的包
+
+```bash
+cd XXX
+
+npm install axios
+```
+
+**import** 导入下载的包
+
+```js
+import axios from "axios"
+```
+
+```vue
+<template>
+	<div id="app">
+    <button @click=ask></button>
+  </div>
+</template>
+
+<script>
+  import axios from "axios"
+  
+  export default {
+    methods{
+    	ask(){
+        axios.get("XXXXXX",{
+          params:{
+            key:value
+          }
+        }).then(res=>{
+          concole.log(res.data)
+        })
+      }
+  }
+  }
+</script>
+
+<style>
+  #app {
+    font-size:20px
+  }
+</style>
+```
+
+
+
+### 组件 抽取与导入
+
+在项目下创建components目录文件夹，将组件都写入其中
+
+需要组件的.vue文件中用import导入组件，
+
+在vue的components属性中注册组件，
+
+然后在需要的地方使用组件名的标签即可
+
+```vue
+<template>
+	<div id="app">
+    
+    <AAA></AAA>
+    
+    <AAA></AAA>
+    <BBB></BBB>
+    
+  </div>
+</template>
+
+<script>
+  import AAA form "@/components/AAA.vue";
+  import BBB form "@/components/BBB.vue"
+  
+  
+  export default {
+    data(){
+      return {}
+    },
+   components:{
+     // AAA:AAA
+     AAA,
+     BBB
+   }
+  }
+</script>
+
+<style>
+  #app {
+    font-size:20px
+  }
+</style>
+```
+
+
+
+
+
+## 快速原型开发
+
+就是打开一个单文本组件**.vue**文件
+
+### 环境配置
+
+安装使用Node.js
+
+```bash
+node -v
+
+npm -v
+```
+
+下载小工具
+
+使得能开启服务器运行单文本组件**.vue**
+
+```bash
+npm install -g @vue/cli-service-global
+```
+
+
+
+### 开始服务器运行文件
+
+在单文本组件**.vue**文件所在目录下，打开终端输入：
+
+```bash
+vue serve 文件名.vue
+```
+
+```bash
+ DONE  Compiled successfully in 2528ms                                           下午9:07:44
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://192.168.1.2:8080/
+
+  Note that the development build is not optimized.
+  To create a production build, run npm run build.
+
+
+```
+
+然后在浏览器输入域名`localhost:8080`，即可访问**.vue**文件
+
+
+
+
+
+
+
 ## 组件调试工具 devtools
 
 识别页面中的Vue组件
