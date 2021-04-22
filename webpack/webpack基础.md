@@ -1,6 +1,174 @@
-# webpack基础
+# Webpack基础
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Webpack.svg/1200px-Webpack.svg.png)
+<img src="https://hiroshi-yokota.com/wp-content/uploads/2019/10/webpack.png" style="zoom:50%;" />
+
+## 简介
+
+Webpack是一个前端项目构建工具（**打包工具**）
+
+用于解决Web开发时候的困境：
+
+- 文件依赖关系复杂
+- 静态资源请求效率低
+- 模块化支持不友好
+- 浏览器对高级JavaScript的特性兼容效率低 
+
+---
+
+目前前端项目都使用Webpack进行打包构建
+
+Webpack提供了 如下等功能：
+
+- **模块化支持**
+
+- **代码压缩混淆**
+
+- 处理**JS的兼容问题**
+
+- 性能优化
+
+![](https://jsstudygroup.github.io/jsStudyBlog/assets/images/post/what-is-webpack.png)
+
+
+
+
+
+## 浏览器 JS 的兼容性问题
+
+如下：列表换行变色
+
+1. 创建项目目录
+
+2. 创建 **package.json** 包管理文件
+
+```bash
+npm init -y
+```
+
+3. 创建 **src目录**
+
+4. scr 目录中创建 **index.html** 文件
+
+```html
+<script src="./index.js"></script>
+
+<body>
+    <ul>
+        <li>只是第1个li</li>
+        <li>只是第2个li</li>
+        <li>只是第3个li</li>
+        <li>只是第4个li</li>
+        <li>只是第5个li</li>
+        <li>只是第6个li</li>
+        <li>只是第7个li</li>
+        <li>只是第8个li</li>
+        <li>只是第9个li</li>
+        <li>只是第10个li</li>
+    </ul>
+</body>
+```
+
+5. 安装**jQuery**
+
+```bash
+npm i jquery -S
+```
+
+6. **模块化的方式导入 jQuery**，在JS文件中导入jQuery
+
+   scr 目录中创建 **index.js** 文件，并导入 index.html
+
+```js
+import $ from "jquery"
+
+//jQuery 入口函数
+$(function() {
+    $('li:odd').css('backgroundColor', 'teal')
+    $('li:even').css('backgroundColor', 'red')
+})
+```
+
+7. 浏览器中打开index.html文件后，样式不会改变
+
+   因为浏览器无法识别 ES6的导入语法`import $ from "jquery"`，
+
+   从而导致**兼容性问题**提示报错，
+
+8. 所以需要通过webpack处理兼容性问题
+
+
+
+
+
+## Webpack安装与配置
+
+1. 安装 **webpack** 和 **webpack-cli** 到开发依赖 --save-dev
+
+```bash
+npm install webpack webpack-cli -D
+```
+
+2. 项目根目录下创建 **webpack.config.js** wenpack配置文件
+
+   通过mode用来指定构建模式
+
+```js
+module.exports = {
+  mode:'指定构建模式'
+}
+```
+
+编译模式有**development**和**production**两种
+
+3. 在package.json 配置文件中的scripts节点下
+
+   新增运行脚本
+
+```js
+"scripts":{
+  "dev":"webpack"
+}
+```
+
+4. 运行 npm run 脚本，进行项目的打包
+
+```bash
+npm run dev
+```
+
+5. webpack打包后后在项目下生成 **dist目录**
+
+   目录下有 **mian.js文件**，即对 index.js文件打包处理后的文件
+
+   
+
+6. 将html文件中导入的JS文件换为webpack打包处理后的文件
+
+   即导入 **`dist / main.js`**
+
+   浏览器页面可识别JS语法，页面有显示了
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 
 
 Webpack，模块打包机，侧重于模块打包
 
