@@ -110,7 +110,7 @@ npm install webpack webpack-cli -D
 
 2. 项目根目录下创建 **webpack.config.js** wenpack配置文件
 
-   通过mode用来指定构建模式
+   通过**mode节点**用来指定构建模式
 
 ```js
 module.exports = {
@@ -147,6 +147,51 @@ npm run dev
    即导入 **`dist / main.js`**
 
    浏览器页面可识别JS语法，页面有显示了
+
+
+
+
+
+## 配置
+
+### 默认 入口 与 出口
+
+Webpack 4.x默认，
+
+将 src目录下的 index.js文件打包处理为dist目录下的main.js文件
+
+打包**入口文件** ：**src / index.js**
+
+打包**出口文件** ：**dist / main.js**
+
+
+
+### 自定义 入口 与 出口
+
+若想修改打包的出口和入口文件，需要在webpack.config.js中配置：
+
+通过 **entry节点** 和 **ouput节点**
+
+```js
+// 导入Node.js的path模块
+const path = require('path')
+
+module.exports = {
+    entry: path.join(__dirname, './src/index.js'),
+    output: {
+      //输出文件的路径
+        path: path.join(__dirname, "./dist"),
+      // 输出文件名
+        filename: 'bundle.js'
+    },
+    // 编译模式
+    mode: "development"
+}
+```
+
+然后运行webpack执行打包
+
+html文件导入新的出口文件
 
 
 
