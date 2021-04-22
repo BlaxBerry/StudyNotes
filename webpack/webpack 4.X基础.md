@@ -1,4 +1,4 @@
-# Webpack基础
+#  Webpack 4.X 基础
 
 <img src="https://hiroshi-yokota.com/wp-content/uploads/2019/10/webpack.png" style="zoom:50%;" />
 
@@ -10,8 +10,8 @@ Webpack是一个前端项目构建工具（**打包工具**）
 
 - 文件依赖关系复杂
 - 静态资源请求效率低
-- 模块化支持不友好
-- 浏览器对高级JavaScript的特性兼容效率低 
+- **模块化支持不友好**
+- **浏览器对高级JavaScript的特性兼容效率低** 
 
 ---
 
@@ -35,7 +35,17 @@ Webpack提供了 如下等功能：
 
 ## 浏览器 JS 的兼容性问题
 
-如下：列表换行变色
+浏览器HTML无法识别兼容高级JS语法，
+
+比如模块化开发时的引入 **import** XXX **from** XXX，
+
+对模块化开发及其不友好，
+
+只能考虑通过webpack俩编译打包JS文件，是浏览器能够识别
+
+如下：
+
+以模块化安装引入jQuery，去实现页面DOM元素换行变色
 
 1. 创建项目目录
 
@@ -94,7 +104,7 @@ $(function() {
 
    从而导致**兼容性问题**提示报错，
 
-8. 所以需要通过webpack处理兼容性问题
+8. 所以只能通过webpack编译打包处理兼容性问题
 
 
 
@@ -108,7 +118,7 @@ $(function() {
 npm install webpack webpack-cli -D
 ```
 
-2. 项目根目录下创建 **webpack.config.js** wenpack配置文件
+2. 项目根目录下创建 **webpack.config.js** 配置文件
 
    通过**mode节点**用来指定构建模式
 
@@ -140,7 +150,19 @@ npm run dev
 
    目录下有 **mian.js文件**，即对 index.js文件打包处理后的文件
 
-   
+   文件被放入项目目录下的dist文件夹中
+
+   ```js
+   项目
+   |--dist
+   		|--main.js
+   |--node_modules
+   |--src
+   		|--index.html
+   		|--index.js
+   |--package.json
+   |--webpack.config.js
+   ```
 
 6. 将html文件中导入的JS文件换为webpack打包处理后的文件
 
@@ -152,7 +174,7 @@ npm run dev
 
 
 
-## 配置
+## 配置出入口 JS 文件
 
 ### 默认 入口 与 出口
 
@@ -197,215 +219,167 @@ html文件导入新的出口文件
 
 
 
+## 自动打包 
+
+html页面中引入被webpack打包处理后的JS出口文件后，
+
+浏览器页面才会显示效果
+
+若只直接修改原来index.JS文件，并没有再次运行webpack打包处理
+
+则页面并不会有变化
+
+即，**每次修改完代码后，都要重新打包处理**
+
+这样会很麻烦，所以需要自动打包功能
 
 
 
+### 自动打包工具
 
-
-
-
-
-
-
-
-
-
-
-
-
-## 
-
-Webpack，模块打包机，侧重于模块打包
-
-开发中的所有图片、JS文件、CSS文件等都可被看作模块
-
-主要通过loader（记载器）和plugins（插件）对资源进行处理
-
-
-
-## 安装和使用
-
-### 生成项目依赖文件
-
-通过npm初始化项目的package.json文件
+1. 安装 **webpack-dev-server**打包工具
 
 ```bash
-npm init -y
+npm install webpack-dev-server -D
 ```
 
-
-
-### 安装依赖包
-
-安装 `webpack` 和 `webpack-cli` 到 `开发依赖`
-
-```bash
-npm install webpack webpack-cli --save-dev
-```
-
-安装 `jquery `到 `生产依赖`
-
-```bash
-npm install jquery --save
-```
-
-
+2. 修改package.json 文件中scripts的运行webpack的脚本
 
 ```js
-{
-  "name": "项目名",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "webpack": "^4.41.6"，
-    "webpack-cli": "^3.3.11"
-  },
-  "dependencies": {
-    "jquery": "^3.4.1"
+"scripts": {
+  "dev": "webpack-dev-server"
+},
+```
+
+3. 运行webpack打包工具打包处理
+
+```bash
+npm run dev
+```
+
+4. 然后在浏览器中访问 **localhost:8080**，即可看到实时的结果
+
+
+
+###  --open 设置自动开启浏览器
+
+给脚本添加 **--open**
+
+```js
+"scripts": {
+  "dev": "webpack-dev-server --open"
+},
+```
+
+然后运行打包处理：
+
+```bash
+npm run dev
+```
+
+默认是开启chorme浏览器，
+
+也可设置为开启其他浏览器，如下，打开火狐浏览器：
+
+```js
+"scripts": {
+  "dev": "webpack-dev-server --open firefox"
+},
+```
+
+
+
+###  --port 设置端口号
+
+给脚本添加 **--port 自定义端口号**
+
+```js
+"scripts": {
+  "dev": "webpack-dev-server --open --port 3000"
+},
+```
+
+
+
+### --host 设置域名
+
+给脚本添加 **--host 自定义域名**
+
+```js
+"scripts": {
+  "dev": "webpack-dev-server --open --host127.0.0.1 --port 3000"
+},
+```
+
+
+
+### --hot
+
+
+
+
+
+### 运行报错 与 版本号
+
+若运行 webpack-dev-server 打包处理时报错
+
+```bash
+Error: Cannot find module 'webpack-cli/bin/config-yargs'
+```
+
+可以下载指定版本
+
+```js
+ "dependencies": {
+        "jquery": "^3.6.0",
+        "webpack": "^4.1.1",
+        "webpack-cli": "^2.0.12",
+        "webpack-dev-server": "^3.1.1"
+    }
+```
+
+
+
+
+
+## webpack-plugin
+
+在内存中自动生成 index页面的插件
+
+```bash
+npm install webpack-plugin -D
+```
+
+在 webpack.config.js 中配置：
+
+```js
+const path = require('path');
+
+//引入插件
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+
+// 创建插件实例对象
+const = htmlPlugin = new  HtmlWebPackPlugin({
+  // 源文件
+  template: 		
+  path.join(__dirname,'./src/index.html'),
+  // 生成的内存中的首页
+  filename：'index.html'
+})
+
+module.exports = {
+  mode:"develpoment",
+  plugin:{
+    htmlPlugin
   }
 }
 ```
 
+src / index.html 中不用再通过script标签引入打包后的文件了
 
-
-比如，安装引入jQuery
-
-并控制html文件的DOM样式
-
-```js
-//引入jquery
-import $ from jquery
-
-$('DOMElement:even').css("background":"red")
-$('DOMElement:odd').css("background":"blue")
-```
-
-但是文件HTML无法识别import
-
-只能通过webpack编译打包
-
-
-
-### 编译
-
-编译压缩
-
-```bash
-webpack 项目主文件 -o/指定文件
-```
-
-文件被放入项目目录下的dist文件夹中
-
-```js
-项目
-|--dist
-|		|--bundle.js
-|--node_modules
-|--package.json
-|--index.js
-```
-
-如下：
-
-webpack index.js -o/bundle/js
-
-把项目主文件编译压缩并输出到bundle.js文件中
-
-```js
-{
-  "name": "项目名",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "自定义命令":"webpack index.js -o/bundle/js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "webpack": "^4.41.6"，
-    "webpack-cli": "^3.3.11"
-  },
-  "dependencies": {
-    "jquery": "^3.4.1"
-  }
-}
-```
-
-```bash
-npm run 自定义命令名 
-```
+webpack-plugin插件会自动把打包好的JS文件引入给页面文件
 
 
 
 
 
-全局下载webpack后才能使用webpack指令
-
-如果是局部下载只下载到了当前项目中，
-
-则命令行中无法直接使用webpack命令，会报错提示找不到命令
-
-只能在package.json文件的`scripts`属性中配置自定义指令后运行
-
-```bash
-npm run 自定义命令名 
-```
-
-
-
-### 热加载（热重载）
-
-js文件被webpack编译后，html文件读取的文件就变味编译后的指定文件了
-
-所以直接只在原来的js文件中修改内容的话，页面不会直接读取
-
-所以需要重新通过webpack再执行一次编译，麻烦
-
-可使用 `webpack-dev-server`的热加载
-
-只要有修改过内容就自动编译内容
-
-
-
-###  webpack-dev-server
-
-下载安装 `webpack-dev-server`
-
-```bash
-npm install webpack-dev-server --save-dev
-```
-
-
-
-```js
-{
-  "name": "项目名",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "自定义命令":"webpack-dec-server index.js -o/bundle/js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "webpack": "^4.41.6"，
-    "webpack-cli": "^3.3.11"
-  },
-  "dependencies": {
-    "jquery": "^3.4.1"
-  }
-}
-```
