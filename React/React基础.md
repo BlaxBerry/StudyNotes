@@ -4,13 +4,88 @@
 
 
 
-## React脚手架安装
+## React基本使用
+
+### 1、安装
+
+在项目目录下安装：
 
 ```bash
-npm install create-react-app -g
+npm install react react-dom --save
+```
+
+react：专门创建组件和虚拟DOM，并包含生命周期
+
+react-dom：专门进行DOM操作，比如`React.render()`
+
+### 2、创建容器
+
+在**index.html**页面中，创建容器
+
+使用React创建的虚拟DOM元素都会被渲染到这个指定的容器中
+
+```html
+<div id="app"></div>
+```
+
+### 3、导入
+
+```js
+import React from "react"
+import ReactDOM from "react-dom"
+```
+
+### 4、创建虚拟DOM元素
+
+```js
+const 虚拟DOM名 = React.createElement(
+  "标签名",
+  {
+    对象形式的元素属性
+  },
+  "子节点"
+)
+```
+
+```js
+// <h1 title="iamtitle" id="myh1">i am content</h1>
+const myh1 = React.createElement(
+  'h1',
+  {
+    title:'iamtitle',
+    id:'myh1'
+  },
+  'i am content'
+)
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 
 
 ## 创建与运行项目
 
