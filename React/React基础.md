@@ -59,9 +59,13 @@ const myh1 = React.createElement(
 )
 ```
 
+### 5、渲染虚拟DOM
 
 
 
+```js
+ReactDOM.render(myh1,document.getElementById('app'))
+```
 
 
 
