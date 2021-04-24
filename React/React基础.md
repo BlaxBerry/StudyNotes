@@ -4,7 +4,19 @@
 
 
 
-## React基本使用
+## 基本使用步骤
+
+先安装
+
+webpack、
+
+webpack-cli、
+
+webpack-dev-derver
+
+编译处理高级JS的语法import
+
+---
 
 ### 1、安装
 
@@ -14,9 +26,17 @@
 npm install react react-dom --save
 ```
 
-react：专门创建组件和虚拟DOM，并包含生命周期
+- react：专门创建组件和虚拟DOM，
 
-react-dom：专门进行DOM操作，比如`React.render()`
+  创建组件、虚拟DOM、生命周期
+
+- react-dom：专门操作DOM，
+
+  把创建好的虚拟DOM放到页面上渲染
+
+  比如	`React.render()`
+
+---
 
 ### 2、创建容器
 
@@ -28,46 +48,81 @@ react-dom：专门进行DOM操作，比如`React.render()`
 <div id="app"></div>
 ```
 
+---
+
 ### 3、导入
+
+项目入口文件中导入 **React** 、 **ReactDOM**
 
 ```js
 import React from "react"
 import ReactDOM from "react-dom"
 ```
 
+---
+
 ### 4、创建虚拟DOM元素
 
 ```js
 const 虚拟DOM名 = React.createElement(
-  "标签名",
+  "标签类型名",
   {
-    对象形式的元素属性
+    // 对象形式的元素属性 或 null
   },
+  "子节点",// 其他虚拟DOM 或 文本内容
+  "子节点",
   "子节点"
 )
 ```
 
 ```js
-// <h1 title="iamtitle" id="myh1">i am content</h1>
+// <h1 title="hello" id="myh1">Hello World</h1>
 const myh1 = React.createElement(
   'h1',
   {
-    title:'iamtitle',
+    title:'hello',
     id:'myh1'
   },
-  'i am content'
+  'Hello World'
 )
 ```
 
+---
+
 ### 5、渲染虚拟DOM
 
-
+就是把虚拟DOM渲染到页面中的一个容器中显示
 
 ```js
-ReactDOM.render(myh1,document.getElementById('app'))
+ReactDOM.render(
+  要渲染到页面的虚拟DOM,
+  指定的页面上的一个容器（一个DOM元素）
+)
+```
+
+```js
+ReactDOM.render(
+  myh1,
+  document.getElementById('app')
+)
 ```
 
 
+
+### HelloWorld
+
+```js
+import React from "react"
+import ReactDOM from "react-dom"
+
+
+const myh1 = React.createElement(
+    'h1', null, 'Hello World'
+);
+
+let target = document.getElementById('app')
+ReactDOM.render(myh1, target)
+```
 
 
 

@@ -251,13 +251,39 @@ npm install webpack-dev-server -D
 },
 ```
 
-3. 运行webpack打包工具打包处理
+3. 修改导入JS文件的路径
+
+   webpack-dev-server自动打包工具打包处理后，并不会生成dist目录
+
+   最后处理完毕的出口文件 main.js文件不会出现在目录中
+
+   而是出现在建立的服务器的根目录下
+
+   **localhost:3000/main.js**
+
+   ```bash
+   React@1.0.0 dev
+   > webpack-dev-server --open --inline
+   
+   ℹ ｢wds｣: Project is running at http://localhost:8080/
+   ℹ ｢wds｣: webpack output is served from / ##出口文件路径
+   ℹ ｢wdm｣: wait until bundle finished: /
+   ℹ ｢wdm｣: Hash: 0dfeabf403ae2670aa0c
+   ```
+
+   所以需要需要在index.html中修改webpack出口的位置
+
+   ```html
+   <script src="/main.js"></script>
+   ```
+
+4. 运行webpack打包工具打包处理
 
 ```bash
 npm run dev
 ```
 
-4. 然后在浏览器中访问 **localhost:8080**，即可看到实时的结果
+5. 然后在浏览器中访问 **localhost:8080**，即可看到实时的结果
 
 
 
@@ -338,11 +364,23 @@ Error: Cannot find module 'webpack-cli/bin/config-yargs'
     }
 ```
 
-
+```bash
+npm install webpack@4.1.1 webpack-cli@2.0.12 webpack-dev-server@3.1.1 --save
+```
 
 
 
 ## webpack-plugin
+
+webpack-dev-server自动打包工具打包处理后，并不会生成dist目录
+
+最后处理完毕的出口文件 main.js文件不会出现在项目的目录中
+
+而是生成在内存中 **localhost:3000/main.js**
+
+提高了运行速度
+
+同样可以通过webpack-plugin，在内存中自动生成index,html主页
 
 在内存中自动生成 index页面的插件
 
