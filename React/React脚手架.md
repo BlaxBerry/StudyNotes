@@ -150,6 +150,12 @@ const mydiv = <div>HELLO REACT</div>
 ReactDOM.render(虚拟DOM，要渲染的HTML页面中的DOM元素)
 ```
 
+```html
+<body>
+  <div id="root"></div>
+</body>
+```
+
 ```jsx
 ReactDOM.render(
     <div>Hello React</div>,
@@ -165,14 +171,10 @@ import React from "react"
 import ReactDOM from "react-dom"
 
 // 把内容渲染到id为root的标签
-// ReactDOM.render(参数1，参数2)
-// 参数1是渲染的内容
-// 参数2是渲染到public/index.html中的哪一个标签
 ReactDOM.render( 
     <div>Hello React</div>,
     document.getElementById("root")
 )
-
 ```
 
 
@@ -435,11 +437,33 @@ React中使用 **JSX语法** 代替常规 JavaScript，
 - 通过大小写区分HTML标签和自定义组件
 
 ```jsx
+// HTML 标签
 <div></div>
-<DIV></DIV>
+
+// React 组件
+<Div></Div>
 ```
 
+---
 
+### class/className，for/htmlFor
+
+因为JSX语法还是 JS，
+
+所以标签的 `class` 和 `for` 不能作为 XML 属性名
+
+应该分别使用 `className` 和 `htmlFor` 作为替代
+
+```jsx
+let mydiv = (
+  <div>
+    	<div className="username"></div>
+  		<label htmlFor="username">
+    		<input type="text" id="username"/>
+  		</label>
+  </div>
+)
+```
 
 ---
 
@@ -483,36 +507,79 @@ ReactDOM.render(
 
 ---
 
-```js
-import React, { Component } from "react"
+### { } JS表达式
 
-import "./assets/css/style.css"
+可以在**{ }** 中书写JavaScript表达式
 
-import img from "./assets/images/img.jpeg"
+如果是数组，数组元素会自动展开（不带逗号）
 
-export default class App2 extends Component {
+```jsx
+// 组件 App.js
 
+import React from "react"
+
+let arr =[1,2,3,4]
+
+class App extends React.Component {
     render() {
         return (
             <div>
-                <h3>JSX语法</h3>
-                <p style={{color:"teal",fontSize:20}}>css行内样式</p>
-
-                <p className="box">css外链式</p>
-
-
-                <img src={img} alt="" width="200"/>
-
-                <br/>
-
-                <label htmlFor="inpt">
-                    输入：
-                    <input type="text" name="" id="inpt"/>
-                </label>
+                <div>{arr}</div>   
+                <div>{arr.join(",")}</div>
+                <div>{arr[1]}</div>
+                <div>{(arr[0] + arr[2])/2}</div>
+            
             </div>
         )
     }
 }
+
+export default App
+```
+
+---
+
+### {* *} 注释
+
+```jsx
+import React from "react"
+
+class App extends React.Component {
+    // 渲染
+    render() {
+        return (
+            <div>
+                {/* 我是注释，不显示 */}
+            </div>
+        )
+    }
+}
+
+export default App
+```
+
+---
+
+### 三元表达式
+
+JSX中不能使用 if else 语法，只能使用**三元表达式**
+
+```jsx
+import React from "react"
+
+let age = 18
+
+class App extends React.Component {
+    render() {
+        return (
+            <div>
+                {age>=18?"成年":"未成年"}
+            </div>
+        )
+    }
+}
+
+export default App
 ```
 
 
