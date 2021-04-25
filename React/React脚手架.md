@@ -274,9 +274,33 @@ ReactDOM.render(
   )
 ```
 
----
 
----
+
+
+
+## 单文件组件
+
+### VSCode插件
+
+![](https://miro.medium.com/max/1838/1*XgMBj0lGzZs7O6okKg5sFA.png)
+
+**rcc + 回车** 快速生成React组件
+
+```jsx
+import React, { Component } from 'react'
+
+export default class App3 extends Component {
+    render() {
+        return (
+            <div>
+                
+            </div>
+        )
+    }
+}
+```
+
+
 
 ### 模版样式
 
@@ -615,3 +639,224 @@ class App extends React.Component {
 export default App
 ```
 
+
+
+
+
+## React事件
+
+```jsx
+import React, { Component } from 'react'
+
+export default class App3 extends Component {
+
+    handleClick(){
+        console.log("hello");
+        console.log(this);      // undefined
+    }  
+  
+    render() {
+        return (
+            <div>
+                <button onClick={this.handleClick}>按钮</button>
+            </div>
+        )
+    }
+}
+```
+
+```jsx
+import React from "react"
+import ReactDOM from "react-dom"
+
+import App3 from "./App3.js"
+
+let mydiv = (
+  <div>
+    <App3></App3>
+  </div>
+)
+```
+
+
+
+### 动态数据
+
+```jsx
+import React, { Component } from 'react'
+
+export default class App3 extends Component {
+    
+    constructor(props){
+        super(props)
+
+        this.state = {
+
+            num:20
+        }
+    }
+
+    handleClick(){
+        this.setState({
+            num: this.state.num +1
+        });
+    }
+
+    render() {
+        return (
+            <div>
+                <h3>{this.state.num}</h3>
+                <button onClick={this.handleClick.bind(this)}>点击+1</button>
+            </div>
+        )
+    }
+}
+```
+
+
+
+### 双向数据绑定
+
+```jsx
+import React, { Component } from 'react'
+
+export default class App4 extends Component {
+
+    constructor(props){
+        super(props)
+
+        this.state = {
+            val:10
+        }
+
+    }
+
+    handleChange(e){
+       	// console.log(e.target.value);
+        this.setState({
+            val:e.target.value
+        })
+
+    }
+
+
+    render() {
+        return (
+            <div>
+                <h3>{this.state.val}</h3>
+                <input type="text" 
+                    value={this.state.val} 
+                    onChange={this.handleChange.bind(this)}
+                />
+            </div>
+        )
+    }
+}
+```
+
+
+
+### 动态绑定样式(Tab栏切换)
+
+```jsx
+import React, { Component } from 'react'
+
+export default class App5 extends Component {
+
+    constructor(props){
+        super(props)
+
+        this.state = {
+            num:1
+        }
+    }
+
+    handleClick(number){
+        // console.log(e.target.value);
+        this.setState({
+            num:number
+        })
+    }
+
+    render() {
+        return (
+            <div>
+                <div className="tab">
+                    <div className="tab_btns">
+                        <input type="button" 
+                          className={this.state.num===1?"active":""} 
+                          onClick={this.handleClick.bind(this,1)} 
+                          value="1"/>
+                        <input 
+                          type="button" 
+                          className={this.state.num===2?"active":""} 
+                          onClick={this.handleClick.bind(this,2)} 
+                          value="2"/>
+                        <input type="button" 
+                          className={this.state.num===3?"active":""} 
+                          onClick={this.handleClick.bind(this,3)} 
+                          value="3"/>
+                    </div>
+                    <div className="tab_cons">
+                        <div className={this.state.num===1?"current":""}>内容1</div>
+                        <div className={this.state.num===2?"current":""}>内容2</div>
+                        <div className={this.state.num===3?"current":""}>内容3</div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+```
+
+或者：
+
+```jsx
+import React, { Component } from 'react'
+
+export default class App5 extends Component {
+
+    constructor(props){
+        super(props)
+
+        this.state = {
+            num:1
+        }
+    }
+
+    handleClick(e){
+        // console.log(e.target.value);
+        this.setState({
+            num:Number(e.target.value)
+        })
+    }
+
+    render() {
+        return (
+            <div>
+                <div className="tab">
+                    <div className="tab_btns">
+                        <input type="button" 
+                          className={this.state.num===1?"active":""} 
+                          onClick={this.handleClick.bind(this)} 
+                          value="1"/>
+                        <input type="button" 
+                          className={this.state.num===2?"active":""} 
+                          onClick={this.handleClick.bind(this)} 
+                          value="2"/>
+                        <input type="button" 
+                          className={this.state.num===3?"active":""} 
+                          onClick={this.handleClick.bind(this)} 
+                          value="3"/>
+                    </div>
+                    <div className="tab_cons">
+                        <div className={this.state.num===1?"current":""}>内容1</div>
+                        <div className={this.state.num===2?"current":""}>内容2</div>
+                        <div className={this.state.num===3?"current":""}>内容3</div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+```

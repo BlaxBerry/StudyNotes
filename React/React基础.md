@@ -300,9 +300,19 @@ JavaScript中不能直接写入HTML，会报错
 
 React中的 JSX语法（符合XML的JS）可以在JS中混合写入HTML
 
+
+
+
+
+
+
+
+
+### babel编译
+
 使用 **babel** 转换 JS 中的 HTML 标签
 
-### 1、安装babel插件
+#### 1、安装babel插件
 
 - **babel-core**
 -  **babel-loader** 
@@ -321,7 +331,7 @@ npm install babel-preset-env babel-preset-stage-0 -D
 
 ---
 
-### 2、安装 babel-present-react
+#### 2、安装 babel-present-react
 
 安装能识别转换JSX语法的包 
 
@@ -331,7 +341,7 @@ npm install babel-present-react -D
 
 ---
 
-### 3、添加第三方load规则
+#### 3、添加第三方load规则
 
 Webpack只能打包处理 .js 后缀名的文件
 
@@ -352,7 +362,7 @@ module.exports = {
 }
 ```
 
-### 4、添加.babelrc 配置文件
+#### 4、添加.babelrc 配置文件
 
 ```js
 {
