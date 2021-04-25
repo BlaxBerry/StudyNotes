@@ -582,5 +582,36 @@ class App extends React.Component {
 export default App
 ```
 
+---
 
+### 数组 + 遍历生成元素
+
+如下：通过 **arr.map()** 遍历生成 li
+
+```jsx
+import React from "react"
+
+let arr =[1,2,3,4]
+
+class App extends React.Component {
+    render() {
+        return (
+            <div>
+                <ul>
+                    {
+                      arr.map((item,index)=>{
+                          return (
+                            <li key={index}>我是{item}</li>
+                          )
+                      })
+                    }
+                </ul>
+            </div>
+        )
+    }
+}
+
+// 导出组件
+export default App
+```
 
