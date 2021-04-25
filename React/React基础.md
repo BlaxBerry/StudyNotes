@@ -2,6 +2,36 @@
 
 <img src="https://cdn-ssl-devio-img.classmethod.jp/wp-content/uploads/2019/07/react.jpg" style="zoom:50%;" />
 
+## 简介
+
+- **声明式开发**
+
+  面向数据编程，不需要直接去操控DOM，只需要操纵数据
+
+- **虚拟DOM**
+
+  不会重新渲染DOM树，仅将变化的部分同步
+
+- **使用 JSX语法**
+
+  可以在 JS中书写HTML
+
+- **组件化开发**
+
+- **单项数据流**
+
+  父组件——>子组件，子组件接受数据使用
+
+  但子组件不能通过 this.props 修改父组件的数据
+
+- **灵活**
+
+  React仅操控主页面中的一个DOM容器（脚手架中是“**root**”）
+
+  其他容器仍可以使用其他jQuery等框架
+
+
+
 
 
 ## 基本使用步骤
