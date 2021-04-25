@@ -16,11 +16,13 @@ webpack-dev-derver
 
 编译处理高级JS的语法import
 
+[Webpack 4.X 基本用法](https://github.com/BlaxBerry/StudyNotes/blob/master/webpack/webpack%204.X%E5%9F%BA%E7%A1%80.md)
+
 ---
 
-### 1、安装
+### 1、安装包
 
-在项目目录下安装：
+在项目目录下安装 **react**、**react-dom**
 
 ```bash
 npm install react react-dom --save
@@ -63,6 +65,12 @@ import ReactDOM from "react-dom"
 
 ### 4、创建虚拟DOM元素
 
+第一个参数是要创建的标签
+
+第二个参数是null，或者是对象形式的属性和属性值
+
+第三个及以后的参数是子节点，可以写n个同级的子节点（标签或文本）
+
 ```js
 const 虚拟DOM名 = React.createElement(
   "标签类型名",
@@ -93,6 +101,10 @@ const myh1 = React.createElement(
 
 就是把虚拟DOM渲染到页面中的一个容器中显示
 
+第一个参数是要渲染到页面的虚拟DOM
+
+第二个参数必须是个DOM对象
+
 ```js
 ReactDOM.render(
   要渲染到页面的虚拟DOM,
@@ -109,7 +121,9 @@ ReactDOM.render(
 
 
 
-### HelloWorld
+
+
+## HelloWorld
 
 ```js
 import React from "react"
@@ -123,6 +137,139 @@ const myh1 = React.createElement(
 let target = document.getElementById('app')
 ReactDOM.render(myh1, target)
 ```
+
+
+
+
+
+## 虚拟DOM嵌套
+
+**React.createElement( )** 创建虚拟DOM时候，可创建n个子节点
+
+若要实现页面中如下的嵌套关系DOM树：
+
+```html
+<div id="app">
+  <div>
+    i am father
+    <div>
+      i am son
+    </div>
+  </div>
+</div>
+```
+
+```js
+import React from "react"
+import ReactDOM from "react-dom"
+
+const son = React.createElement(
+    'div', null, 'i am son'
+);
+
+const father = React.createElement(
+    'div', null, 'i am father', son
+)
+
+ReactDOM.render(father, document.getElementById('app'))
+```
+
+但是这样API的写法，每次创建一个节点就要写一次API，太麻烦
+
+所以需要通过 **JSX语法**，即在 JS 中使用 HTML 语言
+
+
+
+```jsx
+import React from "react"
+import ReactDOM from "react-dom"
+
+const mydiv = <div>i am father<div>i am son</div></div>
+
+
+ReactDOM.render(father, document.getElementById('app'))
+```
+
+
+
+
+
+
+
+## JSX语法
+
+JavaScript中不能直接写入HTML，会报错
+
+React中的 JSX语法（符合XML的JS）可以在JS中混合写入HTML
+
+使用 **babel** 转换 JS 中的 HTML 标签
+
+### 1、安装babel插件
+
+- **babel-core**
+-  **babel-loader** 
+- **babel-plugin-transform-runtime** 
+
+```bash
+npm install babel-core babel-loader babel-plugin-transform-runtime -D
+```
+
+- **babel-preset-env**
+- **babel-preset-stage-0**
+
+```bash
+npm install babel-preset-env babel-preset-stage-0 -D
+```
+
+---
+
+### 2、安装 babel-present-react
+
+安装能识别转换JSX语法的包 
+
+```bash
+npm install babel-present-react -D
+```
+
+---
+
+### 3、添加第三方load规则
+
+Webpack只能打包处理 .js 后缀名的文件
+
+webpack.config.js文件中添加第三方配置规则
+
+```js
+module.exports = {
+    mode: 'development',
+    devtool: 'inline-source-map',
+    module: {
+        // 第三方匹配规则
+        rules: [{
+            test: /\.js|jsx$/,
+            use: 'babel-loader',
+            exclude: /node_modules/
+        }]
+    }
+}
+```
+
+### 4、添加.babelrc 配置文件
+
+```js
+{
+    "presets": ["env","stage-0","react"],
+    "plugins": ["transform-runtime"]
+}
+```
+
+JXS语法 不是直接把HTML标签哪去显示，
+
+而是在 **运行时被转换为 React.createElement()** 来执行
+
+
+
+
 
 
 
@@ -146,7 +293,7 @@ ReactDOM.render(myh1, target)
 
 ## 
 
-## 创建与运行项目
+##  React脚手架
 
 创建项目
 
@@ -216,7 +363,7 @@ ReactDOM.render(
 
 
 
-## 组件化开发
+### 组件化开发
 
 入口文件要保持简洁
 
@@ -243,7 +390,7 @@ ReactDOM.render(
 
 
 
-## JSX语法
+### JSX语法
 
 ```js
 import React, { Component } from "react"
