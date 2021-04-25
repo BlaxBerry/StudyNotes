@@ -172,22 +172,85 @@ ReactDOM.render(myh1, target)
 
 
 
-## 虚拟DOM嵌套
+## 虚拟DOM
+
+```js
+// JS原生DOM
+let docDOM = document.createElement("div")
+
+// React虚拟DOM
+let reactDOM = React.createElement("div")
+```
+
+React虚拟DOM更加简介，内容除去了不需要的DOM对象属性，渲染时也会更加高效
+
+---
+
+### 虚拟DOM的属性
+
+```js
+import React from "react"
+
+const mydiv = React.createElement(
+  "div",
+  {
+    id:"box",
+    index:1
+  }
+)
+```
+
+一般是使用 JSX语法：
+
+```jsx
+import React from "react"
+import ReactDOM from "react-dom"
+
+const mydiv = (
+  <div id="father" index=1></div>
+)
+
+ReactDOM.render(father, document.getElementById('app'))
+```
+
+---
+
+### 虚拟DOM的子节点嵌套
 
 **React.createElement( )** 创建虚拟DOM时候，可创建n个子节点
 
 若要实现页面中如下的嵌套关系DOM树：
 
 ```html
-<div id="app">
-  <div>
+<div id="root">
+  <div id="father">
     i am father
-    <div>
+    <div id="son">
       i am son
     </div>
   </div>
 </div>
 ```
+
+```jsx
+import React from "react"
+import ReactDOM from "react-dom"
+
+const mydiv = React.createElement(
+    "div",
+    {id:"father"},
+    "i am father",
+    React.createElement(
+        "div",
+        {id:"son"},
+        "i am son"
+    )
+)
+
+ReactDOM.render(father, document.getElementById('app'))
+```
+
+或者写入一个变量中：
 
 ```js
 import React from "react"
@@ -204,17 +267,22 @@ const father = React.createElement(
 ReactDOM.render(father, document.getElementById('app'))
 ```
 
-但是这样API的写法，每次创建一个节点就要写一次API，太麻烦
+但是每次创建一个DOM节点就需要调用一次React.createELement()
 
-所以需要通过 **JSX语法**，即在 JS 中使用 HTML 语言
-
-
+书写麻烦，所以一般是使用 **JXS语法**：
 
 ```jsx
 import React from "react"
 import ReactDOM from "react-dom"
 
-const mydiv = <div>i am father<div>i am son</div></div>
+const mydiv = (
+  <div id="father">
+    i am father
+    <div id="son">
+      i am son
+    </div>
+  </div>
+)
 
 
 ReactDOM.render(father, document.getElementById('app'))
