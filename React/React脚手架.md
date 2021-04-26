@@ -4,7 +4,7 @@
 
 
 
-## 安装
+## 安装 create-react-app
 
 ### 1、全局安装脚手架
 
@@ -183,8 +183,6 @@ ReactDOM.render(
 
 
 
-
-
 ## 组件化开发
 
 入口文件要保持简洁，所以虚拟DOM要写入组件
@@ -194,6 +192,8 @@ ReactDOM.render(
 #### ES6 Class创建组件
 
 可以使用ES6的 **class类** 创建组件
+
+组件名必须大写
 
 return只能返回一个根标签，
 
@@ -284,12 +284,16 @@ React中使用 **JSX语法** 代替常规 JavaScript，
 
 在React中 JSX 会被 Babel 编译为JavaSCript
 
+JSX创建的看起来是HTML标签，但实际是虚拟DOM，而不是HTML
+
 ### JSX的特点
 
 - 执行更快
 - 可以更方便书写**HTML**模版
 
 - 通过大小写区分HTML标签和自定义组件
+
+  原生HTML标签用小写，自定义组件名用大写
 
 ```jsx
 // HTML 标签
@@ -317,7 +321,7 @@ React中使用 **JSX语法** 代替常规 JavaScript，
 
 ### { } JS表达式
 
-可以在**{ }** 中书写JavaScript表达式
+可以在**{ }** 中书写JavaScript表达式，或者引用变量
 
 如果是数组，数组元素会自动展开（不带逗号）
 
@@ -770,9 +774,35 @@ class Father extends Component {
 
 ### 获取双标签子元素
 
- **this.props.children**
+当父组件中以双标签形式调用子组件时，
 
+双标签中间的所有子节点（DOM节点/文本节点）
 
+可在子组件中通过  **this.props.children** 获取
+
+```jsx
+import React, { Component } from 'react'
+
+class Son extends Component {
+    render(){
+        return (
+            <div className="son"> 
+                {this.props.children}
+            </div>
+        )
+    }
+}
+
+export default class Father extends Component {
+    render() {
+        return (
+            <div className="father"> 
+                <Son>子元素</Son>
+            </div>
+        )
+    }
+}
+```
 
 
 
@@ -891,6 +921,33 @@ export default class App3 extends Component {
 }
 ```
 
+或者使用**箭头函数**
+
+但是必须要传入e
+
+```jsx
+import React, { Component } from 'react'
+
+export default class App3 extends Component {
+
+    handleClick(e){
+        console.log(this);      // App3这个组件自己
+        console.log(e.target);  // <button>DOM元素
+    }  
+  
+    render() {
+        return (
+            <div>
+                <button 
+                  onClick={(e)=>this.handleClick(e)}>按钮</button>
+            </div>
+        )
+    }
+}
+```
+
+
+
 
 
 ### 动态数据
@@ -933,6 +990,8 @@ export default class App3 extends Component {
 
 
 ### 双向数据绑定
+
+通过表单的value属性和onChange事件
 
 ```jsx
 import React, { Component } from 'react'
@@ -1078,3 +1137,289 @@ export default class App5 extends Component {
 }
 ```
 
+
+
+
+
+## 规定父组件传递的数据的数据类型
+
+实现在子组件内控制传入的props属性的数据类型
+
+如果子组件收到的数据不是指定的数据类型，就会提示报错
+
+```js
+Warning: Failed prop type: Invalid prop `title` of type `number` supplied to `Father`, expected `string`.
+```
+
+### 1、安装 prop-types
+
+```bash
+npm install prop-types
+
+或
+
+yarn add prop-types
+```
+
+### 2、导入 prop-types
+
+```jsx
+import PropTypes from "prop-types"
+```
+
+### 3、指定数据类型
+
+在static中指定父组件传递来的数据（自定义属性）的数据类型
+
+```js
+class Son extends Component{
+  
+    static propTypes = {
+      
+       父组件传入的属性:PropTypes.数据类型 
+    }
+}
+```
+
+如下：规定传入的 title自定义属性必须是字符串类型，不然会报错提示
+
+```jsx
+import React, { Component } from 'react'
+import PropTypes from "prop-types"
+
+class Son extends Component{
+  
+    static propTypes = {
+        title:PropTypes.string
+    }
+
+    render(){
+        return(
+            <div>
+                {this.props.title}
+            </div>
+        )
+    }
+}
+
+export default class Father extends Component {
+    render() {
+        return (
+            <div>
+                <Son title={123}></Son>
+            </div>
+        )
+    }
+}
+```
+
+
+
+## props属性值的跨级传递
+
+React的组件之间的数据传递是通过props属性
+
+数据一级一级从上到下传递
+
+1. 父组件通过**自定义属性**传入数据——>
+
+2. 子组件中**this.props.自定义属性**接受数据——>
+3. 子组件通过**自定义属性**传入数据给孙子组件——>
+4. 孙子组件中**this.props.自定义属性**接受数据
+
+```jsx
+import React, { Component } from 'react'
+
+// 孙子
+class Son extends Component {
+    render(){
+        return(
+            <div>
+                i am Son
+                {this.props.title}
+            </div>
+        )
+    }
+}
+
+// 子组件
+class Father extends Component {
+    render(){
+        return(
+            <div>
+                i am Father
+                <Son title={this.props.title}></Son>
+            </div>
+        )
+    }
+}
+
+// 父组件
+export default class GrandFather extends Component {
+    render() {
+        return (
+            <div>
+                i am Grandfather
+                <Father title="数据"></Father>
+            </div>
+        )
+    }
+}
+```
+
+
+
+### Context
+
+如果传递的层级过多的话，逐级都要写这样写起来太麻烦
+
+React通过**Context配置**解决组件之间的数据跨级传递
+
+可理解为把需要跨级传递的数据放入一个容器，
+
+哪一级的组件需要就取出，不需要每一层级都书写了
+
+1. **父组件将数据存入Context容器**
+
+```jsx
+class 父组件 extends Component {
+  
+  getChildContext(){
+    自定义属性：值（数据）
+  }
+  
+  render(){
+    return (
+      <div>
+        <子组件></子组件>
+      </div>	
+    )
+  }
+}
+```
+
+2. **父组件规定传递数据的类型**
+
+```jsx
+import PropTypes from "prop-types"
+
+class 父组件 extends Component {
+  static childContextTypes = {
+    自定义属性：PropTypes.数据类型
+  }
+  
+  getChildContext(){
+    自定义属性：值（数据）
+  }
+  
+  render(){
+    return (
+      <div>
+        <子组件></子组件>
+      </div>	
+    )
+  }
+}
+```
+
+3. **需要接受数据的子组件通过`this.context.属性`**获取数据
+
+```jsx
+class 子孙组件 extends Component {
+
+    render(){
+        return(
+            <div>
+                {this.context.自定义属性}
+            </div>
+        )
+    }
+}
+```
+
+4. **需要接受数据的子组件规定接受的数据类型**
+
+```jsx
+class 子孙组件 extends Component {
+
+    static contextTypes = {
+        自定义属性:PropTypes.数据类型
+    }
+
+    render(){
+        return(
+            <div>
+                {this.context.自定义属性}
+            </div>
+        )
+    }
+}
+```
+
+---
+
+```jsx
+import React, { Component } from 'react'
+import PropTypes from "prop-types"
+
+class Son extends Component {
+
+  // 获取存入Context中的属性类型
+    static contextTypes = {
+        title:PropTypes.string
+    }
+
+    render(){
+        return(
+            <div>
+                i am Son
+<!--获取存入Context中的属性值-->         
+                {this.context.title}
+            </div>
+        )
+    }
+}
+
+class Father extends Component {
+
+    render(){
+        return(
+            <div>
+                i am Father
+
+                <Son></Son>
+            </div>
+        )
+    }
+}
+
+export default class GrandFather extends Component {
+
+    // 规定数据类型
+    static childContextTypes = {
+        title:PropTypes.string
+    }
+
+    // 传递数据放入Context容器
+    getChildContext(){
+        return {
+            title:"数据"
+        }
+    }
+
+    render() {
+        return (
+            <div>
+                i am Grandfather
+                <Father></Father>
+            </div>
+        )
+    }
+}
+```
+
+
+
+
+
+### 子组件传数据给父组件
