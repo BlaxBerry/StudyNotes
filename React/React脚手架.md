@@ -776,6 +776,49 @@ class Father extends Component {
 
 
 
+### 遍历
+
+**key属性** 用于标记唯一
+
+提高DOM渲染效率，不再是全部重新渲染，而是仅渲染修改变更的部分
+
+```jsx
+import React,{Component} from "react"
+
+export default class App extends Component {
+  constructor(props){
+    super(props)
+    
+    this.state = {
+      list:[
+        {id:1,val:"数值1"},
+        {id:2,val:"数值2"},
+        {id:3,val:"数值3"}]
+    }
+  }
+  
+  render(){
+    return (
+      <div>
+        <ul>
+          {
+            this.state.list.map((item,index)=>{
+              return (
+                <li key={item.id}>{item.val}</li>
+              )
+            })
+          }
+        </ul>
+      </div>
+    )
+  }
+}
+```
+
+
+
+
+
 ## VSCode插件
 
 ![](https://miro.medium.com/max/1838/1*XgMBj0lGzZs7O6okKg5sFA.png)
@@ -1034,3 +1077,4 @@ export default class App5 extends Component {
     }
 }
 ```
+
