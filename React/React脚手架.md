@@ -1422,4 +1422,162 @@ export default class GrandFather extends Component {
 
 
 
-### 子组件传数据给父组件
+## 子组件修改父组件数据
+
+因为React中没有直接在子组件修改父组件的API
+
+所以，在子组件中修改父组件的数据 时，需要
+
+1. 父组件中声明一个**改变自身数据的方法**
+2. 父组件通过**自定义属性传出将该方法**
+3. 子组件中通过 **this.props.自定义属性** 接受该方法
+4. 子组件**调用该方法**，即可在子组件中修改父组件的数据
+
+---
+
+如下：点击子组件内的按钮，修改父组件中声明的数据
+
+```jsx
+import React, { Component } from 'react'
+
+class Son extends Component {
+
+    handleClick(){
+        this.props.fatherChange()
+    }
+
+    render(){
+        return (
+            <div className="son"> 
+            <button onClick={this.handleClick.bind(this)}>click</button>
+                {this.props.children}
+            </div>
+        )
+    }
+}
+
+export default class Father extends Component {
+
+    constructor(props){
+        super(props)
+
+        this.state = {
+            num:20
+        }
+    }
+
+    // 父组件中传递一个方法，给子组件调用
+    fatherChange(){
+        this.setState({
+            num: this.state.num +1
+        });
+    }
+
+
+    render() {
+        return (
+            <div className="father"> 
+                <Son fatherChange={this.fatherChange.bind(this)}>{this.state.num}</Son>
+            </div>
+        )
+    }
+}
+```
+
+
+
+
+
+## 生命周期函数
+
+<img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Faliyunzixunbucket.oss-cn-beijing.aliyuncs.com%2Fjpg%2F11ab95cda4dfef0e7b23c457c2a92255.jpg%3Fx-oss-process%3Dimage%2Fresize%2Cp_100%2Fauto-orient%2C1%2Fquality%2Cq_90%2Fformat%2Cjpg%2Fwatermark%2Cimage_eXVuY2VzaGk%3D%2Ct_100&refer=http%3A%2F%2Faliyunzixunbucket.oss-cn-beijing.aliyuncs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1622010592&t=a63ff737cef785512e947609c1471509"  />
+
+共有3个阶段：
+
+- **实例化（挂载期**）：对象的创建到完全渲染
+  - constructor：初始化组件
+  - componentWillMount
+  - render：页面标签的渲染填充
+  - **componentDidMount**
+- **更新期**：组件状态的改变
+  - props改变
+    - componentWillReceiveProps 
+  - state改变
+    - shouldComponentUpdate
+    - **componentWillUpdate**
+    - render
+    - componentDidUpdate
+- **销毁期**：组件使用完毕后，或 不存在与页面中
+  - componentWillUnmount
+
+```jsx
+import React, {Component} from "react"
+
+export default class App extends Component {
+  
+  constructor(props){
+    //调用会父组件的constructor方法，传递props属性名，让props起作用
+    super(props)
+    
+    //定义初始化状态数据
+    this.state = {
+      num: 100
+    }
+    
+    console.log('1.1 初始化时执行')
+  }
+  
+-----------------
+
+  UNSAFE_componentWillMount(){
+    console.log('1.2 挂载数据前执行')
+  }
+
+-----------------
+
+  componentDidMount(){
+    console.log('1.4 挂载数据之后执行') 
+    // 异步请求
+  }
+  
+-----------------
+-----------------
+  UNSAFE_componentWillReceiveProps(){
+      console.log('2.1 组件接受props属性前执行') 
+}
+-----------------
+  shouldComponentUpdate(nextprops,nextState){
+      console.log('2.2 this.state改变时执行')  
+  
+  		console.log("旧的值" + this.state.num)
+  		console.log("修改后的新值" + nextState.num)
+
+  		// return true // this.state改变时
+  		// return false // this.state没改变时
+  		return (this.state.num !== nextState.num?)
+
+}
+-----------------
+	UNSAFE_componentWillUpdate(){
+     console.log('2.5 this.state改变后执行')   
+     // loading加载
+  }
+-----------------
+-----------------   
+  handleClick(){
+    console.log("hello 自定义方法函数")
+  	this.setState({
+      num:this.state.num+1
+    }) 
+  }
+  
+  render(){
+    console.log('1.3/2.4 渲染填充数据到页面时执行')
+    return (
+    	<div>
+      	<button onClick={this.handleClick.bind(this)}></button>
+      </div>
+    )
+  }
+}
+```
