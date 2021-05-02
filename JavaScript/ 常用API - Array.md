@@ -48,6 +48,20 @@ console.log(typeof str); // String
 
 
 
+## toString()
+
+转为字符串
+
+```js
+let a = [ 1, 2, 3, 4 ]
+
+console.log(a.toString(); // 1,2,3,4
+
+console.log(a.toString() === a.join()); true
+```
+
+
+
 ## push()
 
 在末尾添加（追加）一个或多个元素
@@ -260,21 +274,35 @@ console.log(a.splice(0, 1)); // [4]
 
 
 
-## substring()
-
-## substr()
-
-
-
-
-
 ## sort()
+
+升序冒泡排列
+
+会修改数组
+
+返回的是修改后的数组
+
+```js
+a = [4, 1, 3, 2, 5]
+
+console.log(a.sort()); // [ 1, 2, 3, 4, 5 ]
+```
 
 
 
 ## reverse()
 
+反转颠倒数组
 
+会改变数组
+
+返回的是颠倒后的数组
+
+```js
+let a = [1, 2, 3, 4, 5]
+
+console.log(a.reverse()); // [ 5, 4, 3, 2, 1 ]
+```
 
 
 
@@ -318,6 +346,12 @@ console.log(a.indexOf(NaN)); // -1
 遍历数组
 
 相当于for，给每一个元素执行相同操作
+
+```js
+arr.forEach((item, index, self) => {
+  
+})
+```
 
 ```js
 let a = [1, 2, 3]
@@ -390,6 +424,12 @@ let res = a.filter(item => {
 })
 console.log(res); // [ ]
 ```
+
+
+
+## reduce()
+
+
 
 
 
