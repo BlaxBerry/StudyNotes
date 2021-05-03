@@ -129,6 +129,14 @@ React对Javascript基础要求高
 
 
 
+## 虚拟DOM
+
+- 本质是个Object类型对象
+
+- 只是在React中使用，不需要和真实DOM上那么多的属性
+
+- 最终会被React转换为真实DOM，并渲染到页面上
+
 
 
 
@@ -261,7 +269,7 @@ React定义的一种类似XML的JS扩展
 
 定义虚拟DOM时的有以下注意点：
 
-### 1、括号和直接定义
+### 1、在括号内直接定义虚拟DOM
 
 不写引号，用小括号包起
 
@@ -289,7 +297,7 @@ const VDOM = (
 ReactDOM.render(VDOM, document.getElementById("root"));
 ```
 
-### 3、插入 Javascript表达式
+### 3、{ } 插入 Javascript表达式
 
 标签中混人 **JS表达式** 时，使用花括号 **{}**
 
@@ -305,7 +313,26 @@ const VDOM = (
 )
 ```
 
-### 4、外外联class类名样式
+JSX只能写JS表达式不能写JS语句，
+
+表达式，必须有一个结果返回值
+
+```js
+a
+a + b
+fun(a)
+function fun(){}
+```
+
+语句代码
+
+```
+if(){}
+for(){}
+switch(){case:XXX}
+```
+
+### 4、 外联class类名样式
 
 标签中写入 **CSS的class类名** 时，使用 **className**
 
@@ -395,39 +422,75 @@ const VDOM = (
 ReactDOM.render(VDOM, document.getElementById("root"));
 ```
 
-### 7、小写和大写的标签名
+### 7、标签首字母大小写
 
-JSX并不是创建HTML标签
+JSX并不是创建HTML标签，而是将虚拟DOM转换为HTML标签
 
-创建的如果名字是小写字母，则被转换为HTML标签
+- 创建的如果虚拟DOM标签名字的**首字母是小写**，
 
-如果名字是大写的，则被当作React组件
+  则被转换为HTML标签的同名标签，
 
+  若不存在该标签，则报错
 
+- 如果虚拟DOM标签名字的**首字母是大写**，
 
+  则被当作React组件，
 
+  若不存在该组件，则报错
 
+```react
+const VDOM = (
+  <div>
+    <div></div>
+    <DIV></DIV>
+  </div>
+)
+```
 
+### 8、动态遍历创建虚拟DOM
 
-## 虚拟DOM
+JSX创建虚拟DOM时，如果插入的JS表达式是个数组
 
-- 本质是个Object类型对象
+React会自动把所有元素遍历出
 
-- 只是在React中使用，不需要和真实DOM上那么多的属性
+```react
+const data = ["Reacr", "Vue", "angular"]; 
 
-- 最终会被React转换为真实DOM，并渲染到页面上
+const VDOM = (
+<div>
+    <h1>{data}</h1>
+</div>
+); 
 
+ReactDOM.render(VDOM, document.getElementById("root"));
+```
 
+可以利用这一特性**遍历**生成元素
 
+并且，遍历的元素需要指定**唯一的key属性**，
 
+Diffing算法需要靠这个唯一的属性比较虚拟DOM
 
+```react
+const data = ["Reacr", "Vue", "angular"]; 
 
+const VDOM = (
+<div>
+    <h1>JS前端框架列表</h1>
+    <ul>
+        {
+            data.map((item,index)=>{
+                return <li key={index}>{item}</li>
+            })
+        }
+    </ul>
+</div>
+); 
 
+ReactDOM.render(VDOM, document.getElementById("root"));
+```
 
-
-
-
-```html
+```react
 <ul id="list"></ul>
 
 <script>
@@ -444,4 +507,6 @@ person.foeEach(item=>{
 document.getElementById('list').innerHTML = str
 </script>
 ```
+
+
 
