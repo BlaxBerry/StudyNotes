@@ -1300,7 +1300,7 @@ let obj = {
 
 console.log(...obj);
 //报错
-TypeError: Found non-callable @@iterator
+// TypeError: Found non-callable @@iterator
 ```
 
 ---

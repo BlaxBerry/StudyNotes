@@ -301,7 +301,7 @@ ReactDOM.render(VDOM, document.getElementById("root"));
 
 ### 3、{ } 插入 Javascript表达式
 
-标签中混人 **JS表达式** 时，使用花括号 **{}**
+JSX语法不能直接使用JS语法，必须放入花括号 **{}**
 
 ```jsx
 const attrFather = "fatHER"
@@ -315,7 +315,7 @@ const VDOM = (
 )
 ```
 
-JSX只能写JS表达式不能写JS语句，
+JSX的花括号**{}** 只能写 **JS表达式** 不能写JS语句，
 
 表达式，必须有一个结果返回值
 
@@ -324,6 +324,7 @@ a
 a + b
 fun(a)
 function fun(){}
+a ？b : c
 ```
 
 语句代码
@@ -334,7 +335,20 @@ for(){}
 switch(){case:XXX}
 ```
 
-### 4、 外联class类名样式
+### 4、注释
+
+因为JSX标签中混人 **JS表达式** 时必须使用花括号 **{}**
+
+所以在JSX中的注释必须也写入花括号 **{}**
+
+```jsx
+const VDOM = 
+      <div>
+        {/*<div>我是注释</div>*/}
+      </div>	
+```
+
+### 5、 外联class类名样式
 
 标签中写入 **CSS的class类名** 时，使用 **className**
 
@@ -383,7 +397,7 @@ switch(){case:XXX}
 
 ```
 
-### 5、内联style样式
+### 6、内联style样式
 
 JSX中的内联样式使用 双花括号 **{{}}**  和  **驼峰命名**
 
@@ -407,7 +421,7 @@ const VDOM = (
 ReactDOM.render(VDOM, document.getElementById("root"));
 ```
 
-### 6、标签必须闭合
+### 7、标签必须闭合
 
 JSX中的虚拟DOM标签必须是闭合的，
 
@@ -424,7 +438,7 @@ const VDOM = (
 ReactDOM.render(VDOM, document.getElementById("root"));
 ```
 
-### 7、标签首字母大小写
+### 8、标签首字母大小写
 
 JSX并不是创建HTML标签，而是将虚拟DOM转换为HTML标签
 
@@ -449,7 +463,7 @@ const VDOM = (
 )
 ```
 
-### 8、动态遍历创建虚拟DOM
+### 9、动态遍历创建虚拟DOM
 
 JSX创建虚拟DOM时，如果插入的JS表达式是个数组
 

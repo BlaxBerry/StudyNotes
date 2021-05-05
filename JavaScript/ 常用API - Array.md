@@ -429,7 +429,15 @@ console.log(res); // [ ]
 
 ## reduce()
 
+累加
 
+```js
+var arr = [10,20,30,40,50];
+var sum = arr.reduce(function(prev,now,index,self){
+  return prev + now;
+})
+console.log(sum);  //  150
+```
 
 
 
