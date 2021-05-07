@@ -253,3 +253,25 @@ class Student {
 const a = new Student('tom',18,"高一")
 a.say()
 ```
+
+
+
+
+
+直接给类定义属性
+
+```js
+class Person {
+    gender = "male"
+    say = ()=>{
+        console.log('hello');
+    }
+}
+const p = new Person()
+
+console.log(p) // {gender: "male", say: ƒ}
+console.log(Person); 
+console.log(p.gender,p.say) // male ()=>{console.log('hello')}
+p.say() // hello
+console.log(Person.gender,Person.say); // undefined undefined
+```

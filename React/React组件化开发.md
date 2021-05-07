@@ -33,7 +33,7 @@
 ```react
 // 1.函数定义组件
   function Demo() { 
-      return <h2>Hello</h2>
+      return <input/>
    }
 
 // 2. 渲染组件到页面
@@ -776,13 +776,13 @@ function 组件(){
 
 ### ref 属性名的设置与获取
 
-标签可以通过 **ref 属性 **来标识自己（可理解为 id 属性）
+在标签上通过 **ref 属性 **来标识标签（可理解为 id 属性）
 
 ```react
 <节点 ref="自定义名"></节点>
 ```
 
-在组件内部通过 **refs.ref属性名**，获取标记的真实DOM
+在组件内部通过 **refs.ref属性名**，**获取标记的该标签**（真实DOM）
 
 ```react
 this.refs.ref属性的自定义名
@@ -881,7 +881,9 @@ this.refs.自定义名
 
 通过 **`this.自定义名 = 回调函数参数`** 
 
-将参数(该节点)放在了类组件实例上并起了自定义名
+**将参数(该节点)放在了类组件实例上，并起了自定义名**
+
+然后可直接通过获取类中自定义名获取存入的该节点
 
 ```react
 // 设置
@@ -989,7 +991,651 @@ ReactDOM.render(
 )
 ```
 
-#### 4. React.createRef()
+#### 4. 创建专用容器 React.createRef()
+
+通过React的内置API **React.createRef()** 在类组件中生成一个绑定属性，
+
+作为一个容器，用来存储 被 **ref 属性标识的节点**
+
+可通过 **this.自定义名.current** 访问这个节点
+
+```jsx
+// 生成容器
+myRef = React.createRef()
+
+// 设置ref
+<input ref="myRef"/>
+```
+
+专人专用，**里面只能存一个节点**
+
+后放入的回替换之前放入的
+
+所以需要多少就创建多少
+
+虽然麻烦，但是目前React官方推荐
+
+```react
+class Demo extends React.Component {
+    // constructor(props){
+    //       super(props)
+    //       console.log(this);
+    //       console.log(this.myRef);
+    //			 console.log(this.myRef.current);  // null
+    //   }
+    myRef = React.createRef()
+    myRef2 = React.createRef()
+
+    render() {
+      return (
+        <div>
+            <input type="text"
+                ref={this.myRef}
+                onBlur={this.onBlur}
+            /> 
+            <input type="text"
+                ref={this.myRef2}
+                onBlur={this.onBlur2}
+            /> 
+        {/*<h3>{this.myRef.current.value}</h3>*/}      
+        </div>
+      )
+    }
+    onBlur = ()=>{
+        console.log(this.myRef);
+        console.log(this.myRef.current);
+        console.log(this.myRef.current.value);
+    }
+    onBlur2 = ()=>{
+        console.log(this.myRef2);
+        console.log(this.myRef2.current);
+        console.log(this.myRef2.current.value);
+    }            
+
+  }
+
+ReactDOM.render(
+    <Demo/>,
+    document.getElementById("root")
+)
+```
+
+
+
+
+
+## 事件处理
+
+- 通过 **onXxxx 标签属性** 指定事件处理函数
+
+```react
+<div onClick={handle}></div>
+<input onBlur={handle}></input>
+```
+
+- React使用的是自定义合成事件，不是原生DOM事件
+
+  相当于 React 把原生DOM事件重新封装了一遍
+
+- React中的事件时通过**事件委托**方式
+
+  即，将事件委托给组件的**最外层元素**
+
+  效率更高
+
+- 为了**避免 ref属性的过度使用**
+
+  当发生事件的元素就是要操作的元素时，
+
+  可通过 **event.target** 获得触发事件的DOM元素
+
+```react
+class Demo extends React.Component {
+        
+    render() {
+      return (
+        <div>
+            <input type="text"
+                   onBlur={this.onBlur}
+            /> 
+        </div>
+      )
+    }
+    onBlur = ()=>{
+        console.log(event.target);
+        console.log(event.target.value);
+    }
+  }
+
+ReactDOM.render(
+  <Demo/>,
+  document.getElementById("root")
+)
+```
+
+
+
+
+
+## 表单数据 的收集
+
+包含表单的组件分为：
+
+- **非受控组件**:
+
+  页面中的**数据现用现取**
+
+- **受控组件**:
+
+  **随着输入维护状态**
+
+---
+
+### 非受控组件
+
+通过 **ref属性** 获取标签节点，
+
+并将获取的节点作为类的属性存入，
+
+然后通过类中该属性的value属性获取表单的输入内容
+
+```react
+class Login extends React.Component {
+    render(){
+        return(
+          <form onSubmit={this.getData}>
+              姓名：<input type="text" name="userName"
+                          ref={c=>{this.userName = c}}/>
+                  <br/>
+              密码：<input type="password" name="password"
+                          ref={c=>{this.passWord = c}}/>
+                  <br/>
+              <button>确定</button>
+          </form>
+        )
+    }
+
+    getData = ()=>{
+        // 阻止表单的提交并刷新页面的默认行为
+        event.preventDefault()
+        const {userName,passWord} = this
+        console.log(userName.value,passWord.value);
+        // console.log(this);
+        // console.log(this.userName.value);
+        // console.log(this.passWord.value);
+    }
+      
+}
+
+ReactDOM.render(
+    <Login/>,
+    document.getElementById('root')
+)
+
+```
+
+---
+
+### 受控组件
+
+不是通过 ref属性
+
+通过 **onChange事件** 获取表单内容的即时变化，
+
+随着表单内容的变化，即时将变化反馈到状态state中
+
+即，随着输入维护状态就是非受控
+
+可理解为**Vue的双向数据绑定**
+
+```react
+class Login extends React.Component {
+	// 初始化状态
+    state = {
+        userName:'',
+        passWord:''
+    }
+
+    render(){
+        return(
+          <form>
+              姓名：<input type="text" name="userName"
+                          onChange={this.getName}/>
+                  <br/>
+              密码：<input type="password" name="password"
+                          onChange={this.getPassword}/>
+                  <br/>
+
+              姓名：<h3>{this.state.userName}</h3>
+              密码：<h3>{this.state.passWord}</h3>
+          </form>
+        )
+    }
+	// 将数据存入状态
+    getName = ()=>{
+        this.setState({
+            userName:event.target.value
+        })
+    }
+  // 将数据存入状态
+    getPassword = ()=>{
+        this.setState({
+            passWord:event.target.value
+        })
+    }
+      
+}
+
+ReactDOM.render(
+    <Login/>,
+    document.getElementById('root')
+)
+```
+
+通过 **高阶函数 + 函数柯里化** 简化
+
+```react
+class Login extends React.Component {
+    state = {
+      userName: "",
+      passWord: "",
+    };
+
+    render() {
+      return (
+        <form>
+          姓名：<input type="text" name="userName"
+                    onChange={this.saveData("userName")}/>
+          <br />
+          密码：<input type="password" name="password"
+                    onChange={this.saveData("passWord")} />
+          <br />
+          姓名：<h3>{this.state.userName}</h3>
+          密码：<h3>{this.state.passWord}</h3>
+        </form>
+      );
+    }
+    saveData = (params) => {
+      return () => {
+        this.setState({
+          [params]: event.target.value,
+        });
+      };
+    };
+    //   getName = ()=>{
+    //       this.setState({
+    //           userName:event.target.value
+    //       })
+    //   }
+    //   getPassword = ()=>{
+    //       this.setState({
+    //           passWord:event.target.value
+    //       })
+    //   }
+  }
+
+  ReactDOM.render(
+      <Login />, 
+      document.getElementById("root")
+ );
+```
+
+
+
+
+
+## 生命周期函数
+
+组件中有一系列 生命周期回调函数（生命周期钩子函数）
+
+React会在在特定时间点调用特定的生命周期函数
+
+生命周期函数是通过类组件的实例对象调用
+
+
+
+挂载（渲染到页面）mount
+
+卸载 （从页面移除）unmount
+
+
+
+## 旧 生命周期
+
+![](https://pbs.twimg.com/media/E0uAjaJUYAAUPUH?format=jpg&name=medium)
+
+---
+
+### 初始化 组件第一次挂载
+
+由 `ReactDOM.render()` 触发初次渲染（挂载）
+
+1. **constructor(){ } **
+
+   初始化状态
+
+2. **componentWillMount(){  }** 
+
+   组件将要卸载时执行
+
+3. **render(){  }** 
+
+   组件挂载时执行 
+
+4. **componentDidMount(){ }** 
+
+   组件完成挂载完毕后调用
+
+```react
+class Demo extends React.Component {
+  //构造器函数
+  constructor(props){
+    super(props)
+    this.state = {key:value}
+  }
+  // 组件将要挂载时执行
+  componentWillMount(){ }
+  
+  // 组件挂载完毕时执行
+  componentDidMount(){ }
+  
+  // 组件挂载、状态更新时执行
+  render(){
+    return ()
+  }
+}
+```
+
+---
+
+### 组件自身更新状态
+
+由组件内部的`this.setState()` 
+
+1. 当前组件内部**setState()** 
+
+   修改状态
+
+2. **shouldComponentUpdate(){ }**
+
+   组件是否应该被更新，控制组件更新的阀门
+
+   若返回值是 **true**，继续执行下面的render步骤
+
+   若返回值是 **false**，到此为止不执行render
+
+   若是不写底层自动写上，并设定默认返回 true
+
+3. **componentWillUpdate(){  }**
+
+   组件将要更新时执行
+
+4. **render(){  }**
+
+   修改状态时执行
+
+5. **componentDidUpdate(){  }**
+
+   组件更新完毕时执行
+
+```react
+class Demo extends React.Component {
+    constructor(props){
+      super(props)
+      this.state = {key:value}
+    }
+    componentWillMount(){ }
+    componentDidMount(){ }
+    
+    
+    fun01 = () => {
+      // 修改状态
+      this.setState({key:this.state.key???})
+    }
+                    
+    // 是否修改组件 阀门
+    shouldComponentUpdate(){
+      return true
+      // return false
+    }
+    
+    // 组件将要更新时执行
+    componentWillUpdate(){}
+    
+    // 组件将更新完毕执行
+    componentDidUpdate(){ }
+    
+    // 挂载 修改状态
+    render(){
+      return ()
+    }
+      
+    fun02 = () => {
+    // 卸载组件
+    ReactDOM.ummountComponentAtNode(doucment.getElementByID('root'))
+  }
+  
+}
+```
+
+---
+
+### 父组件更新重新渲染
+
+由父组件重新`render()`触发
+
+1. 父组件修改状态 `setState()` 会导致重新渲染 **render()**
+
+2. **componentWillReceuveProps(){  }** 
+
+   子组件将要接受新的Props时执行
+
+   *第一次调用到父组件传入的props时是不执行的*
+
+   等后面父组件更新状态后再次传入新的props时才开始执行
+
+3. **shouldComponentUpdate(){ }**
+
+   子组件是否应该被更新
+
+   控制组件更新的阀门
+
+4. **componentWillUpdate(){  }**
+
+   子组件将要更新时执行
+
+5. 当前子组件**render(){  }**
+
+   挂载子组件、更新子组件状态时执行
+
+6. **componentDidUpdate(){  }**
+
+   子组件更新完毕时执行
+
+```react
+// 父组件
+class Father extends React.Component {
+    state = {
+        userName: "Andy",
+    }
+    changeName = ()=>{
+        this.setState({
+            userName:"Tom"
+        })
+    }
+    render() {
+      return (
+        <div>
+          <Son userName={this.state.userName}></Son>
+          <button onClick={this.changeName}>切换</button>
+        </div>
+      );
+    }
+  }
+
+//子组件
+ class Son extends React.Component {
+		// 子组件将要接受新的Props时执行
+    componentWillReceiveProps(){
+        console.log("B  componentWillReceiveProps");
+    }
+   // 子组件是否应该更新
+    shouldComponentUpdate(){
+        console.log("B  shouldComponentUpdate");
+        return true
+    }
+   // 子组件将要更新时执行
+    componentWillUpdate(){
+        console.log("B  componentWillUpdate");
+    }
+   // 子组件完成更新
+    componentDidUpdate(){
+        console.log("B  componentDidUpdate");
+    }
+   // 子组件挂载
+    render() {
+      return(
+        <div>
+            {this.props.userName}
+        </div>
+      )
+    }
+ }
+
+ReactDOM.render(
+    <Father />, 
+    document.getElementById("root")
+);
+```
+
+---
+
+### 强制更新
+
+不更改任何状态数据，只强制更新
+
+比正常更新少了更新的阀门 shouldComponentUpdate
+
+1. **forceUpdate()**
+
+2. **componentWillUpdate(){  }**
+
+   组件将要更新时执行
+
+3. **render(){  }**
+
+   修改状态时执行
+
+4. **componentDidUpdate(){  }**
+
+   组件更新完毕时执行
+
+```react
+class Demo extends React.Component {
+    constructor(props){
+      super(props)
+      this.state = {key:value}
+    }
+    componentWillMount(){ }
+    componentDidMount(){ }
+    
+    
+    fun01 = () => {
+      // 强制更新
+      this.forceUpdate()
+    }
+                    
+    // 是否修改组件 阀门
+    shouldComponentUpdate(){
+      return true
+      // return false
+    }
+    
+    // 组件将要更新时执行
+    componentWillUpdate(){}
+    
+    // 组件将更新完毕执行
+    componentDidUpdate(){ }
+    
+    // 挂载 修改状态
+    render(){
+      return ()
+    }
+      
+    fun02 = () => {
+    // 卸载组件
+    ReactDOM.ummountComponentAtNode(doucment.getElementByID('root'))
+  }
+  
+}
+```
+
+---
+
+### 卸载组件
+
+有 `ReactDOM.unmountComponentAtNode()` 触发
+
+1. 组件的事件方法
+
+2. **componentWillUnmount(){  }**
+
+   组件将要卸载时执行
+
+```react
+class Demo extends React.Component {
+  
+  // 组件挂载、状态更新时执行
+  render(){
+    return ()
+  }
+  
+  // 类方法回调函数
+	fun = () => {
+    // 卸载组件
+    ReactDOM.ummountComponentAtNode(doucment.getElementByID('root'))
+  }
+  
+}
+```
+
+---
+
+### 3个常用生命周期
+
+- **componentDidMount(){  }**
+
+  页面一加载后就执行的处理
+
+  一般写初始化的操作
+
+  （**定时器、发送请求、订阅消息**）
+
+- **render(){  }**
+
+   组件必有的生命周期
+
+-  **componentWillUnmonunt(){  }**
+
+  一般写收尾的操作
+
+  （**关闭定时器、取消订阅消息**）
+
+
+
+
+
+## 新 生命周期
+
+提出两个新的生命周期
+
+废除三个久的生命周期
+
+
+
+
+
+
 
 
 
