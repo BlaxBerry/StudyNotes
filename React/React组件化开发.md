@@ -145,9 +145,9 @@ render方法放在创建的类的原型对象上，
 
 ```react
 class Demo extends React.Component {
-    constructor(props){
-        super(props)
-        console.log(this); // 类组件的实例对象
+  constructor(props){
+      super(props)
+      console.log(this); // 类组件的实例对象
     }
   render() {
       console.log(this);  // 类组件的实例对象
@@ -170,10 +170,10 @@ ReactDOM.render(
 
 ```react
 class Demo extends React.Component {
-    constructor(props){
-        super(props)
+  constructor(props){
+      super(props)
       // 修改方法的this指向
-        this.fun = this.say.bind(this)
+      this.fun = this.say.bind(this)
     }
   render() {
       return <h1 onClick={this.fun}>hello</h1>
@@ -191,7 +191,7 @@ ReactDOM.render(
 
 ```react
 class Demo extends React.Component {
-    constructor(props){
+  constructor(props){
         super(props)
     }
   render() {
@@ -346,7 +346,7 @@ ReactDOM.render(
 
 必须通过类组件继承的React.Component组件的原型上的一个内置API
 
-`setState`来实现
+即通过 **`setState`**来实现
 
 ```react
 class Demo extends React.Component {
@@ -408,6 +408,10 @@ ReactDOM.render(
     document.getElementById("root")
 );
 ```
+
+---
+
+### setState() 的调用次数
 
 constructor构造器函数值调用了一次，即初始化时
 
@@ -757,9 +761,7 @@ function 组件(){
 }
 // 限制传入的数据的类型和必要性
 组件名.propTypes = {
-
   属性:PropTypes.string.required
-
 }
 // 设置数据的默认值
 组件名.defaultProps = {
@@ -887,7 +889,7 @@ this.refs.自定义名
 
 ```react
 // 设置
-<节点 ref={(currentNode)=>{this.自定义名}}></节点>
+<节点 ref={(currentNode)=>{this.自定义名 = currentNode}}></节点>
 
 // 获取
 this.自定义名
@@ -895,7 +897,7 @@ this.自定义名
 
 和字符串类型的不同在于：
 
-不是从refs上获取，而是直接从this实例对象上获取
+不再是从refs上获取，而是直接从this实例对象上获取
 
 ```react
 class Demo extends React.Component {
@@ -941,11 +943,11 @@ ref 回调函数如果是 **内联样式**
 
 [官方文档 回调函数的执行次数](https://react.docschina.org/docs/refs-and-the-dom.html)
 
-解决方法
+解决方法：将内联式回调函数写为**类组件的方法**
 
-将内联式回调函数写为**类组件的方法**
+实际上执行的次数无关紧要，
 
-实际上执行的次数无关紧要，一般还是内联样式回调函数写的多
+一般还是内联样式回调函数写的多
 
 ```react
 class Demo extends React.Component {
@@ -1009,7 +1011,7 @@ myRef = React.createRef()
 
 专人专用，**里面只能存一个节点**
 
-后放入的回替换之前放入的
+后放入的替换之前放入的
 
 所以需要多少就创建多少
 
@@ -1066,6 +1068,8 @@ ReactDOM.render(
 
 ## 事件处理
 
+### onXxxx={this.事件名}
+
 - 通过 **onXxxx 标签属性** 指定事件处理函数
 
 ```react
@@ -1083,11 +1087,13 @@ ReactDOM.render(
 
   效率更高
 
-- 为了**避免 ref属性的过度使用**
+### event.target
 
-  当发生事件的元素就是要操作的元素时，
+为了**避免 ref属性的过度使用**
 
-  可通过 **event.target** 获得触发事件的DOM元素
+当发生事件的元素就是要操作的元素时，
+
+可通过 **event.target** 获得触发事件的DOM元素
 
 ```react
 class Demo extends React.Component {
@@ -1112,6 +1118,23 @@ ReactDOM.render(
   document.getElementById("root")
 )
 ```
+
+
+
+
+
+```react
+   handleMouse = (flag) => {
+
+        return () => {
+            this.setState({
+                mouseFlag: flag
+            })
+        }
+    }
+```
+
+
 
 
 
@@ -1298,15 +1321,15 @@ React会在在特定时间点调用特定的生命周期函数
 
 卸载 （从页面移除）unmount
 
+---
 
-
-## 旧 生命周期
+### 旧 生命周期
 
 ![](https://pbs.twimg.com/media/E0uAjaJUYAAUPUH?format=jpg&name=medium)
 
 ---
 
-### 初始化 组件第一次挂载
+#### 初始化 组件第一次挂载
 
 由 `ReactDOM.render()` 触发初次渲染（挂载）
 
@@ -1316,7 +1339,7 @@ React会在在特定时间点调用特定的生命周期函数
 
 2. **componentWillMount(){  }** 
 
-   组件将要卸载时执行
+   组件将要挂载时执行
 
 3. **render(){  }** 
 
@@ -1348,9 +1371,9 @@ class Demo extends React.Component {
 
 ---
 
-### 组件自身更新状态
+#### 组件自身更新状态
 
-由组件内部的`this.setState()` 
+由组件内部的`this.setState()` 触发
 
 1. 当前组件内部**setState()** 
 
@@ -1420,7 +1443,7 @@ class Demo extends React.Component {
 
 ---
 
-### 父组件更新重新渲染
+#### 父组件更新重新渲染
 
 由父组件重新`render()`触发
 
@@ -1510,7 +1533,7 @@ ReactDOM.render(
 
 ---
 
-### 强制更新
+#### 强制更新
 
 不更改任何状态数据，只强制更新
 
@@ -1572,9 +1595,9 @@ class Demo extends React.Component {
 
 ---
 
-### 卸载组件
+#### 卸载组件
 
-有 `ReactDOM.unmountComponentAtNode()` 触发
+ `ReactDOM.unmountComponentAtNode()` 触发
 
 1. 组件的事件方法
 
@@ -1621,17 +1644,179 @@ class Demo extends React.Component {
 
   （**关闭定时器、取消订阅消息**）
 
+```react
+class Demo extends React.Component {
+    state = {
+      date: new Date()
+    }
+
+    componentDidMount() {
+      this.timer = setInterval(() => {
+        this.setState({
+          date: new Date()
+        });
+      }, 1000);
+    }
+
+    componentWillUnmount(){
+        //清除定时器
+        clearInterval(this.timer)
+    }
+    
+    close = ()=>{
+        // 卸载组件
+        ReactDOM.unmountComponentAtNode(document.getElementById('root'))
+    }
+
+    render(){
+        return (
+            <div>
+                <h3>Now Time</h3>
+                <span>{this.state.date.toTimeString()}</span>
+                <button onClick={this.close}>close</button>
+            </div>
+        )
+    }
+  }
+
+  ReactDOM.render(<Demo/>, document.getElementById("root"));
+```
+
+---
+
+---
+
+### 新 生命周期
+
+React17之后
+
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy81Mjg3MjUzLTgyZjZhZjhlMGNjOTAxMmIucG5n?x-oss-process=image/format,png)
+
+#### 弃用3个旧的生命周期
+
+新的生命周期中依然可以使用旧生命周期
+
+但是除了以下3个生命周期将过时
+
+*ComponentWillMount*
+
+*ComponentWillReceiveProps*
+
+*ComponentWillUpdate*
+
+所以改名，需要在前面加上 **UNSAFE_**
+
+**UNSAFE_ComponentWillMount**
+
+**UNSAFE_ComponentWillReceiveProps**
+
+**UNSAFE_ComponentWillUpdate**
+
+因为**不常用**，新版React中将删除上面的3个生命周期
+
+---
+
+#### 提出2个新的生命周期
+
+提出这两个是static静态方法
+
+几乎不会使用
+
+- **getDerivedStateFromProps**
+
+  组件的state完全取决于props
+
+```react
+class Demo extends React.Component {
+        
+    constructor(props){
+        super(props)
+        this.state = {}
+        console.log("constructor");
+    }
+
+    static getDerivedStateFromProps(props){
+        console.log("getDerivedStateFromProps");
+        return props
+    }
+
+    render(){
+        console.log("render");
+        return (
+            <div></div>
+        )
+    }
+  }
+
+ReactDOM.render(<Demo/>, document.getElementById("root"));
+```
+
+- **getSnapshotBeforeUpdate**
+
+  获取快照
+
+---
+
+#### 初始化
+
+1. constructor(){ }
+2. getDerivedStateFromProps(){ }
+3. render(){  }
+4. componentDidMount(){  }
+
+---
+
+#### 更新状态
+
+1. getDerivedStateFromProps(){ }
+2. shouldComponentUpdate(){  }
+3. render(){  }
+4. getSnapshotBeforeUpdate(){  }
+5. componentDidMount(){  }
+
+---
+
+#### 卸载组件
+
+1. componentWillUnmount(){  }
+
+---
 
 
 
 
-## 新 生命周期
-
-提出两个新的生命周期
-
-废除三个久的生命周期
 
 
+
+## 组件间通信
+
+### 父组件——>子组件
+
+通过自定义属性传递给子组件数据
+
+```react
+
+```
+
+在子组件中通过this.props接收传入的数据
+
+```
+
+```
+
+---
+
+### 子组件——>父组件
+
+可通过一个函数
+
+父组件传入一个函数，子组件的事件调用该函数，
+
+并将子组件的数据作为函数的参数传入
+
+```
+
+```
 
 
 

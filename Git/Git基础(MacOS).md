@@ -229,3 +229,23 @@ git push origin master
 git remote add origin XXXXX
 ```
 
+**查看**
+
+```bash
+git remote -v
+```
+
+
+
+## 删除别名（remote remove）
+
+```bash
+git remote remove origin
+```
+
+**查看**
+
+```bash
+git remote -v
+```
+

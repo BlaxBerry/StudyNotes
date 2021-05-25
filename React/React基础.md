@@ -1,4 +1,4 @@
-# React 基础
+#  React 基础
 
 <img src="https://cdn-ssl-devio-img.classmethod.jp/wp-content/uploads/2019/07/react.jpg" style="zoom:50%;" />
 
@@ -310,7 +310,9 @@ const content = 'Hello React'
 
 const VDOM = (
   <div id={attrFather.toLowerCase()}>
-    <div id={attrSon.toLowerCase()}>{content }</div>
+    <div id={attrSon.toLowerCase()}> 
+      {content}
+    </div>
   </div>
 )
 ```
@@ -526,3 +528,53 @@ document.getElementById('list').innerHTML = str
 
 
 
+
+
+## Diffing算法
+
+different
+
+通过**diffing算法**比较虚拟DOM和真实DOM
+
+仅渲染有差异的内容，并不是全部重新渲染
+
+尽量减少与DOM的交互，提高效率
+
+---
+
+### :key的作用
+
+React遍历时的:key是虚拟DOM的标识
+
+state状态中的数据变化时，React会根据 新的数据生成新的虚拟DOM
+
+然后React会将新的虚拟DOM和旧的虚拟DOM进行diff比较
+
+- 旧虚拟DOM中找到了与新虚拟DOM相同的key
+
+  - 若虚拟DOM内容没变，则还是使用旧的虚拟DOM
+  - 若虚拟DOM内容改变，则使用新虚拟DOM替换页面中旧的真实DOM
+
+- 旧虚拟DOM未找到与新虚拟DOM相同的key
+
+  根据数据创建新的真实DOM，并渲染到页面
+
+---
+
+### index作为key会引发的问题
+
+key必须要是唯一标识，比如id，最好不要用index
+
+- 若是对数组进行：**逆序添加、顺序删除 **等 **破坏顺序的操作**
+
+  使原本序号顺序变化而导致全部重新渲染，效率低下
+
+- 若结构中包含 **输入类DOM**（表单）
+
+  会因为虚拟DOM残留的信息错乱
+
+  导致产生错误的DOM更新
+
+若仅是简单展示数据，不存在数据顺序操作
+
+index也会可以作为key属性的
