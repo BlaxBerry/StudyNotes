@@ -87,7 +87,7 @@ Demo
 |-yarn.lock
 ```
 
-<img src="https://pbs.twimg.com/media/E01uI5zVcAQzIR8?format=jpg&name=medium" style="zoom:33%;" />
+<img src="https://pbs.twimg.com/media/E2N6q1tVEAAFAIG?format=jpg&name=medium" style="zoom:33%;" />
 
 ---
 
@@ -515,7 +515,21 @@ export default class 组件文件名 extends Component {
 
 
 
+数据存放在状态中
 
+- 仅某个组件自己使用，数据放在自身的state状态中
+- 被很多组件使用，数据放在共同的父组件的statr状态中
+
+
+
+状态在哪，操作状态的方法就放在哪
+
+
+
+父子组件之间的通信
+
+- 父—>子：通过自定义属性传递，通过this.props属性接收
+- 子—>父：父传给子一个函数，子调用函数将数据作为函数参数
 
 
 
