@@ -32,7 +32,7 @@ axios.get('').then(
     console.log(response.data)
   },
   error=>{
-    console.log('error')
+    console.log(error)
   }
 )
 ```
@@ -47,7 +47,9 @@ Access-Control-Allow-Origin
 
 请求可以发送，但是数据回不来
 
-通过代理解决跨域问题
+可以通过后端配置cors解决
+
+或前端通过设置代理解决跨域问题
 
 将请求通过代理转发给服务器
 
@@ -74,6 +76,8 @@ Access-Control-Allow-Origin
   "poxy":"http://localhost:5000"
 }
 ```
+
+站在3000 给3000上的代理发，代理在转给5000上的服务器
 
 ```react
 axios.get('http://localhost:3000/api1').then(res=>{
@@ -130,6 +134,8 @@ module.exports = function(app){
   )
 }
 ```
+
+站在3000 给3000上的代理发，代理在转给5000上的服务器
 
 ```react
 axios.get('http://localhost:3000/api1/data').then(res=>{

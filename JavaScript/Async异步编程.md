@@ -233,9 +233,9 @@ var promise = new Rromise(function(resolve,reject){
 
 promise.then(
   //resolve的正常结果
-  function(ret){},
+  function(res){},
   //reject的结果
-  function(ret){}
+  function(rej){}
 )
 ```
 

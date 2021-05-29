@@ -877,19 +877,21 @@ this.refs.自定义名
 
 #### 2. 回调函数形式 (内联函数)
 
-在执行组件中的render方法时会自动触发节点的回调函数
-
-回调函数的参数就是当前所在节点本身
-
 通过 **`this.自定义名 = 回调函数参数`** 
 
 **将参数(该节点)放在了类组件实例上，并起了自定义名**
 
 然后可直接通过获取类中自定义名获取存入的该节点
 
+在执行组件中的render方法时会自动触发节点的回调函数
+
+回调函数的参数就是当前所在节点本身
+
 ```react
 // 设置
-<节点 ref={(currentNode)=>{this.自定义名 = currentNode}}></节点>
+<节点 
+  ref={(currentNode)=>{this.自定义名 = currentNode}}
+></节点>
 
 // 获取
 this.自定义名
@@ -901,10 +903,18 @@ this.自定义名
 
 ```react
 class Demo extends React.Component {
-    constructor(props){
-          super(props)
-          console.log(this); // 组件实例对象上有ref回调保存的属性
+   constructor(props){
+        super(props)
+        console.log(this); // 组件实例对象上有ref回调保存的属性
       }
+  
+   	onClick = ()=>{
+        console.log(this.inp1.value);
+    }
+    onBlur = ()=>{
+        console.log(this.inp2.value);
+    }
+    
     render() {
       return (
         <div>
@@ -918,12 +928,6 @@ class Demo extends React.Component {
           </input>
         </div>
       );
-    }
-    onClick = ()=>{
-        console.log(this.inp1.value);
-    }
-    onBlur = ()=>{
-        console.log(this.inp2.value);
     }
   }
 
@@ -1119,9 +1123,13 @@ ReactDOM.render(
 )
 ```
 
+### 事件函数的参数
 
+当调用的事件的函数需要携带参数时
 
+方法应用
 
+不然就成了在绑定事件的同时就调用了事件方法函数
 
 ```react
    handleMouse = (flag) => {
@@ -1790,7 +1798,7 @@ ReactDOM.render(<Demo/>, document.getElementById("root"));
 
 ## 组件间通信
 
-### 父组件——>子组件
+### 父组件 —> 子组件
 
 通过自定义属性传递给子组件数据
 
@@ -1806,9 +1814,9 @@ ReactDOM.render(<Demo/>, document.getElementById("root"));
 
 ---
 
-### 子组件——>父组件
+### 子组件 —> 父组件
 
-可通过一个函数
+通过一个函数
 
 父组件传入一个函数，子组件的事件调用该函数，
 
@@ -1818,7 +1826,52 @@ ReactDOM.render(<Demo/>, document.getElementById("root"));
 
 ```
 
+---
 
+### 兄弟组件 / 任意组件之间
+
+**消息订阅 - 发布机制**
+
+通过第三方库  **PubSubJS**实现数据的订阅和发布
+
+尤其在深层次组件嵌套的场合，任意组件之间的通信使用PubSubJS更方便
+
+下载：
+
+```bash
+npm install pubsub-js --save
+
+yarn add pubsub-js
+```
+
+引入：
+
+```bash
+import PubSub from 'pubsub-js'
+```
+
+使用：
+
+```js
+// 需要数据的组件内，订阅消息，请求数据
+componentDidMount(){
+  this.token = Pubsub.subscribe('自定义名',(_,data)=>{
+    console.log(data)
+  })
+}
+
+// 取消订阅
+componentWillUnmount(){
+  PubSub.unsubscribe(this.token)
+}
+```
+
+```js
+// 传出数据的组件内，发布消息，传出数据
+事件=()=>{
+  PubSub.publish('自定义名',数据)
+}
+```
 
 
 
