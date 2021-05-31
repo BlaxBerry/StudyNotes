@@ -394,6 +394,110 @@ import {Switch} from 'react-router-dom'
 
 
 
+## 路径前缀与样式丢失
+
+React脚手架是通过webpack的devserve开启了一个本地服务器localhost:3000
+
+脚手架项目下的**public**目录就作为该服务器的根路径
+
+```js
+项目
+|-public
+	|-favicon.ico
+	|-index.html
+	|-css
+		|-bootstrap.css
+```
+
+可以通过浏览器地址直接访问public目录下的内容
+
+```react
+localhost:3000/favicon.ico
+localhost:3000/css/bootstrap.css
+```
+
+直接访问 localhost:3000，会返回public目录下的 **index.html**
+
+```js
+localhost:3000
+```
+
+但是若找不到路径的话，会自动返回public目录下的 **index.html**
+
+```js
+localhost:3000/a/b/c/d/123.css
+```
+
+
+
+
+
+前端路由不会产生网络请求
+
+刷新页面会产生网络请求
+
+所以点击link路由链接实现路由跳转后刷新页面
+
+
+
+路由地址添加前缀后，实现路由跳转后刷新页面，
+
+会导致浏览器以添加了地址前缀的路径发送请求，
+
+从而导致路径层级错误，会使public目录下的css样式文件等找不到
+
+仅返回一个index.html
+
+
+
+解决方法1.
+
+.
+
+index.html文件中的css样式引入的路径不能以 . 开头
+
+. 是从相对路径的从当前路径出发查找css文件
+
+因为路由地址添加前缀后会将前缀地址页加入了查找路径，会导致找不到
+
+```html
+<link rel="stylesheet" href="./css/bootstrap.css">
+```
+
+是直接从loclahost:3000的根目录public下查找css文件
+
+```html
+<link rel="stylesheet" href="/css/bootstrap.css">
+```
+
+
+
+2.
+
+%PUBLIC_URL%
+
+绝对路径
+
+```html
+<link rel="stylesheet" href="%PUBLIC_URL%/css/bootstrap.css">
+```
+
+
+
+3.
+
+不用BrowserRouter，使用HashRouter
+
+```java
+localhost:3000/#
+```
+
+在发送网络请求时，#后的路径都认为是前端资源必备忽略，不会带给localhost:3000
+
+
+
+
+
 内置组件
 
 <Router\>
