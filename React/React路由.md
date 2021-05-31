@@ -49,9 +49,7 @@ app.get('/search',function(req,res){
 
 
 
-
-
-## React-Router
+## react-router-dom
 
 React-Router是React的一个库，专门用来实现SPA应用
 
@@ -65,11 +63,7 @@ React-Router是React的一个库，专门用来实现SPA应用
 
 - any(通用)
 
-
-
-
-
-## react-router-dom
+---
 
 ### 下载
 
@@ -161,7 +155,7 @@ react-router-dom是分别暴露，需要谁导入谁
 
 
 
-## 路由组件，一般组件
+## 路由组件 与 一般组件
 
 靠路由匹配然后展示的组件，叫路由组件
 
@@ -392,9 +386,27 @@ import {Switch} from 'react-router-dom'
 
 
 
+## 多级路径页面刷新 与 样式丢失
 
+### 多级路径
 
-## 路径前缀与样式丢失
+```react
+<div>
+	<Link to="food/meat">Meat</Link>
+  <Link to="food/fruits">Fruits</Link>
+</div>
+
+<div>
+	<Route path="food/meat" component={Meat}></Route>
+  <Route path="food/fruits" component={Fruits}></Route>
+</div>
+```
+
+---
+
+---
+
+### 样式丢失原因
 
 React脚手架是通过webpack的devserve开启了一个本地服务器localhost:3000
 
@@ -428,17 +440,11 @@ localhost:3000
 localhost:3000/a/b/c/d/123.css
 ```
 
-
-
-
-
 前端路由不会产生网络请求
 
 刷新页面会产生网络请求
 
 所以点击link路由链接实现路由跳转后刷新页面
-
-
 
 路由地址添加前缀后，实现路由跳转后刷新页面，
 
@@ -448,15 +454,31 @@ localhost:3000/a/b/c/d/123.css
 
 仅返回一个index.html
 
+---
 
+---
 
-解决方法1.
+### 解决方法
 
-.
+#### 1. %PUBLIC_URL%（脚手架常用）
 
-index.html文件中的css样式引入的路径不能以 . 开头
+public / index.html 中引入样式时，
 
-. 是从相对路径的从当前路径出发查找css文件
+不写 **./**  写 **%PUBLIC_URL%**
+
+```html
+<link rel="stylesheet" href="%PUBLIC_URL%/css/bootstrap.css">
+```
+
+---
+
+#### 2.   /（常用）
+
+public / index.html 中引入样式时，
+
+不写 **./**  写 **/**
+
+**./** 是从相对路径的从当前路径出发查找css文件
 
 因为路由地址添加前缀后会将前缀地址页加入了查找路径，会导致找不到
 
@@ -470,51 +492,775 @@ index.html文件中的css样式引入的路径不能以 . 开头
 <link rel="stylesheet" href="/css/bootstrap.css">
 ```
 
+---
 
+#### 3. 修改路由模式（不常用）
 
-2.
-
-%PUBLIC_URL%
-
-绝对路径
-
-```html
-<link rel="stylesheet" href="%PUBLIC_URL%/css/bootstrap.css">
-```
-
-
-
-3.
-
-不用BrowserRouter，使用HashRouter
+不用BrowserRouter，使用**HashRouter**
 
 ```java
 localhost:3000/#
 ```
 
-在发送网络请求时，#后的路径都认为是前端资源必备忽略，不会带给localhost:3000
+在发送网络请求时，#后的路径都认为是前端资源必备忽略，
+
+不会带给localhost:3000
 
 
 
 
 
-内置组件
+## 路由模糊匹配  与 精准匹配 
 
-<Router\>
+### 模糊匹配
 
-<BrowserRouter\> 
+路由默认是模糊匹配
 
-<HashRouter\> 
+Link标签to属性的路径 **只要包含有** Route标签的path属性路径，
+
+且路径的**层级顺序一致**，就可以展现对应组件
+
+```react
+// 可以匹配
+<div>
+	<Link to="home">Home</Link>
+</div>
+
+<div>
+	<Route path="home" component={Home}/>
+</div>
+```
+
+给少了不匹配
+
+```react
+// 无法匹配
+<div>
+	<Link to="home">Home</Link>
+</div>
+
+<div>
+	<Route path="home/a/b" component={Home}/>
+</div>
+```
+
+层级顺序一致给多了可以匹配上
+
+```react
+// 可以匹配
+<div>
+	<Link to="home/a/b">Home</Link>
+</div>
+
+<div>
+	<Route path="home" component={Home}/>
+</div>
+```
+
+层级顺序一致给多了无法匹配
+
+```react
+// 无法匹配
+<div>
+	<Link to="a/home/b">Home</Link>
+</div>
+
+<div>
+	<Route path="home" component={Home}/>
+</div>
+```
+
+---
+
+### 精准匹配
+
+Link的路由地址和路由Route的地址和层级一致才能展现对应组件
+
+开启路由时，通过**exact**属性开启精准匹配
+
+```react
+<Route exact={true} path="/xxx" component={XXX}/>
+
+//简写
+<Route exact path="/xxx" component={XXX}/>
+```
+
+```react
+<div>
+	<Link to="home/a/b">Home</Link>
+	<Link to="about">About</Link>  
+</div>
+
+<div>
+	<Route exact={true} path="home/a/b" component={Home}/>
+	<Route exact path="about" component={About}/>  
+</div>
+```
+
+但是**不能随便开启严格匹配**
+
+不到必须的情况不能随便开启，不然导致无法继续匹配二级路由
+
+
+
+
+
+## Redirect标签
+
+**路由重定向**
+
+常用于刚开启时默认展现的路由地址
+
+```react
+import {Link,Route,Redirect} from 'react-route-dom'
+```
+
+<Redirect\>标签写在所有路由<Route\>标签的最下方
+
+当所有路由都无法匹配上时跳转到<Redirect\>标签指定的路由地址
+
+```react
+<switch>
+	<Route path="/home" component={Home}/>
+  <Route path="/about" component={About}/>
+  <Redirect to="/home"/>
+</switch>
+```
+
+如上，访问 localhost:3000 时，自动跳转到 localhost:3000/home
+
+（localhost:3000/  等同于 localhost:3000）
+
+
+
+
+
+
+
+## 嵌套路由
+
+<img src="https://pbs.twimg.com/media/E2t8QvQVEAAzrUT?format=png&name=small" style="zoom: 80%;" />
+
+展示区里还有导航区和展示区
+
+```react
+export default class App extends Component {
+    render() {
+        return (
+            <div>
+               <div className="nav">
+                   <Link to="/home">Home</Link>
+                   <Link to="/about">About</Link>
+               </div>
+               <div>
+                   <Route path="/home" component={Home}></Route>
+                   <Route path="/about" component={About}></Route>
+                   <Redirect to="/home"/>
+               </div>
+            </div>
+        )
+    }
+}
+```
+
+```react
+export default class About extends Component {
+    render() {
+        return (
+            <div id="about"> 
+                <div className="nav">
+                    <Link to="/about/news">News</Link>
+                    <Link to="/about/messages">Messages</Link>
+                </div>
+                <div className="show">
+                    <Route path="/about/news" component={News}/>
+                    <Route path="/about/messages" component={Messages}/>
+                  	<Redirect to="/about/news"/>
+                </div>
+            </div>
+        )
+    }
+}
+```
+
+子级路由的路径层级中必须带有父级路由
+
+```react
+<Route to="/父级/子级" component={组件}/>
+```
+
+---
+
+若是自己路由层级中没有父级路由，
+
+会在匹配路由时直接在父级路由模版出进行匹配，因为父级路由模版处不存在子级路由，
+
+会导致触发**父级路由中的重定向<Redirect\>**
+
+从而直接跳转到重定向地址然后展示相关组件
+
+---
+
+若开启了精准匹配exact，
+
+也会在匹配路由时在父级路由模版出进行匹配，因为父级路由模版处不存在子级路由，
+
+会导致触发**父级路由中的重定向<Redirect\>**
+
+从而直接跳转到重定向地址然后展示相关组件
+
+
+
+### 多级路由
+
+loaclhost:3000
+
+```react
+export default class App extends Component {
+    render() {
+        return (
+            <div>
+               <div className="nav">
+                   <Link to="/home">Home</Link>
+                   <Link to="/about">About</Link>
+               </div>
+               <div>
+                   <Route path="/home" component={Home}></Route>
+                   <Route path="/about" component={About}></Route>
+                   <Redirect to="/home"/>
+               </div>
+            </div>
+        )
+    }
+}
+```
+
+一级路由模版：
+
+loaclhost:3000/about
+
+```react
+export default class About extends Component {
+    render() {
+        return (
+            <div id="about"> 
+                <div className="nav">
+                    <Link to="/about/news">News</Link>
+                    <Link to="/about/messages">Messages</Link>
+                </div>
+                <div className="show">
+                    <Route path="/about/news" component={News}/>
+                    <Route path="/about/messages" component={Messages}/>
+                  	<Redirect to="/about/news"/>
+                </div>
+            </div>
+        )
+    }
+}
+```
+
+二级路由模版：
+
+loaclhost:3000/about/news
+
+```react
+import React, { Component } from 'react'
+import { Link, Route } from 'react-router-dom'
+import Detail from '../Detail/Detail'
+
+export default class News extends Component {
+    state = {
+        newsObj: [
+            { id: 1, title: 'news01' },
+            { id: 2, title: 'news02' },
+            { id: 3, title: 'news03' }
+        ]
+    }
+    render() {
+        return (
+            <div id="news">
+                <ul>
+                    {
+                        this.state.newsObj.map(item => {
+                            return (
+                                <li key={item.id}>
+                                    <Link to="/about/news/detail">
+                                      {item.title}
+                                		</Link>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+                <Route path="/about/news/detail" component={Detail} />
+            </div>
+        )
+    }
+}
+```
+
+三级路由模版
+
+loaclhost:3000/about/news/detail
+
+```react
+import React, { Component } from 'react'
+
+export default class Detail extends Component {
+    render() {
+        return (
+           <ul>
+               <li>ID:???</li>
+               <li>TITLE:???</li>
+           </ul>
+        )
+    }
+}
+```
+
+
+
+
+
+## 路由组件传参
+
+### 一. params参数
+
+```java
+localhost:3000/about/news/detail/2/news02
+```
+
+#### 1. 路由链接携带参数
+
+在要传递出参数的路由组件中：
+
+Link标签的to属性的路由路径中带上参数数据
+
+```react
+<Link to={`/路由/路由/${数据}/${数据}`}>导航</Link>
+```
+
+#### 2. 注册路由声明接收
+
+在要传递出参数的路由组件中：
+
+Route标签的path属性路径中通过 **:自定义属性名** 存放参数数据
+
+不然会被路由模糊匹配给忽略掉后面的参数
+
+```react
+<Route path="/路由/路由/:自定义名/:自定义名" component={组件} />
+```
+
+#### 3.  接受参数
+
+在接受参数的路由组件中，
+
+通过**this.props.match.params** 接受传参，
+
+收到的是JSON对象形式
+
+```js
+console.log(this.props.match.params)
+/*
+{
+  自定义名: 数据，
+	自定义名: 数据
+}
+*/
+```
+
+如下：
+
+```react
+// 传递参数的组件
+import React, { Component } from 'react'
+import { Link, Route } from 'react-router-dom'
+import Detail from '../Detail/Detail'
+
+export default class News extends Component {
+    state = {
+        newsObj: [
+            { id: 1, title: 'news01' },
+            { id: 2, title: 'news02' },
+            { id: 3, title: 'news03' }
+        ]
+    }
+    render() {
+        return (
+            <div id="news">
+                <ul>
+                    {
+                        this.state.newsObj.map(item => {
+                            return (
+                                <li key={item.id}>
+                                    <Link to={`news/detail/${item.id}/${item.title}`}>
+                                        {item.title}
+                                    </Link>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+                <Route path="news/detail/:id/:title" component={Detail} />
+            </div>
+        )
+    }
+}
+```
+
+```react
+// 接受参数的组件
+import React, { Component } from 'react'
+
+export default class Detail extends Component {
+    state = {
+        details: [
+            { id: 1, message: 'i am No1' },
+            { id: 2, message: 'i am No2' },
+            { id: 3, message: 'i am No3' }
+        ]
+    }
+
+    render() {
+        // console.log(this.props.match.params);
+        const { params } = this.props.match
+
+        const res = this.state.details.find(item=>{
+            return item.id === Number(params.id)
+        })
+
+        return (
+            <ul>
+                <li>ID: {params.id}</li>
+                <li>TITLE: {params.title}</li>
+                <li>MESSAGE: {res.message}</li>
+            </ul>
+        )
+    }
+}
+```
+
+---
+
+---
+
+### 二. search参数
+
+```javascript
+?id=3&title=news03
+```
+
+就是query形式的传参，但是因为最终参数存放在search上，所以叫search参数
+
+#### 1.路由链接携带参数
+
+Link标签通过 **?key=value&key=value**  的query形式传递参数
+
+Route标签无需声明接收，正常注册路由即可
+
+```react
+<Link to={`/路由/路由/?自定义属性名=${数据}&自定义属性名=${数据}`}>
+```
+
+#### 2. 接受参数
+
+在要接收参数的组件中，
+
+通过 **this.props.location.search** 接受传递的参数
+
+返回的是 **?key=value&key=value** urlencoded编码的字符串
+
+```js
+console.log(this.props.location.search)
+
+// ?自定义属性=数据&自定义属性=数据
+```
+
+#### 3. querystring库
+
+由于返回的是 **?key=value&key=value** urlencoded编码的字符串
+
+需要借助第三方库解析为JSON对象格式
+
+React脚手架已经下载好了，直接引入即可
+
+```react
+import qs from 'querystring'
+```
+
+urlencoded格式：多组&链接的key=value形式
+
+JSON格式：花括号包裹的key: value对象形式
+
+- **JSON ——> urlencoded**
+
+```js
+import qs from 'querystring'
+
+let obj = {name: 'andy', age: 28}
+console.log(qs.stringify(obj))
+// name=andy&age=28
+```
+
+- **urlencoded ——> JSON**
+
+```js
+import qs from 'querystring'
+
+let str = 'name=andy&age=28'
+console.log(qs.parse(str))
+// {name: 'andy', age: 28}
+```
+
+#### 4. 解析参数
+
+先截取字符串，除去 **?key=value&key=value** 的 **?**
+
+然后通过内置querystring库解析
+
+ **key=value&key=value **的urlencoded编码字符串为JSON格式
+
+```js
+console.log(this.props.location.search)
+// ?自定义属性=数据&自定义属性=数据
+
+this.props.location.search.slice(1)
+// 自定义属性=数据&自定义属性=数据
+
+qs.parse(this.props.location.search.slice(1))
+/*
+{
+  自定义名: 数据，
+	自定义名: 数据
+}
+*/
+```
+
+如下：
+
+```react
+// 传出参数的组件
+import React, { Component } from 'react'
+import { Link, Route } from 'react-router-dom'
+import Detail from '../Detail/Detail'
+
+export default class News extends Component {
+    state = {
+        newsObj: [
+            { id: 1, title: 'news01' },
+            { id: 2, title: 'news02' },
+            { id: 3, title: 'news03' }
+        ]
+    }
+    render() {
+        return (
+            <div id="news">
+                <ul>
+                    {
+                        this.state.newsObj.map(item => {
+                            return (
+                                <li key={item.id}>
+                                    <Link to={`/news/detail/?id=${item.id}&title=${item.title}`}>
+                                        {item.title}
+                                    </Link>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+                <Route path="/news/detail" component={Detail} />
+            </div>
+        )
+    }
+}
+
+```
+
+```react
+// 接受参数的组件
+import React, { Component } from 'react'
+
+import qs from 'querystring'
+
+export default class Detail extends Component {
+    state = {
+        details: [
+            { id: 1, message: 'i am No1' },
+            { id: 2, message: 'i am No2' },
+            { id: 3, message: 'i am No3' }
+        ]
+    }
+
+    render() {
+        // console.log(this.props.location.search);
+        // console.log(qs.parse((this.props.location.search).slice(1)));
+
+        const { id, title } = qs.parse((this.props.location.search).slice(1))
+        
+        const res = this.state.details.find(item => {
+            return item.id === Number(id)
+        })
+
+        return (
+            <ul>
+                <li>ID: {id}</li>
+                <li>TITLE: {title}</li>
+                <li>MESSAGE: {res.message}</li>
+            </ul>
+        )
+    }
+}
+```
+
+---
+
+---
+
+### 三. state参数
+
+是路由中的state参数，不是组件中的state
+
+params参数和search参数的传递，都可以在浏览器地址栏中看到
+
+而路由**state参数不暴露，在浏览器地址栏中看不到**
+
+刷新页面也会保留参数
+
+#### 1. 路由链接携带参数
+
+Link标签的to属性通过对象形式传递参数
+
+Route标签无需声明接收，正常注册路由即可
+
+```react
+<Link to={{ path:'/路由地址', state:{自定义属性名:数据, 自定义属性名:数据 }}}>
+```
+
+#### 2. 接收参数
+
+在接受参数的路由组件中，
+
+通过**this.props.loctaion.state** 接受传参，
+
+收到的是JSON对象形式
+
+```js
+console.log(this.props.loctaion.state)
+/*
+{
+  自定义名: 数据，
+	自定义名: 数据
+}
+*/
+```
+
+如下：
+
+```react
+// 传出参数的组件
+import React, { Component } from 'react'
+import { Link, Route } from 'react-router-dom'
+import Detail from '../Detail/Detail'
+
+export default class News extends Component {
+    state = {
+        newsObj: [
+            { id: 1, title: 'news01' },
+            { id: 2, title: 'news02' },
+            { id: 3, title: 'news03' }
+        ]
+    }
+    render() {
+        return (
+            <div id="news">
+                <ul>
+                    {
+                        this.state.newsObj.map(item => {
+                            return (
+                                <li key={item.id}>
+                                    <Link to={{ 
+                                    	path: '/news/detail', 
+                                      state: { 
+                                        id: item.id, 
+                                        title: item.title 
+                                      } 
+                                  	}}>
+                                     	{item.title}
+                                    </Link>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+                <Route path="/news/detail" component={Detail} />
+            </div>
+        )
+    }
+}
+```
+
+```react
+// 接收参数的组件
+import React, { Component } from 'react'
+
+export default class Detail extends Component {
+    state = {
+        details: [
+            { id: 1, message: 'i am No1' },
+            { id: 2, message: 'i am No2' },
+            { id: 3, message: 'i am No3' }
+        ]
+    }
+
+    render() {	
+      	//console.log(this.props.location.state);
+        const {id, title} = this.props.location.state
+        
+        const res = this.state.details.find(item => {
+            return item.id === Number(id)
+        })
+
+        return (
+            <ul>
+                <li>ID: {id}</li>
+                <li>TITLE: {title}</li>
+                <li>MESSAGE: {res.message}</li>
+            </ul>
+        )
+    }
+}
+```
+
+
+
+
+
+## 路由跳转模式
+
+
+
+
+
+
+
+
+
+react-router-dom的内置组件
+
+<BrowserRouter\> 浏览器路由模式
+
+<HashRouter\> Hash路由模式
 
 <Link\> 路由链接
 
-<Navlink\>
+<Navlink\> 带高亮样式的路由链接
 
-<Route\>
+<Route\> 路由占位
 
-<Switch\>
+<Switch\>单一匹配
 
-<Redirect\>
+<Redirect\> 重定向
 
 
 
