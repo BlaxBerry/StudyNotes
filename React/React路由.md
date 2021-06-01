@@ -83,7 +83,7 @@ react-router-dom是分别暴露，需要谁导入谁
 
 
 
-## 注册路由
+## 路由链接 与 注册路由
 
 1. 明确界面中的**导航区** 和 **展示区**
 
@@ -157,9 +157,11 @@ react-router-dom是分别暴露，需要谁导入谁
 
 ## 路由组件 与 一般组件
 
-靠路由匹配然后展示的组件，叫路由组件
-
 ### 1. 写法不同
+
+通过手写展示的组件，叫一般组件
+
+靠路由匹配然后展示的组件，叫路由组件
 
 ```react
 // 路由组件：
@@ -183,17 +185,17 @@ src
 |-App.jsx
 ```
 
-### 3. 接受到的props不同
+### 3. 接收到的props不同
 
 **一般组件：**
 
 写组件标签时传递了什么，在组件内通过this.props就接受到什么
 
+若不传递则组件内通过this.props获得的是个空对象 **{ }**
+
 **路由组件**
 
-接收到由路由器传入**三个固定的属性**
-
-在路由组件中通过this.props获得
+路由组件中this.props默认获得路由器默认传入**三个固定的属性**
 
 - **history**
   - go
@@ -1215,11 +1217,11 @@ export default class Detail extends Component {
 
     render() {	
       	//console.log(this.props.location.state);
-        const {id, title} = this.props.location.state
+        const {id, title} = this.props.location.state || {}
         
         const res = this.state.details.find(item => {
             return item.id === Number(id)
-        })
+        }) || {}
 
         return (
             <ul>
@@ -1238,15 +1240,466 @@ export default class Detail extends Component {
 
 ## 路由跳转模式
 
+### push
+
+路由默认的跳转模式
+
+**压栈**，会留下历史记录，可前进后退
+
+----
+
+### replace
+
+浏览记录的无痕模式
+
+**替换**，没历史记录，无法前进后退
+
+Link标签通过replace属性开启
+
+```react
+<Link replace={true} to="/路由地址">导航</Link>
+
+// 简写
+<Link replace to="/路由地址">导航</Link>
+```
 
 
 
 
 
+## 编程式路由导航
+
+不借助点击路由链接的Link标签和NavLink标签，
+
+而是借助路由组件的**this.props.history**对象上的API实现路由跳转、前进、后退
 
 
 
-react-router-dom的内置组件
+### this.props.history.push( )
+
+### this.props.history.replace( )
+
+React的路由有两种跳转模式，有三种携带参数的方式
+
+编程式导航都可以实现：
+
+#### 不带参数
+
+```react
+import React, { Component } from 'react'
+
+export default class Home extends Component {
+  
+    componentDidMount(){
+      
+        setTimeout(()=>{
+            this.props.history.push('/about/messages')
+        },2000)
+    }
+
+    render() {
+        return (
+            <div>Home</div>
+        )
+    }
+}
+```
+
+---
+
+#### params参数
+
+```react
+import React, { Component } from 'react'
+import { Route } from 'react-router-dom'
+import Detail from '../Detail/Detail'
+
+export default class News extends Component {
+    state = {
+        newsObj: [
+            { id: 1, title: 'news01' },
+            { id: 2, title: 'news02' },
+            { id: 3, title: 'news03' }
+        ]
+    }
+
+    pushShow = (id,title) => {
+        return () => {
+            // console.log(this.props.history);
+            this.props.history.push(`/about/news/detail/${id}/${title}`)
+        }
+    }
+
+    replaceShow =(id,title)=>{
+        return ()=>{
+          	// console.log(this.props.history.replace);
+            this.props.history.replace(`/about/news/detail/${id}/${title}`)
+        }
+
+    }
+
+    render() {
+        return (
+            <div id="news">
+                <ul>
+                    {
+                        this.state.newsObj.map(item => {
+                            return (
+                                <li key={item.id}>
+                                    <button onClick={this.pushShow(item.id,item.title)}>
+                                      Push跳转
+                                		</button>
+                                
+                                    <button onClick={this.replaceShow(item.id,item.title)}>
+                                      Replace跳转
+                                		</button>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+                <Route path="/about/news/detail/:id/:title" component={Detail} />
+                {/* <Route path="/about/news/detail" component={Detail} /> */}
+            </div>
+        )
+    }
+}
+
+```
+
+---
+
+#### search参数
+
+```react
+import React, { Component } from 'react'
+import { Route } from 'react-router-dom'
+import Detail from '../Detail/Detail'
+
+export default class News extends Component {
+    state = {
+        newsObj: [
+            { id: 1, title: 'news01' },
+            { id: 2, title: 'news02' },
+            { id: 3, title: 'news03' }
+        ]
+    }
+
+    pushShow = (id,title) => {
+        return () => {
+            // console.log(this.props.history.push);
+            this.props.history.push(`/about/news/detail/?id=${id}&title=${title}`)
+
+        }
+    }
+
+    replaceShow =(id,title)=>{
+        return ()=>{
+            // console.log(this.props.history.replace);
+            this.props.history.replace(`/about/news/detail/?id=${id}&title=${title}`)
+        }
+
+    }
+
+    render() {
+        return (
+            <div id="news">
+                <ul>
+                    {
+                        this.state.newsObj.map(item => {
+                            return (
+                                <li key={item.id}>
+                                    <button onClick={this.pushShow(item.id,item.title)}>
+                                      Push跳转
+                                		</button>
+                                
+                                    <button onClick={this.replaceShow(item.id,item.title)}>
+                                      Replace跳转
+                                		</button>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+                <Route path="/about/news/detail" component={Detail} />
+            </div>
+        )
+    }
+}
+
+```
+
+---
+
+#### state参数
+
+```react
+import React, { Component } from 'react'
+import { Route } from 'react-router-dom'
+import Detail from '../Detail/Detail'
+
+export default class News extends Component {
+    state = {
+        newsObj: [
+            { id: 1, title: 'news01' },
+            { id: 2, title: 'news02' },
+            { id: 3, title: 'news03' }
+        ]
+    }
+
+    pushShow = (id,title) => {
+        return () => {
+            // console.log(this.props.history.push);
+
+            this.props.history.push('/about/news/detail', {id:id,title:title})
+        }
+    }
+
+    replaceShow =(id,title)=>{
+        return ()=>{
+            // console.log(this.props.history.replace);
+          
+            this.props.history.replace('/about/news/detail', {id:id,title:title})
+        }
+
+    }
+
+    render() {
+        return (
+            <div id="news">
+                <ul>
+                    {
+                        this.state.newsObj.map(item => {
+                            return (
+                                <li key={item.id}>
+                                    <button onClick={this.pushShow(item.id,item.title)}>
+                                        Push跳转
+                                    </button>
+                                    <button onClick={this.replaceShow(item.id,item.title)}>
+                                        Replace跳转
+                                    </button>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+                <Route path="/about/news/detail" component={Detail} />
+            </div>
+        )
+    }
+}
+
+```
+
+---
+
+### this.props.history.goBack()
+
+返回上一层级路由
+
+### this.props.history.goForward()
+
+前往下一层级
+
+```react
+<button onClick={this.goBack}> Back </button>
+
+<button onClick={this.goForward}> Forward </button>
+```
+
+```react
+goBack=()=>{
+  this.props.history.goBack()
+}
+    
+goForward=()=>{
+  this.props.history.goForward()
+}
+```
+
+---
+
+### this.props.history.go()
+
+#### this.props.history.go(1)
+
+返回上一层级路由
+
+#### this.props.history.go(-1)
+
+前往下一层级
+
+#### this.props.history.go(0)
+
+刷新页面
+
+
+
+
+
+## withRouter 函数（常用）
+
+用于解决一般组件中无法使用路由组件API的问题
+
+编程式导航是通过this.props.history中的API实现路由的跳转、前进、后退
+
+其中的history是路由器默认传递给路由组件的
+
+因此一般组件中的 this.props中不含有histor对象
+
+所以无法直接通过编程式导航实现路由跳转
+
+如下：
+
+浏览器会提示没有history对象
+
+```react
+import React, { Component } from 'react'
+
+export default class Header extends Component {
+
+    goBack = () => {
+        this.props.history.goBack()
+    }
+
+    goForward = () => {
+        this.props.history.goForward()
+    }
+
+    render() {
+        console.log(this.props);
+        return (
+            <div className="header"}>
+                    
+                <button onClick={this.goBack}>Back</button>
+                <button onClick={this.goForward}>Forward</button>
+
+            </div>
+        )
+    }
+}
+```
+
+```js
+// Uncaught TypeError: Cannot read property 'goBack' of undefined
+```
+
+所以，一般组件上想要使用路由组件API的跳转、前进、后退，
+
+需要借助路由react-router-dom的一个内置函数**withRoute**
+
+**加工一般组件，使该一般组件具有路由组件特有的API**（history、location、match）
+
+使其可以通过this.props.history对象上的API实现路由的跳转、前进、后退
+
+**withRoute(一般组件)** 接收一个一般组件，返回值是个新组件
+
+然后通过export default暴露
+
+```react
+import { withRouter } from 'react-router-dom'
+
+class 组件 extends React.Component {
+  render(){}
+}
+
+export default withRouter(组件)
+```
+
+```react
+import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
+
+
+class Hello extends Component {
+
+    goBack = () => {
+        this.props.history.goBack()
+    }
+
+    goForward = () => {
+        this.props.history.goForward()
+    }
+
+    render() {
+        console.log(this.props);
+        return (
+            <div className={hello.title}>
+            
+            		<button onClick={this.goBack}>Back</button>
+                <button onClick={this.goForward}>Forward</button>
+
+            </div>
+        )
+    }
+}
+
+export default  withRouter(Hello)
+```
+
+
+
+
+
+## 两种路由器的区别
+
+#### BrowserRouter
+
+#### HashRoouter
+
+1. 底层原理不同：
+
+- BrowserRouter使用的是H5的 History API
+
+  （IE9及以下不支持）
+
+- HashRouter使用的是 URL的哈希值
+
+---
+
+2. 表现形式不同：
+
+- BrowserRouter的路由路径中没有#
+
+```js
+loaclhost:3000/a/b/c
+```
+
+- HashRouter的路由路径中包含#
+
+```	java
+loaclhost:3000/#/a/b/c
+```
+
+---
+
+3. 刷新页面后对路由参数state的影响不同：
+
+- BrowserRouter没有影响，
+
+  state参数储存在history对象中
+
+- **HashRouter刷新后会导致state参数丢失**，
+
+  因为没有使用history API，没有history对象，
+
+  没有储存state参数
+
+---
+
+4. HashRouter可以用来解决路径错误问题
+
+   比如多层级路径页面刷新时导致的引入样式丢失
+
+---
+
+一般情况下BrowserRouter使用场合更多
+
+
+
+
+
+## react-router-dom内置组件和API
 
 <BrowserRouter\> 浏览器路由模式
 
@@ -1264,11 +1717,13 @@ react-router-dom的内置组件
 
 
 
-
-
 history对象
 
+location对象
+
 martch对象
+
+
 
 withRouter函数
 
@@ -1276,17 +1731,7 @@ withRouter函数
 
 
 
-## BrowserRouter, HashRoouter
 
-```java
-// BrowserRouter
-loaclhost:3000/home
-loaclhost:3000/about
-
-// HashRouter
-loaclhost:3000/#/home
-loaclhost:3000/#/about
-```
 
 
 
