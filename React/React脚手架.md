@@ -533,3 +533,22 @@ export default class 组件文件名 extends Component {
 
 
 
+
+
+
+
+
+
+## 暴露脚手架配置
+
+```bash
+yarn eject
+```
+
+会暴露出react脚手架的所有配置文件
+
+```js
+XXX
+|-config
+|-scripts
+```

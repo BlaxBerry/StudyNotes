@@ -4,35 +4,87 @@
 
 ## XHR
 
-window上带的，最原始的Ajax
+**XMLHttpRequest**（XHR）
+
+window上带的JS对象，最原始的Ajax
 
 ```js
 const xhr = new XMLHttpRequest()
 ```
 
----
 
-### JQuery
 
-是对xhr的封装，简化了xhr的写法
+
+
+## JQuery
+
+$.get()  
+
+$.post 
+
+$.ajax()
+
+是对xhr的封装，底层是**XMLHttpRequest**，简化了xhr的写法
 
 但是容易出现**回调地狱**
 
----
 
-### Axios
 
-前端的Axios也是对xhr的封装
+
+
+## Axios
+
+只专注于网络请求的库，比起jQuery更加轻量化
+
+也是对xhr的封装
 
 **Promise**风格，解决了回调地狱
 
 请求返回的数据在response的data中
 
+### GET请求
+
 ```js
-axios('请求地址').then(
+axios.get('请求地址', {
+  params: {
+    name: 'Andy'
+  }
+}).then(
 	response=>{console.log('获取数据成功了',response.data)},
   error=>{console.log('获取数据失败了了',error)}
 )
+```
+
+### POST请求
+
+```js
+axios.post('请求地址', {
+  name:'Andy'
+}).then(
+	response=>{console.log('获取数据成功了',response.data)},
+  error=>{console.log('获取数据失败了了',error)}
+)
+```
+
+### 直接发起请求
+
+jQuery $.ajax
+
+```js
+let obi = {name: 'andy'}
+
+axios({
+  method: '请求类型'，
+  url: '',
+  // POST数据
+  data: obj,
+  // GET数据
+  params: {
+  	name: 'Andy'
+	},
+}).then(res=>{
+  console.log(res)
+})
 ```
 
 
