@@ -1,36 +1,18 @@
 # 防抖（debounce）
 
+防抖策略（debounce），是指
 
+**当事件被触发后不会立即执行，延迟 n秒后再执行事件回调函数，**
 
-比如，酒店的电动门
+**若在延迟期间再次被触发，则重新计时使延迟时间**
 
-有人走进就打开，为了防止夹住人，就延迟几秒后关闭
+（比如：英雄回城的读条时间，回城读条时的中断和在回城）
 
-若等待期间有人在靠近，会重新计算延迟
+可以防止频繁触发执行某事件函数，
 
+保证即使频繁循环触发事件，事件最终也只会被执行一次
 
-
-触发事件
-
-setTimeout
-
-clearTimeout
-
-
-
-## 使用场景
-
-改变页面大小的统计
-
-滚动页面位置的统计
-
-输入框连续输入的请求次数（**防止表单多次提交**）
-
-
-
-
-
-
+从而提高浏览器的性能
 
 ```mermaid
 graph LR
@@ -40,7 +22,161 @@ C -->|规定时间内 没有触发事件| E[执行表达的提交]
 
 ```
 
-## 流程和难点
+## 使用场景
+
+- **输入框内容的连续输入**（常用）
+
+  防止多次提交请求，仅在输入完成后提交
+
+- 改变页面大小的统计
+
+- 滚动页面位置的统计
+
+
+
+
+
+## 输入框防抖
+
+### 步骤
+
+1. **定义防抖Timer**
+
+2. **定义防抖函数**
+
+   不是直接发起Ajax / JSONP请求，
+
+   而是通过定时器延时一定时间后再发起数据请求
+
+3. **输入框触发keyUp事件时，清空Timer**
+
+   有内容输入时，清空上一个请求的延时器，使上一个请求不会被发起
+
+   等输入结束后，最后的输入请求的延时器没人清空，最后请求会被发送出去
+
+
+
+
+
+## 实例
+
+没有防抖，每次输入都会发送数据请求
+
+```html
+<body>
+    <input type="text" name="" id="" />
+    <hr />
+    <ul></ul>
+</body>
+
+<script type="text/html" id="art">
+    {{each result}}
+    <li>{{$value[0]}}</li>
+    {{/each}}
+</script>
+
+<script>
+    $(function () {
+      $("input").on("keyup", function () {
+        var val = $(this).val().trim();
+        getData(val);
+      });
+
+      // JSONP 请求
+      function getData(keyword) {
+        $.ajax({
+          url: "https://suggest.taobao.com/sug?q=" + keyword,
+          dataType: "jsonp",
+          success: function (res) {
+            // console.log(res);
+            renderUI(res);
+          },
+        });
+      }
+
+      // 渲染UI
+      function renderUI(res) {
+        if (res.result.length <= 0) {
+          return $("ul").empty().hide();
+        } else {
+          var art = template("art", res);
+          $("ul").html(art).show();
+        }
+      }
+    });
+</script>
+```
+
+
+
+```html
+<body>
+    <input type="text" name="" id="" />
+    <hr />
+    <ul></ul>
+</body>
+
+<script type="text/html" id="art">
+    {{each result}}
+    <li>{{$value[0]}}</li>
+    {{/each}}
+</script>
+
+<script>
+    $(function () {
+      //1. 定义延时器ID
+      var timer = null;
+
+      // 2. 定义防抖函数
+      function debounceSearch(keyword) {
+        timer = setTimeout(function () {
+          // 调用数据请求函数
+          getData(keyword);
+        }, 500);
+      }
+
+      //3. 输入框绑定keyup事件
+      $("input").on("keyup", function () {
+        // 4. 清空上一个请求的延时器
+        clearTimeout(timer);
+        var val = $(this).val().trim();
+        // 5. 调用防抖函数
+        debounceSearch(val);
+      });
+
+      
+      // JSONP 请求
+      function getData(keyword) {
+        $.ajax({
+          url: "https://suggest.taobao.com/sug?q=" + keyword,
+          dataType: "jsonp",
+          success: function (res) {
+            // 渲染数据到页面
+            renderUI(res);
+          },
+        });
+      }
+
+      // 渲染UI
+      function renderUI(res) {
+        if (res.result.length <= 0) {
+          return $("ul").empty().hide();
+        } else {
+          var art = template("art", res);
+          $("ul").html(art).show();
+        }
+      }
+    });
+  </script>
+```
+
+
+
+
+
+
+
+## 流程难点解决
 
 ### 1、设置事件
 
@@ -291,3 +427,10 @@ btn.addEeventListener('click',debounce(sendMessage,1000)
 
 综上，**防抖函数完成**
 
+
+
+
+
+防抖：保证会被频繁触发的事件最终只会执行最后一次
+
+节流：控制会被频繁触发的事件的触发频率

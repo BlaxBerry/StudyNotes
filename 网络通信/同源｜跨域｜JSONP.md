@@ -1,4 +1,4 @@
-# 同源 跨域 JSONP
+# 同源 跨域  JSONP
 
 
 
@@ -106,6 +106,10 @@ JSONP（**JSON** with **P**adding）是JSON的一种使用模式
 
 可用于主流浏览器的跨域数据访问问题
 
+**JSONP并不属于Ajax请求**
+
+JSONP是脚本请求，是通过script标签发送请求，被当作一个JS文件的请求
+
 ---
 
 ### 实现原理
@@ -114,17 +118,11 @@ JSONP（**JSON** with **P**adding）是JSON的一种使用模式
 
 **并通过函数调用接收跨域接口响应回的数据**
 
-由于浏览器的同源策略，
+由于浏览器的同源策略，网页无法通过Ajax请求获取非同源的接口数据
 
-网页无法通过Ajax请求获取非同源的接口数据
-
-但是**<script\>标签不受到浏览器同源策略的影响**
+但是<script\>标签不受到浏览器同源策略的影响
 
 所以可以通过**src属性**，请求非同源的JS脚本
-
-**JSONP并不属于Ajax请求**
-
-JSONP是脚本请求，是通过script标签发送请求，被当作一个JS文件的请求
 
 ---
 
@@ -164,7 +162,140 @@ JSONP是脚本请求，是通过script标签发送请求，被当作一个JS文�
 
 
 
+## jQuery中JSONP实现原理
+
+也是通过<script\>标签的src属性实现跨域数据请求
+
+只不过jQuery是通过动态创建和移除<script\>标签的方式发情JSONP请求
+
+- 发起JSONP请求时，
+
+  会动态向<header\>标签中append一个<script\>标签
+
+- JSONP请求成功时，
+
+  会动态从<header\>标签中移除刚刚添加的<script\>标签
+
+
+
+
+
 ## jQuery中的JSONP
+
+jQuery的 **$.ajax()**函数，除了可以发起Ajax数据请求。
+
+还可以发情JSONP数据请求
+
+### 发送JSONP请求
+
+通过URL请求地址中的查询字符串传递GET请求参数
+
+通过dataType属性指定请求为jsonp数据请求而不是Ajax数据请求
+
+```js
+$.ajax({
+  url: 'XXXXX?key=value&key=value',
+  dataType: 'jsonp',
+  success: function(res){
+    console.log(res)
+  }
+})
+```
+
+---
+
+### 请求参数callback
+
+使用jQuery发起JSONP请求时，
+
+会自动携带一个 **callback**参数，
+
+值是jQuery随机生成的回调函数名 **jqueryXXXX**
+
+```http
+http://xxxxx?key=value&key=value&callback=jqueryxxxxx
+```
+
+---
+
+### 自定义callback回调函数名
+
+使用jQuery发起JSONP请求时，
+
+若想自定义JSONP请求参数和回调函数名
+
+JSONP回调函数名一般默认callback
+
+```js
+$.ajax({
+  url: 'xxxxx',
+  dataType: 'jsonp',
+  
+  jsonp: 'callback',
+  jsonpCallback: 'callbackFunction',
+  
+  success: function(res){
+    console.log(res)
+  }
+})
+```
+
+
+
+
+
+## 淘宝搜索框相关内容
+
+art-templayte模版引擎 + JSONP
+
+```html
+<body>
+    <input type="text" name="" id="" />
+    <hr />
+    <ul></ul>
+</body>
+
+<script type="text/html" id="art">
+    {{each result}}
+    <li>{{$value[0]}}</li>
+    {{/each}}
+</script>
+
+<script>
+    $(function () {
+      $("input").on("keyup", function () {
+        var val = $(this).val().trim();
+        getData(val);
+      });
+
+      // JSONP 请求
+      function getData(keyword) {
+        $.ajax({
+          url: "https://suggest.taobao.com/sug?q=" + keyword,
+          dataType: "jsonp",
+          success: function (res) {
+            // console.log(res);
+            renderUI(res);
+          },
+        });
+      }
+
+      // 渲染UI
+      function renderUI(res) {
+        if (res.result.length <= 0) {
+          return $("ul").empty().hide();
+        } else {
+          var art = template("art", res);
+          $("ul").html(art).show();
+        }
+      }
+    });
+</script>
+```
+
+
+
+
 
 
 
