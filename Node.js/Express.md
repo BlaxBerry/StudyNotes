@@ -1188,11 +1188,17 @@ Express4.16.0版本后，内置了3个常用中间件：
 
 按需下载使用
 
+- **cors**
+
+  解决跨域问题
+
 - **body-parser**
 
   **解析JSON格式的请求体数据**
 
   Express4.16.0版本之前使用
+
+body-parser使用：
 
 安装：
 
@@ -1224,7 +1230,7 @@ app.listen(80, () => {
 
 
 
-### 解析POST请求参数格式的中间件
+### 解析请求体数据格式的中间件
 
 对于POST请求参数，若不配置解析请求体 req.body 的中间件的话，
 
@@ -1372,4 +1378,280 @@ app.post('/', (req, res)=>{
 
 
 ## Express写接口
+
+1. 创建路由模块
+
+2. 导入路由模块
+
+3. 在导入路由模块前，配置解析表单数据的中间件
+
+   app.use(express.json())
+
+   或 app.use(express.urlencoded({extended:false}))
+
+- **路由模块**
+
+```js
+const express = require('express')
+const router = express.Router()
+
+// GET
+router.get('/get', (req, res) => {
+    const query = req.query;
+    res.send({
+        // 0: succeed  1:failed
+        status: 0,
+        msg: 'GET Request Succeed!!!',
+        data: query
+    })
+})
+
+// POST
+router.post('/post', (req,res)=>{
+    const body = req.body
+    res.send({
+        // 0: succeed  1:failed
+        status: 0,
+        msg: 'POST Request Succeed!!!',
+        data: body
+    })
+})
+
+module.exports = router
+```
+
+- **入口文件**
+
+```js
+const express = require('express')
+const app = express()
+
+// urlencoded
+app.use(express.urlencoded({
+    extended: false
+}))
+
+
+// router
+const router = require('./router')
+app.use('/api', router)
+
+
+
+const port = 3000
+app.listen(port, () => {
+    console.log('Server running at loaclhost:3000');
+})
+```
+
+上文的API接口存在一个问题，不支持跨域请求
+
+
+
+
+
+## 通过Express写接口
+
+### CORS（跨域资源共享）
+
+详见笔记 [同源｜跨域｜JSONP｜CORS ](https://github.com/BlaxBerry/StudyNotes/blob/master/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%90%8C%E6%BA%90%EF%BD%9C%E8%B7%A8%E5%9F%9F%EF%BD%9CJSONP.md)
+
+---
+
+#### 第三方中间件cors
+
+可以通过一个是Express的第三方中间件，**cors** 来用于解决跨域问题
+
+1. npm安装
+
+```bash
+npm i cors
+```
+
+2. **必须在所有路由之前使用cros中间件**
+
+```js
+const cors = require('cors')
+app.use(cors())
+```
+
+---
+
+#### 通过cors中间件配置CORS
+
+- 入口文件
+
+```js
+const express = require('express')
+const app = express()
+
+// urlencoded
+app.use(express.urlencoded({
+    extended: false
+}))
+
+
+// CORS 
+const cors = require('cors')
+app.use(cors())
+
+// router
+const router = require('./router')
+app.use('/api', router)
+
+
+
+const port = 3000
+app.listen(port, () => {
+    console.log('Server running at loaclhost:3000');
+})
+```
+
+- 路由模块
+
+```js
+const express = require('express')
+const router = express.Router()
+
+// GET 接口
+router.get('/get', (req, res) => {
+    const query = req.query;
+    res.send({
+        // 0: succeed  1:failed
+        status: 0,
+        msg: 'GET Request Succeed!!!',
+        data: query
+    })
+})
+
+// POST 接口
+router.post('/post', (req,res)=>{
+    const body = req.body
+    res.send({
+        // 0: succeed  1:failed
+        status: 0,
+        msg: 'POST Request Succeed!!!',
+        data: body
+    })
+})
+
+module.exports = router
+```
+
+- Ajax请求
+
+```js
+window.addEventListener('load', function () {
+    $(function () {
+
+
+        $('#get').on('click', function () {
+            const data = {
+                name: 'Andy',
+                age: 28
+            }
+            
+            sendAjax('GET', 'http://127.0.0.1:3000/api/get',data)
+            
+        })
+
+        $('#post').on('click', function () {
+            const data = {
+                name: 'Tom',
+                age: 20
+            }
+            sendAjax('POST', 'http://127.0.0.1:3000/api/post',data)
+           
+        })
+
+      
+        function sendAjax(method, url, data) {
+            $.ajax({
+                type: method,
+                url: url,
+                data: data,
+                success: function (res) {
+                    console.log(res);
+                }
+            })
+        }
+
+
+    })
+})
+```
+
+
+
+### JSONP接口
+
+详见笔记 [同源｜跨域｜JSONP｜CORS ](https://github.com/BlaxBerry/StudyNotes/blob/master/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%90%8C%E6%BA%90%EF%BD%9C%E8%B7%A8%E5%9F%9F%EF%BD%9CJSONP.md)
+
+---
+
+若已经配置了CORS跨域资源共享，
+
+为了防止冲突导致JSONP接口被处理为开启了CORS的接口
+
+**必须将JSONP接口配置在 声明CORS中间件之前**
+
+```js
+// JSONP 接口
+app.get('api/jsonp', (req,res)=>{
+  xxxx
+})
+
+// 开启CORS
+app.use(cors())
+
+// 开启了CORS的接口
+app.get('api/get', (req,res)=>{
+  xxxxxx
+})
+```
+
+#### 实现
+
+- 服务端：
+
+```js
+const express = require('express')
+const app = express()
+
+// JSONP请求的处理
+app.get('/api/jsonp', (req, res) => {
+    const fun = req.query.callback
+    const data = {
+        name: 'JSONP',
+        desc: 'by callback function'
+    }
+    // callback函数调用data
+    const str = `${fun}(${JSON.stringify(data)})`
+
+    res.send(str)
+})
+
+
+app.listen(3000, () => {
+    console.log('Server running at loaclhost:3000');
+})
+```
+
+- 客户端发送JSONP跨域请求
+
+```js
+// JSONP跨域请求
+$('#jsonp').on('click', function () {
+  
+  $.ajax({
+    type:'GET',
+    url: 'http://127.0.0.1:3000/api/jsonp',
+    dataType: 'jsonp',
+    success: function (res) {
+      console.log(res)
+    }
+  })
+  
+})
+```
 
