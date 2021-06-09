@@ -308,19 +308,29 @@ art-templayte模版引擎 + JSONP
 
 ### 概念
 
-CORS（Cross-Origin Resource Sharing）跨域资源共享，是由一系列**HTTP响应头**组成，
+CORS（Cross-Origin Resource Sharing）跨域资源共享，
 
-这些HTTP响应头决定了 浏览器是否阻止前端JS代码跨域获取资源
+是由一系列**HTTP响应头**组成，通过在服务端设置CORS的响应头，
 
-浏览器出于同源安全策略会默认阻止网页跨域获取资源，
+决定浏览器是否阻止前端JS代码跨域获取资源
 
-但若API接口**服务器**配置了CORS相关的HTTP响应头，就可以解除的浏览器跨域访问限制
+原本浏览器出于同源安全策略会默认阻止网页跨域获取资源，
+
+但若API接口**服务器**配置了CORS相关的HTTP响应头，
+
+就可以解除的浏览器跨域访问限制
+
+![](https://pbs.twimg.com/media/E3crZQUVoAsrtXo?format=jpg&name=medium)
 
 
 
-- **CORS主要在服务端配置**，
+### 注意点
+
+- **CORS主要配置在服务端**，
 
   客户端无需做配置
+
+  详见笔记 [Express接口开启CORS](https://github.com/BlaxBerry/StudyNotes/blob/master/Node.js/Express.md)
 
 - CORS在浏览器中有兼容性
 
@@ -331,6 +341,14 @@ CORS（Cross-Origin Resource Sharing）跨域资源共享，是由一系列**HTT
 
 
 ### CORS响应头
+
+CORS由一系列**HTTP响应头**组成，
+
+通过在服务端设置CORS的响应头，
+
+决定浏览器是否阻止前端JS代码跨域获取资源
+
+---
 
 ####  Access-Control-Allow-Origin
 
@@ -438,10 +456,6 @@ CORS跨域资源请求，根据**请求方式**和**请求头**的不同，分�
   - Save-Data
   - Viewport-Width
   - Width
-
-- 
-
-  - 
 
 ---
 
