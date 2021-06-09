@@ -64,7 +64,7 @@ Node.js是JS的**后端运行环境**
 
 ---
 
-
+**建议流程：**
 
 1. JS基础语法
 
@@ -104,7 +104,7 @@ node -v
 
 
 
-## 执行JS文件
+## 终端中执行JS文件
 
 在JavaScript文件目录下打开终端
 
@@ -747,7 +747,682 @@ console.log(path.basename(fullPath, ext));
    匹配获得完整HTML页面文件中的 **<style\>标签** 和 **<script\>标签**
 
 2. 通过fs模块读取完整的页面文件
+3. html页面文件内容中替换去掉正则匹配的内容 <style\>标签 和 <script\>标签
+4. 通过fs模块将正则匹配的内容替换掉首尾标签后分别写入HTML文件、CSS文件
 
-3. 通过fs模块分别写入HTML文件、CSS文件、JS文件
+[拆分完整HTML页面为.html , .css , .js文件](https://github.com/BlaxBerry/Demo_Node.js/tree/master/splitPage)
 
+
+
+
+
+
+
+## http模块
+
+http模块是Node.js提供的内置模块
+
+用来创建web服务器
+
+Node.js中不需要通过IIS，Apache等web服务器软件，
+
+通过内置http模块的代码手写一个服务器软件，提供web服务
+
+- **http.createServer()**
+
+  可将一个普通电脑变为可以向外提供Web资源的Web服务器
+
+---
+
+在JS文件中向使用http模块，要先通过require导入模块
+
+```js
+const http = require('http')
+```
+
+
+
+### 创建web服务器
+
+1. 导入http模块
+
+2. 创建web服务器实例
+
+3. 给服务器实例绑定request事件监听客户端请求
+
+4. 监听端口启动服务器
+
+   终端中用node打开该JS文件
+
+```js
+const http = require('http')
+
+const server = http.createServer()
+
+server.on('request', (req, res) => {
+    console.log('有客户端来访问服务器了');
+})
+
+server.listen(3000, () => {
+    console.log('服务器运行在http://127.0.0.7:3000');
+})
+```
+
+
+
+### server.on()
+
+**server.on()** 中给服务器绑定的**request事件处理函数**
+
+只要服务器收到了客户端请求，
+
+就可以通过request事件获得客户端相关的数据
+
+---
+
+#### req请求对象
+
+包含客户端相关的数据和属性
+
+- **req.url** 
+
+  是客户端请求的的**url地址**
+
+- **req.method**
+
+  客户端请求的方式
+
+```js
+server.on('request', (req)=>{
+  console.log('有客户端来访问服务器了');
+  
+  console.log(req.url);
+  console.log(req.method);
+})
+```
+
+---
+
+#### res响应对象
+
+包含服务端相关的数据和属性
+
+- **res.end**
+
+  向客户端响应指定内容，并结束该次请求的处理
+
+```js
+server.on('request', (req, res)=>{
+  console.log('有客户端来访问服务器了');
+  
+  res.end('<h1>Hello</h1>')
+})
+```
+
+- **res.setHeader**
+
+  设置响应头
+
+```js
+// 可用于的设置编码格式来解决res.end() 乱码
+res.setHeader('Content-Type','text/html; charset=utf-8')
+```
+
+```js
+server.on('request', (req, res)=>{
+  console.log('有客户端来访问服务器了');
+  
+  res.setHeader('Content-Type','text/html; charset=utf-8')
+  
+  res.end('<h1>你好</h1>')
+})
+```
+
+
+
+### 简单路由
+
+根据客户端请求URL地址的不同，响应不同的页面内容
+
+```js
+const http = require('http')
+
+const server = http.createServer()
+
+server.on('request', (req, res) => {
+
+    console.log('有客户端来访问服务器了');
+
+
+    // 获取 客户端发送的URL请求地址
+    const url = req.url
+    // 设置默认响应内容 404
+    let responseContnet = '<h1>404 Not Found</h1>'
+
+    // 判断 客户端发送的URL请求地址
+    if (url === '/' || url === '/index.html') {
+        responseContnet = '<h1>index 首页</h1>'
+    } else if (url === '/about.html') {
+        responseContnet = '<h1>About 页面</h1>'
+    }
+
+    // 设置 响应头的编码格式
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    // 响应页面内容
+    res.end(responseContnet)
+})
+
+server.listen(3000, () => {
+    console.log('服务器运行在http://127.0.0.7:3000');
+})
+```
+
+
+
+
+
+### 项目存入服务器
+
+浏览器访问地址即为文件存放路径
+
+```js
+|-项目文件根目录
+	|- index.html
+	|- inex.css
+	|- index.js
+|- server.js
+```
+
+- 文件在服务器中存放路径：
+
+```http
+/项目文件根目录/index.html
+/项目文件根目录/index.css
+/项目文件根目录/index.js
+```
+
+- 浏览器中资源访问的地址：
+
+```http
+/项目文件根目录/index.html
+/项目文件根目录/index.css
+/项目文件根目录/index.js
+
+# 当访问了index.html时，若发现里面有外链引入的CSS文件JS文件，浏览器会默认去请求
+```
+
+---
+
+#### 根据请求URL响应指定存放路径的文件
+
+- 文件在服务器中存放路径：
+
+```http
+/项目文件根目录/index.html
+/项目文件根目录/index.css
+/项目文件根目录/index.js
+```
+
+- 浏览器中资源访问的地址：
+
+```http
+/项目文件根目录/index.html
+/项目文件根目录/index.css
+/项目文件根目录/index.js
+
+# 当访问了index.html时，若发现里面有外链引入的CSS文件JS文件，浏览器会默认去请求
+```
+
+将浏览器访问地址映射为文件存放路径
+
+直接将浏览器访问地址映射为文件存放路径，
+
+在浏览器的文件资源的**请求URL地址前面拼接上文件资源绝对路径**
+
+```js
+path.join(__dirname, '/文件资源根目录', 浏览器请求URL地址)
+```
+
+如下：
+
+```js
+const http = require('http')
+const path = require('path')
+const fs = require('fs')
+
+const server = http.createServer()
+
+server.on('request', (req, res) => {
+    // 获取 请求URL
+    const url = req.url
+    // 请求URL 映射为文件存放路径
+    const filePath = path.join(__dirname,'/项目文件存放目录',url)
+
+		// 读取相应文件并响应给客户端
+    fs.readFile(filePath, 'utf8', (err,data)=>{
+        if(err){
+            return res.end('404 NOT FOUND')
+        }else{
+            res.end(data)
+        }
+    })
    
+})
+
+server.listen(3000, () => {
+    console.log('server running at http://127.0.0.1:3000');
+})
+```
+
+---
+
+#### 优化完善资源请求路径
+
+直接将用户访问的URL地址映射为文件地址做法
+
+但，该做法仅适合用户在浏览器地址栏中输入的是文件资源绝对路径
+
+即需要用户手动写上 **/文件存放根目录 **这个层级
+
+```http
+http://localhost:3000/文件存放根目录/index.html
+```
+
+若用户访问的路径是不完整的
+
+即访问的是根目录，或访问URL里不带有**/文件存放根目录** 层级的**index.html**
+
+会导致查不到该路径的资源，无法访问到文件
+
+```http
+http://localhost:3000
+```
+
+```http
+http://localhost:3000/index.html
+```
+
+如下：
+
+```js
+|-项目文件根目录
+	|- index.html
+	|- inex.css
+	|- index.js
+|- server.js
+```
+
+```js
+const http = require('http')
+const path = require('path')
+const fs = require('fs')
+
+const server = http.createServer()
+
+server.on('request', (req, res) => {
+    // 获取 请求URL
+    const url = req.url
+    // 请求URL 映射为文件存放路径
+    // const filePath = path.join(__dirname,'/test',url)
+    let filePath = ''
+    if (url === '/') {
+        filePath = path.join(__dirname, './test/index.html')
+    } else {
+        filePath = path.join(__dirname, '/test', url)
+    }
+
+    console.log(filePath);
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            return res.end('404 NOT FOUND')
+        } else {
+            res.end(data)
+        }
+    })
+
+})
+
+server.listen(3000, () => {
+    console.log('server running at http://127.0.0.1:3000');
+})
+```
+
+
+
+
+
+## querystring模块
+
+Node.js的内置模块，
+
+专门用来处理查询字符串
+
+通过**parse()** 将字符串转为对象格式
+
+```js
+const qs = require('querystring')
+
+app.get('/', (req, res) => {
+    res.send(qs.parse('name=andy&age=100'))
+})
+```
+
+```json
+{
+    "name": "andy",
+    "age": "100"
+}
+```
+
+
+
+
+
+## 模块化
+
+### 模块化概念
+
+将一个大文件拆分为多个独立且相互有依赖的小文件（模块）
+
+- 提高了代码的维护性、复用性
+- 可实现模块的按需加载
+
+
+
+### Node.js中模块的分类
+
+- 内置模块（内置的fs、path、http等）
+
+- 自定义模块（用户自己写的每个JS文件）
+- 第三方模块（也叫**包**，需要下载引入）
+
+
+
+### CommonJS规范
+
+Node.js 遵循CommonJS的模块化规范：
+
+- 每个模块内部的module变量代表当前模块
+- module变量是个对象，其exports属性（module.exports）是对我接口
+- require() 用于加载模块，加载的是该模块的module.exports属性的内容
+
+
+
+### CommonJS - 加载模块
+
+通过 **require() **加载执行其他模块
+
+内置模块和第三方模块直接写名字，
+
+自定义模块要写文件路径
+
+```js
+// 内置模块
+const fs = require('fs') 
+
+// 自定义模块
+const calculate = require('./calcaulat.js')
+
+// 第三方模块
+const xxx = require('xxx')
+```
+
+---
+
+**require() ** 是被导入模块的**module对象中的exports属性**的内容，
+
+因为module.exports默认是个空对象 **{ }** ，
+
+所以require()默认导入一个空对象 **{ }** 
+
+```js
+// 导出成员的模块
+let a = 10 + 20
+
+let b = 0
+setTimeout(() => {
+    b = 10 + 10
+}, 1000)
+
+let c = function () {
+    console.log("hello");
+}
+
+module.exports.a = a
+module.exports.b = b
+module.exports.c = c
+```
+
+```js
+// 导入自定义模块的JS文件
+const m1 = require('./01')
+console.log(m1);
+// { a: 30, b: 0, c: [Function: c] }
+m1.c()
+// Hello
+```
+
+
+
+### 模块作用域
+
+在自定义模块中定义的变量、方法
+
+只能在当前模块内被访问、使用
+
+即使模块被导入也无法直接访问使用其中的变量方法
+
+模块作用域的限制有利于防止全局变量污染
+
+
+
+### CommonJS - 暴露模块成员
+
+因为有模块作用域的限制，
+
+模块只被导入使用其中的变量、方法无法被访问使用，还需要在模块中将其对外暴露（共享）
+
+---
+
+#### module对象
+
+每个 JS文件中都有一个**module对象**，存储了和当前模块相关的信息
+
+其中的 **exports 属性** 可以向外暴露共享模块内成员，默认是个空对象 **{ }**
+
+```js
+console.log(module);
+
+
+Module {
+  id: '.',
+  path: '/Users/chen/StudyPractice/JS/req',
+  exports: {},
+  parent: null,
+  filename: '/Users/chen/StudyPractice/JS/req/02.js',
+  loaded: false,
+  children: [],
+  paths: [
+    '/Users/chen/StudyPractice/JS/req/node_modules',
+    '/Users/chen/StudyPractice/JS/node_modules',
+    '/Users/chen/StudyPractice/node_modules',
+    '/Users/chen/node_modules',
+    '/Users/node_modules',
+    '/node_modules'
+  ]
+```
+
+---
+
+#### module.exports对象
+
+在自定义模块中，
+
+可以将模块内的变量、方法挂载到**module.exports对象** ，
+
+将模块内部的私有成员向外暴露分享出去供其他模块使用
+
+module.exports默认是个空对象 **{ }**
+
+```js
+console.log(module.exports);
+// {}
+```
+
+```js
+let a = 10 + 20
+
+let b = 0
+setTimeout(() => {
+    b = 10 + 10
+}, 1000)
+
+let c = function () {
+    console.log("hello");
+}
+
+
+module.exports.a = a
+module.exports.b = b
+module.exports.c = c
+```
+
+---
+
+#### exports对象
+
+但因为module.exports写起了麻烦，Node提供了exports对象
+
+exports对象的内容默认指向以module.exports对象的内容
+
+最终模块对外暴露的内容永远以module.exports指向的对象为准
+
+```js
+console.log(module.exports === exports);
+// true
+```
+
+```js
+let a = 10 + 20
+
+let b = 0
+setTimeout(() => {
+    b = 10 + 10
+}, 1000)
+
+let c = function () {
+    console.log("hello");
+}
+
+
+exports.a = a
+exports.b = b
+exports.c = c
+```
+
+![](https://pbs.twimg.com/media/E3V1z7gVoBYDogY?format=jpg&name=medium)
+
+module.exports默认是个空对象，exports默认也是个空对象
+
+**通过exprots.属性的方式挂在模块成员，可以反映到module.exports指向的对象的内容**
+
+**直接让 exports等于一个新对象，并不会修改module.exports指向的对象的内容**
+
+所以，ES6对象的健值同名时的简写只能用于module.exports
+
+为了防止混乱，导出模块是不要混用
+
+
+
+
+
+### 模块的加载机制
+
+#### 优先缓存加载
+
+模块都是优先缓存中加载
+
+模块在第一次被 require()加载后会被缓存，
+
+即使多次调用require() 导入相同模块也不会导致模块内代码重复被多次执行，
+
+```js
+const xxx = require('xxx')
+const xxx = require('xxx')
+const xxx = require('xxx')
+```
+
+---
+
+#### 加载的是目录路径
+
+把目录作为模块的导入地址时：
+
+1. 优先加载**package.jsonz的main属性**指定的入口文件
+
+2. 若没有就根据指定路径，加载路径下的 index.js文件
+3. 若都没有，终端报错
+
+---
+
+#### 内置模块加载机制
+
+Node.js的**内置模块的加载优先级最高**
+
+假若同时加载重名的自定义模块、第三方模块、内置模块，
+
+导入的永远是内置模块
+
+---
+
+#### 自定义模块加载机制
+
+- 需要通**过路径标识符** **./** 或 **../** 指定模块路径
+
+  若不指定路径只写某块名，会被当作内置模块或第三方模块
+
+- 会自动补后缀名
+
+  若导入时没有指定自定义模块的的后缀名
+
+  Node.js会自动按顺序补上后缀名，然后加载：
+
+  1. 优先补上.js的后缀名，然后加载
+
+  2. 若没找到带有.js后缀名的文件，就补上 .json 然后加载
+
+  3. 若还没找到.json后缀名的文件，就补上 .node 然后加载
+
+  4. 若都没找到，就在终端报错
+
+---
+
+#### 第三方模块加载地址
+
+require()导入第三方模块时：
+
+1. 优先从的当前文件的父目录开始，
+
+   查找node_modules文件夹中第三方模块
+
+2. 若查找不到要加载的第三方模块，
+
+   就会逐层向上一级目录中查找加载，
+
+   直到文件系统的根目录
+
+3. 若都查不到，终端报错
+
+如下：
+
+导入名为moment的第三方模块时：
+
+```
+C:\User\test\project\node_modules\moment
+C:\User\test\node_modules\moment
+C:\User\project\node_modules\moment
+C:\node_modules\moment
+报错
+```
+
