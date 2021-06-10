@@ -443,6 +443,14 @@ SELECT count(*) AS ageTotal FROM students WHERE age>=20;
 
 
 
+## ？展位符
+
+```sql
+INSERT INTO students (name,age) VALUES (?,?)
+```
+
+
+
 
 
 ## .sql文件

@@ -174,3 +174,28 @@
 
 通过SQL语言，以编程的形式操作数据库的数据
 
+详见笔记 [SQL基础](https://github.com/BlaxBerry/StudyNotes/blob/master/DataBase%E6%95%B0%E6%8D%AE%E5%BA%93/SQL%E5%9F%BA%E7%A1%80.md)
+
+
+
+
+
+
+
+## 项目中操作MySQL
+
+### Node.js Express 
+
+1. 安装第**三方模块mysql**
+
+2. 通过mysql模块**链接到MySQL数据库**
+3. 通过mysql模块**执行SQL语句**
+
+详见笔记 [Node.js模块](https://github.com/BlaxBerry/StudyNotes/blob/master/Node.js/Node.js%E5%9F%BA%E7%A1%80.md)
+
+
+
+
+
+## 
+
