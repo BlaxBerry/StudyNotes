@@ -200,3 +200,149 @@ jQuery使用时需要转换为DOM对象后使用
       })
 </script>
 ```
+
+
+
+
+
+## FormData对象
+
+HTML5新增了一个FormData对象用于操作表单
+
+---
+
+### 创建表单数据
+
+手动创建表单数据，并发送Ajax请求：
+
+```js
+var fd = new FormData();
+
+// 添加表单项
+fd.append("username", "Andy");
+fd.append("userage", "28");
+
+var xhr = new XMLHttpRequest();
+xhr.open("POST", "http://www.liulongbin.top:3006/api/formdata");
+
+xhr.send(fd);
+
+xhr.onreadystatechange = function () {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+    var res = xhr.responseText;
+    console.log(JSON.parse(res));
+  }
+};
+```
+
+---
+
+### 获取表单数据
+
+获取页面中表单的数据，并发送Ajax请求：
+
+```js
+var form = document.querySelector("form");
+
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  
+  var fd = new FormData();
+  var xhr = new XMLHttpRequest();
+  
+  xhr.open("POST", "http://www.liulongbin.top:3006/api/formdata");
+  xhr.send(fd);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      var res = xhr.responseText;
+      console.log(JSON.parse(res));
+    }
+  };
+});
+```
+
+
+
+
+
+## 文件上传
+
+### 判断是否上传
+
+通过原生JS的DOM属性 **files**判断是否添加了上传的文件
+
+**DOM对象.files** 返回的是一个对象
+
+可通过该对象的**length属性**判断是否有上传的文件
+
+**DOM对象.files[0]** 是上传文件，以及相关信息 
+
+```js
+console.log(JSNode.files)
+// FileList {0: File, length: 1}
+
+JSNode.files.length <= 0  // 没有上传的文件
+```
+
+因为是原生DOM的方法，所以需要从jQuery对象转换为DOM对象
+
+```html
+<body>
+  <input type="file"/>
+  <button>上传</button>
+</body>
+
+<script>
+$(function(){
+  $('button').on('click', function(){
+   if( $('input')[0].files.length <= 0){
+      return alert('请上传文件后再提交')
+   }else{
+     alert('上传成功')
+   }
+  })
+})
+</script>
+```
+
+### jQuery发送Ajax请求
+
+```html
+<body>
+  <input type="file" />
+  <button>上传</button>
+</body>
+ 
+<script>
+    $(function () {
+      $("button").on("click", function () {
+        // console.log($("input")[0].files[0]);
+
+        var fileData = new FormData();
+        fileData.append("pic", $("input")[0].files[0]);
+       
+        // 调用Ajax发送文件
+        fun(fileData)
+      });
+
+
+      function fun(fileData) {
+        $.ajax({
+          type: "POST",
+          url: "http://www.liulongbin.top:3006/api/upload/avatar",
+          data: fileData,
+
+          // 不修改ContentType属性，使用FormData默认的ContentType属性
+          contentType: false,
+          // 不对FormData中的数据进行编码，将数据（文件）直接发送到服务器
+          processData: false,
+          
+          success: function (res) {
+            console.log(res);
+          },
+        });
+      }
+    });
+</script>
+```

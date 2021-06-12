@@ -404,11 +404,9 @@ $.ajax({
 
 通过原生JS的DOM属性 **files**判断是否添加了上传的文件
 
-**DOM对象.files** 返回的是一个对象
+- **DOM对象.files** : 返回的是一个对象
 
-可通过该对象的**length属性**判断是否有上传的文件
-
-**DOM对象.files[0]** 是上传文件，以及相关信息 
+- **DOM对象.files.length属性** : 判断是否有上传的文件
 
 ```js
 console.log(JSNode.files)
@@ -419,6 +417,8 @@ JSNode.files.length <= 0  // 没有上传的文件
 
 因为是原生DOM的方法，所以需要从jQuery对象转换为DOM对象
 
+- **jQuery对象[0].files.length**  
+
 ```html
 <body>
   <input type="file"/>
@@ -428,7 +428,7 @@ JSNode.files.length <= 0  // 没有上传的文件
 <script>
 $(function(){
   $('button').on('click', function(){
-   if( $('input')[0].file.length <= 0){
+   if( $('input')[0].files.length <= 0){
       return alert('请上传文件后再提交')
    }else{
      alert('上传成功')
@@ -438,18 +438,18 @@ $(function(){
 </script>
 ```
 
+### 发送上传文件请求
 
-
-### Ajax发送上传文件请求
+1. 将获取的上传文件加入FormData对象中
+2. 然后通过POST请求发送Ajax请求
 
 ```js
-var fileData = new FormData()
-fileData.append('自定义名', files)
+var fd = new FormData()
+fd.append('自定义名', $("文件域标签")[0].files[0])
 
-// 然后将fileData发送到服务器
+// 然后将fd FormData对象发送Ajax
+ajax(fd)
 ```
-
-
 
 ```html
 <body>
@@ -498,15 +498,27 @@ fileData.append('自定义名', files)
 
 通过document文档下的 **ajaxStart()** 和 **ajaxStop()**
 
+- **ajaxStart(function () {});**
+
+  自动监听页面中 所有被发起的Ajax请求
+
 ```js
 $(document).ajaxStart(function () {
   图片.show();
 });
-      
+```
+
+- **ajaxStop(function () {});**
+
+  自动监听页面中 所有结束的Ajax请求
+
+```js
 $(document).ajaxStop(function () {
   图片.hide();
 });
 ```
+
+如下：
 
 监听页面中的Ajax请求的发起和结束，
 
@@ -529,6 +541,7 @@ $(document).ajaxStop(function () {
         fileData.append("pic", $("input")[0].files[0]);
         fun(fileData);
       });
+      
       function fun(fileData) {
         $.ajax({
           type: "POST",
@@ -553,4 +566,5 @@ $(document).ajaxStop(function () {
       });
 
     });
+</script>
 ```
