@@ -1655,3 +1655,132 @@ $('#jsonp').on('click', function () {
 })
 ```
 
+
+
+
+
+## 身份认证
+
+### Session认证
+
+#### 记录用户信息
+
+通过express-session中间件在项目中使用Session认证
+
+下载中间件：
+
+```bash
+npm i express-session
+```
+
+配置中间件：
+
+```js
+const sesion = require('express-session')
+
+app.use(session({
+  secret: '任意字符串',
+  resave: false,
+  saveUninitialized: true
+}))
+```
+
+向Session中存数据：
+
+在express-session中间件配置成功后，
+
+可通过 **req.session**了访问使用session对象，从而储存用户信息和登陆状态
+
+```js
+app.post('/post', (req, res)=>{
+  
+  // 用户信息
+  req.session.userInfo = req.body
+  // 用户登陆状态
+  req.session.islogin = true
+  
+  res.send({
+    status: 0,
+    msg: '登陆成功'
+  })
+})
+```
+
+---
+
+#### 从session中获取数据
+
+```js
+const express = require('express')
+const app = express()
+
+app.use(express.urlencoded())
+
+const session = require('express-session')
+app.use(session({
+  secret: '任意字符串',
+  resave: false,
+  saveUninitialized: true
+}))
+
+
+app.post('/post', (req, res) => {
+    // 用户信息
+    req.session.userInfo = req.body
+    // 用户登陆状态
+    req.session.islogin = true
+
+    res.send({
+        status: 0,
+        msg: '登陆成功',
+        data: {
+            username: req.session.userInfo.username,
+            password: req.session.userInfo.password
+        }
+    })
+})
+
+
+app.listen(3000, () => {
+    console.log('Server running at localhost:3000');
+})
+```
+
+---
+
+#### 清空Session
+
+比如用户退出登陆时，需要清空Session
+
+通过req.sessino.destroy()实现清空服务器保存的sessin信息
+
+清空的只是请求退出的当前用户的Session，不会清除其他人的
+
+```js
+const express = require('express')
+const app = express()
+app.use(express.urlencoded())
+
+
+const session = require('express-session')
+
+app.use(session({
+    secret: '任意字符串',
+    resave: false,
+    saveUninitialized: true
+}))
+
+
+app.post('/logout', (req, res) => { 
+    req.session.destroy()
+    res.send({
+        status:1,
+        msg:'退出登陆成功'
+    })
+})
+
+
+app.listen(3000, () => {
+    console.log('Server running at localhost:3000');
+})
+```

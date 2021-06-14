@@ -26,7 +26,7 @@ $.ajax()
 
 是对xhr的封装，底层是**XMLHttpRequest**，简化了xhr的写法
 
-但是容易出现**回调地狱**
+但是容易出现**回调地狱**（Callback Hell）
 
 
 
