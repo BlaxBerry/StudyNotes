@@ -1590,3 +1590,205 @@ console.log(module.exports === exports);
 
 
 
+## Node.js的异步
+
+### 异步嵌套（回调地狱）
+
+比如，依次读取A文件、B文件、C文件、D文件
+
+多个异步调用嵌套层数过多，会导致维护困难
+
+```js
+const fs = require('fs')
+
+fs.readFile('./A.html', (err, res)=>{
+  console.log(res)
+    
+	fs.readFile('./B.html', (err, res)=>{
+  	console.log(res)
+    
+    fs.readFile('./C.html', (err, res)=>{
+      console.log(res)
+      
+      fs.readFile('./D.html', (err, res)=>{
+        console.log(res)
+      })
+    })
+  })
+})
+```
+
+### Promise解决回调地狱
+
+```js
+function 第一个(){
+  return new Promise((res,rej)=>{
+    // 成功时
+    res()
+    // 失败时
+    rej()
+  })
+}
+function 第二个(){
+  return new Promise((res,rej)=>{
+    // 成功时
+    res()
+    // 失败时
+    rej()
+  })
+}
+
+第一个()
+	.then(res=>{
+  		// console.log(res)
+  		retuen 第二个
+		})
+  .then(res=>{
+  		// console.log(res)
+		})
+```
+
+1. 原本是需要嵌套调用三次 fs.readFile()
+
+   因为是异步API，嵌套会有回调地狱，
+
+   可使用promise
+
+2. 将异步函数外包裹一个promise实例对象，
+
+   并将promise实例对象放入一个函数
+
+   每个函数return 返回的是创建的promise实例对象
+
+3. 异步执行成功时，通过promise实例对象的resolve参数传出结果
+
+   异步执行失败时，通过promise实例对象的reject参数传出结果
+
+4. 调用函数（第一个Promise实例对象）
+
+   通过then()方法获取异步执行的结果，并return返回下一个函数（Promise实例对象）
+
+   链式编程依次调用函数
+
+```js
+const fs = require('fs')
+
+function p1() {
+
+    return new Promise((reslove, reject) => {
+        fs.readFile('./A.js', 'utf8', (err, data) => {
+            if (err) {
+                reject(err.message)
+            } else {
+                reslove(data)
+            }
+        })
+    })
+
+}
+
+function p2() {
+    return new Promise((reslove, reject) => {
+
+        fs.readFile('./B.js', 'utf8', (err, data) => {
+            if (err) {
+                reject(err.message)
+            } else {
+                reslove(data)
+            }
+        })
+    })
+}
+
+function p3() {
+    return new Promise((reslove, reject) => {
+
+        fs.readFile('./C.js', 'utf8', (err, data) => {
+            if (err) {
+                reject(err.message)
+            } else {
+                reslove(data)
+            }
+        })
+    })
+}
+
+
+p1()
+    .then(res1 => {
+        console.log(res1);
+        return p2()
+    })
+    .then(res2 => {
+        console.log(res2);
+        return p3()
+    })
+    .then(res3=> {
+        console.log(res3);
+    })
+```
+
+
+
+### async异步函数解决回调地狱
+
+> Promise还是比较繁琐
+>
+> - 需要手动给每个异步API包裹上Promise对象
+>
+> - 还要手动调用resolve和reject传递出异步执行结果
+>
+> - 外部的链式比较臃肿
+
+将异步嵌套写成了同步的形式
+
+```js
+async function p1(){
+  return 'p1'
+}
+
+async function p1(){
+  return 'p2'
+}
+
+async function p1(){
+  return 'p2'
+}
+
+async function run(){
+  let res1 = await p1()
+  let res2 = await p2()
+  let res3 = await p3()
+  console.log(res1)
+  console.log(res2)
+  console.log(res3)
+}
+```
+
+#### util内置模块
+
+```js
+const promisify =  require('util').promisify
+```
+
+包装Node.js的API，使返回值为Promise对象
+
+然后才能支持异步函数的语法
+
+```js
+const promisify =  require('util').promisify
+const fs = require('fs')
+const readFile = promisify(fs.readFile)
+
+async function run (){
+  let res1 = await readFile('./A.html', 'utf8')
+  let res1 = await readFile('./B.html', 'utf8')
+  let res1 = await readFile('./C.html', 'utf8')
+  console.log(res1)
+  console.log(res2)
+  console.log(res3)
+}
+
+run();
+```
+
