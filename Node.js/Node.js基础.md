@@ -1,48 +1,8 @@
 # Node.js
 
-![](https://cdn-ssl-devio-img.classmethod.jp/wp-content/uploads/2018/12/node-icon-960x504.jpg)
+<img src="https://www.fusionia.jp/wp-content/uploads/2018/06/node-js-736399_960_720.png" style="zoom:50%;" />
 
 Node.js是个基于Chrome V8 引擎的JavaSCript运行环境
-
-
-
-
-
-## JavaScript运行环境
-
-JS可以运行在浏览器（前端开发），
-
-还可以运行在基于JS解析引擎的Node.js上（后端开发）
-
----
-
-### 浏览器运行环境
-
-浏览器是JS的**前端运行环境**
-
-浏览器都内置JS解析引擎，其中Chrome浏览器的V8引擎效率最高
-
-- JS解析引擎
-
-- 运行环境提供的内置API
-
-  （DOM、BOM、Canvas、XMLHttpRequest、JS内置对象...）
-
----
-
-### Node.js运行环境
-
-Node.js是JS的**后端运行环境**
-
-**Node.js中无法调用浏览器提供的DOM，BOM，Ajax等API函数**
-
-- V8引擎 
-
-- 运行环境提供的内置API
-
-  （fs、path、http、querystring、JS内置对象...）
-
-
 
 
 
@@ -104,7 +64,45 @@ node -v
 
 
 
-## 终端中执行JS文件
+## JavaScript运行环境
+
+JS可以运行在浏览器（前端开发），
+
+还可以运行在基于JS解析引擎的Node.js上（后端开发）
+
+---
+
+---
+
+### 1. 浏览器运行环境
+
+浏览器是JS的**前端运行环境**
+
+浏览器都内置JS解析引擎，其中Chrome浏览器的V8引擎效率最高
+
+- JS解析引擎
+
+- 运行环境提供的内置API
+
+  （DOM、BOM、Canvas、XMLHttpRequest、JS内置对象...）
+
+---
+
+---
+
+### 2. Node.js运行环境
+
+Node.js是JS的**后端运行环境**
+
+**Node.js中无法调用浏览器提供的DOM，BOM，Ajax等API函数**
+
+- V8引擎 
+
+- 运行环境提供的内置API
+
+  （fs、path、http、querystring、JS内置对象...）
+
+---
 
 在JavaScript文件目录下打开终端
 
@@ -138,7 +136,37 @@ Hello Node.js
 
 
 
-## fs 文件系统模块
+## 全局对象global
+
+Node.js这个JS运行环境中没有DOM和BOM，
+
+在浏览器JS运行环境中的全局对象是window
+
+在Node.js运行环境中的全局对象是global
+
+Node.js中的global中的方法可以省略global
+
+- **console.log()**
+- **setTimeout()**
+- **clearTimout()**
+- **setInterval()**
+- **claerInterval()**
+
+```js
+global.console.log('i am Global.console.log()')
+
+global.setTimeout(function() {
+    console.log('timer');
+},2000)
+```
+
+
+
+
+
+
+
+## fs  内置文件系统模块
 
 fs模块是Node.js提供的内置模块
 
@@ -373,7 +401,7 @@ err是错误对象，错误原因存放在**err.massage**
 
 文件写入成功时，err是**null**，
 
-文件写入失败时，err是错误对象
+文件写入失败时，err是个错误对象
 
 所以可以通过判断err是否为**true**（不是null，是个包含错误信息的对象），
 
@@ -387,6 +415,7 @@ fs.writeFile('./02/txt',content,'utf8',function(err){
     if(err){
         console.log('文件写入失败');
         console.log(err.message);
+      	return
     }else{
         console.log('文件写入成功');
     }
@@ -426,6 +455,7 @@ const fs = require('fs')
 fs.readFile('./01.txt', 'utf8', function (err, data) {
     if (err) {
         console.log('读取失败', err.message);
+      	return
     } else {
         console.log('读取成功', data);
         // 1. 转为数组
@@ -445,6 +475,7 @@ function fun(content) {
     fs.writeFile('./学生成绩.txt', content, function (err) {
         if (err) {
             console.log('写入失败', err.message)
+         	  return
         } else {
             console.log('写入成功');
         }
@@ -456,19 +487,23 @@ function fun(content) {
 
 ### 相对路径导致动态拼接问题
 
-使用fs模块操作文件时，
+**因为Node.js中的相对路径，相对的不是工作目录，**( require( )例外 )
 
-如果fs模块的方法中的**path属性**的路径，写的是**相对路径**的 **./** 或 **../** 
+**相对的是指向命令行工具时所在的目录**
 
-会以执行Node.js命令的当前所在目录路径后，动态拼接上被操作文件的路径
+于是，
 
-很容易出现路径动态拼接错误问题，导致找不到文件
+若 fs模块的方法中路径写的是**相对路径**的 **./** 或 **../** 
+
+则最终被拼接成的路径是
+
+执行Node.js命令的当前所在目录路径 + 被操作文件的路径
+
+最终，出现路径动态拼接错误问题，导致找不到文件
 
 所以，
 
-Node.js自动拼接路径错误，是因为path属性的路径写的是相对路径
-
-所以为了避免路径拼接错误，path属性的路径应该写为 **绝对路径**
+为了避免路径错误，使用fs模块操作文件时一般要使用**绝对路径**
 
 即从目标文件的盘符开始写
 
@@ -476,15 +511,13 @@ Node.js自动拼接路径错误，是因为path属性的路径写的是相对路
 
 ### __dirname
 
-因为绝对路径是从目标文件的盘符开始写，
+因为绝对路径是从目标文件的盘符开始写，太麻烦
 
-且不同系统的层级 \ /不同，
+且不同系统window 和 linux中的的层级 \ /不同，
 
-太麻烦又不利于维护
+所以不应该自己手写文件存放路径，而是采用
 
-所以不应该自己手写文件存放路径，
-
-而是采用Node.js 提供的 **__dirname** (双下划线) 获取文件所在目录，然后拼接文件名
+Node.js 的 **__dirname** (双下划线) 获取文件所在目录然后拼接文件名
 
 **以后路径path属性都要用__dirname拼接绝对路径**
 
@@ -530,7 +563,7 @@ fs.writeFile(__dirname + '/02.txt', content, 'utf8', function (err) {
 
 
 
-## path 路径模块
+## path 内置路径模块
 
 path模块是Node.js提供的内置模块
 
@@ -564,7 +597,9 @@ const path = require('path')
 
 用于拼接字符串的路径
 
-**Node.js的所有的路径拼接全部都要用path.join()**，而不是用 +拼接字符串
+**Node.js的所有的路径拼接全部都要用path.join()**，
+
+而不是用 +拼接字符串
 
 路径片段用逗号分隔，返回值是拼接后的路径字符串
 
@@ -758,7 +793,7 @@ console.log(path.basename(fullPath, ext));
 
 
 
-## http模块
+## http 内置模块
 
 http模块是Node.js提供的内置模块
 
@@ -826,7 +861,9 @@ server.listen(3000, () => {
 
 - **req.url** 
 
-  是客户端请求的的**url地址**
+  是客户端浏览器发送GET请求的**url地址** 
+
+  GET请求的参数可通过url内置模块辅助获取
 
 - **req.method**
 
@@ -838,6 +875,41 @@ server.on('request', (req)=>{
   
   console.log(req.url);
   console.log(req.method);
+})
+```
+
+- req.on
+
+- req.end
+
+  监听POST请求的参数的传递
+
+  当有数据传递时便会触发req.on事件
+
+  当数据传递完成时便会触发req.end事件
+
+  POST请求的参数会很大，放在了请求体中传输，不是一次性传递完成的，
+
+  是分批次的，需要通过变量拼接获取完整POST请求参数
+
+  最后可通过querystring内置模块将拼接的字符串转为对象形式获取POST参数
+
+```js
+const querystring = require('querystring')
+
+app.on('request', (req, res)=>{
+  
+  let postParams = ''
+
+	req.on('data', (chunk)=>{
+  	postParams += params
+	})
+
+	req.end('data', ()=>{
+  	console.log('传输完成')
+  	console.log(querystring.parse(postParams))
+	})
+  
 })
 ```
 
@@ -878,11 +950,29 @@ server.on('request', (req, res)=>{
 })
 ```
 
+- res.writeHead
+
+  设置响应状态、响应数据类型、编码类型
+
+```js
+res.write(500)
+```
+
+```js
+res.write(200, {
+  'Content-type':'text/plain;charset=utf8'
+})
+```
+
+
+
 
 
 ### 简单路由
 
-根据客户端请求URL地址的不同，响应不同的页面内容
+根据判断客户端请求URL地址路径的不同，响应不同的页面内容
+
+如下：
 
 ```js
 const http = require('http')
@@ -919,172 +1009,88 @@ server.listen(3000, () => {
 
 
 
+### 静态资源访问
 
+- 静态资源
 
-### 项目存入服务器
+  服务器不需要处理，直接响应给客户端的资源就是静态资源
 
-浏览器访问地址即为文件存放路径
+  比如 .html文件、.css文件、.js文件、images图片...
+
+- 动态资源
+
+  相同的请求地址但是请求参数不同 
+
+  服务器响应给 这种请的资源就是动态资源
 
 ```js
-|-项目文件根目录
-	|- index.html
-	|- inex.css
-	|- index.js
-|- server.js
-```
+http://www.abc.com/list?id=001
 
-- 文件在服务器中存放路径：
-
-```http
-/项目文件根目录/index.html
-/项目文件根目录/index.css
-/项目文件根目录/index.js
-```
-
-- 浏览器中资源访问的地址：
-
-```http
-/项目文件根目录/index.html
-/项目文件根目录/index.css
-/项目文件根目录/index.js
-
-# 当访问了index.html时，若发现里面有外链引入的CSS文件JS文件，浏览器会默认去请求
+http://www.abc.com/list?id=002
 ```
 
 ---
 
-#### 根据请求URL响应指定存放路径的文件
+如下：
 
-- 文件在服务器中存放路径：
-
-```http
-/项目文件根目录/index.html
-/项目文件根目录/index.css
-/项目文件根目录/index.js
-```
-
-- 浏览器中资源访问的地址：
-
-```http
-/项目文件根目录/index.html
-/项目文件根目录/index.css
-/项目文件根目录/index.js
-
-# 当访问了index.html时，若发现里面有外链引入的CSS文件JS文件，浏览器会默认去请求
-```
-
-将浏览器访问地址映射为文件存放路径
-
-直接将浏览器访问地址映射为文件存放路径，
-
-在浏览器的文件资源的**请求URL地址前面拼接上文件资源绝对路径**
+服务器静态资源存放于public目录
 
 ```js
-path.join(__dirname, '/文件资源根目录', 浏览器请求URL地址)
+xxxx
+|- public
+		|- images
+				|- 01.jpg
+		|- css
+				|- index.css
+		|- js
+				|- index.js
+		|- index.html
+|- app.js
 ```
 
-如下：
+1. 通过url内置模块，获取不带请求参数的请求url路径
+
+2. 通过path内置模块，拼接文件所在目录的绝对路径 + 请求路径
+
+3. 通过fs内置模块，读取的内容响应给客户端
+
+4. 通过mime第三方模块，动态设定响应报文的数据类型
 
 ```js
 const http = require('http')
+const url = require('url')
 const path = require('path')
 const fs = require('fs')
+const mime = require('mime')
 
-const server = http.createServer()
+const app = http.createServer()
 
-server.on('request', (req, res) => {
-    // 获取 请求URL
-    const url = req.url
-    // 请求URL 映射为文件存放路径
-    const filePath = path.join(__dirname,'/项目文件存放目录',url)
-
-		// 读取相应文件并响应给客户端
-    fs.readFile(filePath, 'utf8', (err,data)=>{
-        if(err){
-            return res.end('404 NOT FOUND')
-        }else{
-            res.end(data)
-        }
-    })
-   
-})
-
-server.listen(3000, () => {
-    console.log('server running at http://127.0.0.1:3000');
-})
-```
-
----
-
-#### 优化完善资源请求路径
-
-直接将用户访问的URL地址映射为文件地址做法
-
-但，该做法仅适合用户在浏览器地址栏中输入的是文件资源绝对路径
-
-即需要用户手动写上 **/文件存放根目录 **这个层级
-
-```http
-http://localhost:3000/文件存放根目录/index.html
-```
-
-若用户访问的路径是不完整的
-
-即访问的是根目录，或访问URL里不带有**/文件存放根目录** 层级的**index.html**
-
-会导致查不到该路径的资源，无法访问到文件
-
-```http
-http://localhost:3000
-```
-
-```http
-http://localhost:3000/index.html
-```
-
-如下：
-
-```js
-|-项目文件根目录
-	|- index.html
-	|- inex.css
-	|- index.js
-|- server.js
-```
-
-```js
-const http = require('http')
-const path = require('path')
-const fs = require('fs')
-
-const server = http.createServer()
-
-server.on('request', (req, res) => {
-    // 获取 请求URL
-    const url = req.url
-    // 请求URL 映射为文件存放路径
-    // const filePath = path.join(__dirname,'/test',url)
-    let filePath = ''
-    if (url === '/') {
-        filePath = path.join(__dirname, './test/index.html')
-    } else {
-        filePath = path.join(__dirname, '/test', url)
+app.on('request', (req, res)=>{
+  // 1. 
+  // let pathname = url.parse(req.url).pathname
+  let pathname = '/' ? '/index.html' :  url.parse(req.url).pathname
+  // 2. 
+ 	let realPath = path.join( __dirname, 'public' + pathname)
+  // 3.
+  fs.readFile(realPath, 'utf8', (err,data)=>{
+    if(err != null){ 
+      res.writeHead(404, {
+        'Content-type':'text/html;charset=utf8'
+      })
+      console.log('404 Not Found')
+      return  
     }
-
-    console.log(filePath);
-
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            return res.end('404 NOT FOUND')
-        } else {
-            res.end(data)
-        }
-    })
-
+    // 4. 
+    let type = mime(realPath)
+    res.writeHead(404, {
+        'Content-type': type
+      })
+   	res.end(data)
+  })
 })
 
-server.listen(3000, () => {
-    console.log('server running at http://127.0.0.1:3000');
+app.listen(3000, ()=>{
+  console.log('server running at http://localhost:3000')
 })
 ```
 
@@ -1092,7 +1098,36 @@ server.listen(3000, () => {
 
 
 
-## querystring模块
+## url 内置模块
+
+处理请求URL地址
+
+```js
+const url = require('url')
+```
+
+- url.parse
+
+  将URL请求地址转为对象形式
+
+```js
+url.parse(req.url, true).query
+```
+
+```js
+let getParams = url.parse(req.url, true).query
+
+console.log(getParams.name)
+console.log(getParams.age)
+```
+
+
+
+
+
+
+
+## querystring 内置模块
 
 Node.js的内置模块，
 
@@ -1101,6 +1136,7 @@ Node.js的内置模块，
 通过**parse()** 将字符串转为对象格式
 
 ```js
+// 在Express.js中
 const qs = require('querystring')
 
 app.get('/', (req, res) => {
@@ -1115,6 +1151,27 @@ app.get('/', (req, res) => {
 }
 ```
 
+---
+
+```js
+const querystring = require('querystring')
+
+app.on('request', (req, res)=>{
+  
+  let postParams = ''
+
+	req.on('data', (chunk)=>{
+  	postParams += params
+	})
+
+	req.end('data', ()=>{
+  	console.log('传输完成')
+  	console.log(querystring.parse(postParams))
+	})
+  
+})
+```
+
 
 
 
@@ -1124,6 +1181,8 @@ app.get('/', (req, res) => {
 ### 模块化概念
 
 将一个大文件拆分为多个独立且相互有依赖的小文件（模块）
+
+每一个JavaScript就是一个模块
 
 - 提高了代码的维护性、复用性
 - 可实现模块的按需加载
@@ -1139,13 +1198,129 @@ app.get('/', (req, res) => {
 
 
 
-### CommonJS规范
+### 模块的加载机制
 
-Node.js 遵循CommonJS的模块化规范：
+#### 1. 完整路径 + 文件后缀
+
+直接引入模块
+
+```js
+require('./targetModule.js')
+```
+
+---
+
+#### 2. 有路径，但无后缀
+
+```js
+require('./targetModule')
+```
+
+1. 先指定的目录下查找，是否有同名文件的JS文件
+
+   若找到了，则执行导入模块
+
+2. 若找不到，则找到并打开同名文件夹，
+
+   从中查找index.js文件
+
+   若找到了，则执行
+
+3. 若没有index.js，
+
+   则在同名文件夹下package.json中mian指定的主入口文件
+
+   若找到，则执行
+
+4. 若package.json中mian没指定主入口文件，或没找到，
+
+   则报错
+
+```bash
+Cannot find module 'xxxxx'
+```
+
+---
+
+#### 3. 无路径，无后缀
+
+```js
+require('targetModule')
+```
+
+1. Node.js会假设是系统内置模块
+
+2. 若不存在该内置模块，
+
+   则去 node_modules目录中查找同名文件
+
+   若找到了同名文件，则执行
+
+3. 若没找到同名文件，
+
+   会在node_modules目录中查找同名文件
+
+   若找了同名文件夹，则查找其中的index.js
+
+   若有index.js，则执行
+
+4. 若无index.js，
+
+   则查找该同名文件夹的package.json的main的入口文件
+
+   若找到则执行
+
+5. 若package.json中mian没指定主入口文件，或没找到，
+
+   则报错
+
+```bash
+Cannot find module 'xxxxx'
+```
+
+---
+
+#### 优先内置模块
+
+Node.js的**内置模块的加载优先级最高**
+
+假若同时加载重名的模块，最终导入的是内置模块
+
+---
+
+#### 优先缓存加载
+
+模块都是优先缓存中加载
+
+模块在第一次被 require()加载后会被缓存，
+
+即使多次调用require() 导入相同模块也不会导致模块内代码重复被多次执行，
+
+```js
+const xxx = require('xxx')
+const xxx = require('xxx')
+const xxx = require('xxx')
+```
+
+
+
+
+
+
+
+## CommonJS规范
+
+Node.js 遵循CommonJS的模块化规范解决模块与模块之间的依赖关系：
 
 - 每个模块内部的module变量代表当前模块
-- module变量是个对象，其exports属性（module.exports）是对我接口
-- require() 用于加载模块，加载的是该模块的module.exports属性的内容
+
+- module变量是个对象，
+
+  其**exports属性（module.exports）是对导出模块内容**
+
+- **require() 用于加载模块**，
+
+  加载的是该模块的导出的module.exports属性的内容
 
 
 
@@ -1294,15 +1469,6 @@ module.exports.c = c
 
 但因为module.exports写起了麻烦，Node提供了exports对象
 
-exports对象的内容默认指向以module.exports对象的内容
-
-最终模块对外暴露的内容永远以module.exports指向的对象为准
-
-```js
-console.log(module.exports === exports);
-// true
-```
-
 ```js
 let a = 10 + 20
 
@@ -1321,15 +1487,74 @@ exports.b = b
 exports.c = c
 ```
 
+exports对象和module.exports对象指向的内容相同（地址引用）
+
+```js
+console.log(module.exports === exports);
+// true
+```
+
+若exports对象和module.exports对象指向的对象不同时，
+
+最终模块对外暴露的内容永远以 module.exports对象指向的为准
+
+---
+
+#### 区别module.exports, exports
+
 ![](https://pbs.twimg.com/media/E3V1z7gVoBYDogY?format=jpg&name=medium)
 
-module.exports默认是个空对象，exports默认也是个空对象
+- module.exports默认是个空对象
 
-**通过exprots.属性的方式挂在模块成员，可以反映到module.exports指向的对象的内容**
+- exports默认也是个空对象
 
-**直接让 exports等于一个新对象，并不会修改module.exports指向的对象的内容**
+- **二者指向同一个引用地址**
 
-所以，ES6对象的健值同名时的简写只能用于module.exports
+- 若二者指向的是不同对象时，
+
+  以module.exports为准，exports指向失效
+
+- 通过exprots.属性的方式挂在模块成员，
+
+  可以反映到module.exports指向的对象的内容
+
+- 直接让 exports等于一个新对象，
+
+  并不会修改module.exports指向的对象的内容
+
+  最终模块对外暴露的内容永远以 module.exports对象指向的为准
+
+  **ES6对象的健值同名时的简写**只能用于module.exports
+
+所以，上4图
+
+1. exprots指向对象 { username='zs'} 后，
+
+   又使module.exports指向一个新对象
+
+   最终以module.exports对象指向为准
+
+2. module.exports指向一个对象 { username='zs'} 后，
+
+   又使exports指向一个新对象
+
+   最终以module.exports对象指向为准
+
+3. exprots指向对象 { username='zs'} 后，
+
+   在此基础上，又追加module.exports的一个属性gender='男'
+
+   最终以追加了属性module.exports对象指向为准
+
+4. exprots指向对象后，
+
+   又使module.exports指向exprots
+
+   在此基础上，又追加module.exports的一个属性age='22'
+
+   最终以追加了属性module.exports对象指向为准
+
+****
 
 为了防止混乱，导出模块是不要混用
 
@@ -1337,516 +1562,31 @@ module.exports默认是个空对象，exports默认也是个空对象
 
 
 
-### 模块的加载机制
 
-#### 优先缓存加载
 
-模块都是优先缓存中加载
+## 第三方模块
 
-模块在第一次被 require()加载后会被缓存，
+也叫做包（package）
 
-即使多次调用require() 导入相同模块也不会导致模块内代码重复被多次执行，
+是基于内置模块封装出的，效率更高
 
-```js
-const xxx = require('xxx')
-const xxx = require('xxx')
-const xxx = require('xxx')
-```
+一般由多个文件构成，放到了一个文件夹中
 
----
+有两种形式：
 
-#### 加载的是目录路径
+- JS文件的形式（body-parser）
 
-把目录作为模块的导入地址时：
+  提供具体功能的API方法函数接口
 
-1. 优先加载**package.jsonz的main属性**指定的入口文件
+- 命令行工具的形式（nodemon）
 
-2. 若没有就根据指定路径，加载路径下的 index.js文件
-3. 若都没有，终端报错
+  负责项目开发
 
----
+通过第三方模块的存储和分发仓库npm获取
 
-#### 内置模块加载机制
+详见npm笔记
 
-Node.js的**内置模块的加载优先级最高**
 
-假若同时加载重名的自定义模块、第三方模块、内置模块，
 
-导入的永远是内置模块
 
----
-
-#### 自定义模块加载机制
-
-- 需要通**过路径标识符** **./** 或 **../** 指定模块路径
-
-  若不指定路径只写某块名，会被当作内置模块或第三方模块
-
-- 会自动补后缀名
-
-  若导入时没有指定自定义模块的的后缀名
-
-  Node.js会自动按顺序补上后缀名，然后加载：
-
-  1. 优先补上.js的后缀名，然后加载
-
-  2. 若没找到带有.js后缀名的文件，就补上 .json 然后加载
-
-  3. 若还没找到.json后缀名的文件，就补上 .node 然后加载
-
-  4. 若都没找到，就在终端报错
-
----
-
-#### 第三方模块加载地址
-
-require()导入第三方模块时：
-
-1. 优先从的当前文件的父目录开始，
-
-   查找node_modules文件夹中第三方模块
-
-2. 若查找不到要加载的第三方模块，
-
-   就会逐层向上一级目录中查找加载，
-
-   直到文件系统的根目录
-
-3. 若都查不到，终端报错
-
-如下：
-
-导入名为moment的第三方模块时：
-
-```
-C:\User\test\project\node_modules\moment
-C:\User\test\node_modules\moment
-C:\User\project\node_modules\moment
-C:\node_modules\moment
-报错
-```
-
-
-
-
-
-
-
-## mysql模块 与 MySQL数据库
-
-mysql是npm的一个第三方模块
-
-用于在Node.js项目中链接、操作MySQL数据库
-
-基本步骤：
-
-1. 安装第**三方模块mysql**
-
-2. 通过mysql模块**链接到MySQL数据库**
-3. 通过mysql模块**执行SQL语句**
-
----
-
-### 安装配置与链接测试
-
-1. 安装：
-
-```bash
-npm i mysql
-```
-
-2. 然后链接数据库需要配置：
-   - **host**：数据库IP地址（哪一个电脑上的MySQL数据）
-   - **user**：登陆数据库的账号
-   - **password：**登陆数据库的密码
-   - **database：**指定操作的数据库名
-
-```js
-// 1. 导入
-const mysql = require('mysql')
-
-// 2. 建立与MySQL数据库的链接
-const db = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'admin123',
-    database: 'students'
-})
-```
-
-3. 执行SQL语句查询数据
-
-   通过 **db.query() 执行SQL语句**，通过回调函数拿到执行结果
-
-```js
-const sqlStr = 'SQL语句';
-
-db.query(sqlStr, (err, res) => {
-    if (err) {
-        return console.log('链接MySQL失败', err.message);
-    }else {
-        console.log(res);
-    }
-})
-```
-
-终端node命令执行该文件
-
-以**数组形式**返回数据表
-
-```js
-db.query('SELECT 1', (err, res) => {
-    if (err) {
-        return console.log('链接MySQL失败', err.message);
-    }else {
-        console.log(res);
-    }
-})
-// 其中的‘select 1’没有任何实质作用，只是测试用
-// 终端node执行该文件返回 [ RowDataPacket { '1': 1 } ]
-// 说明链接数据库成功
-```
-
-
-
-### mysql模块查询数据
-
-```js
-const sqlStr = 'SELECT 字段 FROM 表名';
-
-db.query(sqlStr, (err, res) => {
-    if (err) {
-        return console.log('链接MySQL失败', err.message);
-    }else {
-        console.log(res);
-    }
-})
-```
-
----
-
-如下：
-
-假设MySQL数据库在本机
-
-其中有一个students数据库，并有一个 class_A数据表
-
-- JS文件：
-
-```js
-const mysql = require('mysql')
-
-const db = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'admin123',
-    database: 'students'
-})
-
-
-const sqlStr = 'SELECT * FROM class_A';
-
-db.query(sqlStr, (err, res) => {
-    if (err) {
-        return console.log('链接MySQL失败', err.message);
-    }else {
-        console.log(res);
-    }
-})
-```
-
-- 终端node执行该JS文件结果：
-
-  以**数组形式**返回数据表，每一数据行都是一个**对象**
-
-```bash
-[
-  RowDataPacket {
-    id: 1,
-    name: 'Andy',
-    gender: '1',
-    age: '28'
-  },
-  RowDataPacket {
-    id: 2,
-    name: 'Lili',
-    gender: '2',
-    age: '26'
-  },
-  RowDataPacket {
-    id: 3,
-    name: 'Jerry',
-    gender: '1',
-    age: '40'
-  }
-]
-```
-
-
-
-### mysql模块插入数据
-
-1. 先声明要执行的SQL语句字符串，
-2. 然后通过SQL语句的 **? 占位符** 空出数据的具体值
-3. db.query() 调用SQL语句字符串，和**数组形式**的具体填充值
-4. 根据 **res.affectedRows === 1** 判断是否数据插入成功
-
-```js
-const 要插入数据库的对象 = {
- //  xxx:xxx,
- //  xxx:xxx
- //  ...
-}
-
-const sqlStr = 'INSERT INTO 表名(字段,字段) VALUES (?,?)'
-
-db.query(sqlStr, [对象.属性, 对象.属性], (err,res)=>{
-  if(err)return console.log(err.message)
-  if(res.affectRows === 1){
-    console.log('数据插入成功')
-  }
-})
-```
-
-如下：
-
-```js
-const people = {
-  name: '奥特曼'，
-  age: 1000
-}
-
-const sqlStr = 'INSERT INTO class_A (name,age) VALUES (?,?)'
-
-db.query(sqlStr, [people.name, people.age], (err,res)=>{
-  if(err)return console.log(err.message)
-  if(res.affectRows === 1){
-    console.log('数据插入成功')
-  }
-})
-
-// sql模块insert into插入数据的回调函数res是个对象
-```
-
----
-
-#### 简写
-
-若插入的数据对象的**属性**和数据库中的**字段** 是**一一对应**的话
-
-db.query()调用的 SQL语句写作 **INSERT INTO 表名 SET ?**
-
-db.query() 带入SQL语句字符串和目标对象
-
-```js
-const 要插入数据库的对象 = {
- //  xxx:xxx,
- //  xxx:xxx
- //  ...
-}
-
-const sqlStr = 'INSERT INTO 表名 SET ?'
-
-db.query(sqlStr, 要插入数据库的对象, (err,res)=>{
-  if(err)return console.log(err.message)
-  if(res.affectRows === 1){
-    console.log('数据插入成功')
-  }
-})
-```
-
-如下：
-
-```js
-const people = {
-  name: '奥特曼',
-  gender:'1'
-  age: '1000',
-  
-}
-
-const sqlStr = 'INSERT INTO SET ?'
-
-db.query(sqlStr, [people.name, people.age], (err,res)=>{
-  if(err)return console.log(err.message)
-  if(res.affectRows === 1){
-    console.log('数据插入成功')
-  }
-})
-
-// sql模块insert into插入数据的回调函数res是个对象
-```
-
-
-
-### mysql模块更新数据
-
-1. 先声明要执行的SQL语句字符串，
-
-2. 然后通过SQL语句的 **? 占位符** 空出数据的具体值
-
-3. db.query() 调用SQL语句字符串，和**数组形式**的具体填充值
-
-   按顺序填充上？占位符
-
-4. 根据 **res.affectedRows === 1** 判断是否数据更新成功
-
-```js
-const 要修改的数据对象 = {
- //  xxx:xxx,
- //  xxx:xxx
- //  ...
-}
-const sqlStr = 'UPDATE 表名 SET 字段=?,字段=? WHERE 字段=?'
-
-db.query(sqlStr, [对象.属性,对象.属性], (err, res) => {
-    if (err) return console.log('更新失败', err.message);
-    if (res.affectedRows === 1) {
-        console.log('更新成功');
-    }
-})
-```
-
-如下：
-
-```js
-const people = {
-    id: 8,
-    name: '雷欧奥特曼',
-    age: '55555'
-}
-const sqlStr = 'UPDATE class_A SET name=?,age=? WHERE id=?'
-
-db.query(sqlStr, [people.name, people.age, people.id], (err, res) => {
-    if (err) return console.log('更新失败', err.message);
-    if (res.affectedRows === 1) {
-        console.log('更新成功');
-    }
-})
-```
-
----
-
-#### 简写
-
-若插入的数据对象的**属性**和数据库中的**字段** 是**一一对应**的话
-
-db.query()调用的 SQL语句写作 **UPDATE 表名 SET ? WHERE 字段=？**
-
-db.query() 带入SQL语句字符串和目标对象
-
-因为WHERE用于指定，所以除了带入对象还要额外带入WHERE条件的占位符具体值
-
-```js
-const 要修改的数据对象 = {
- //  xxx:xxx,
- //  xxx:xxx
- //  ...
-}
-const sqlStr = 'UPDATE 表名 SET ? WHERE 字段=?'
-
-db.query(sqlStr, [目标对象, 对象.属性], (err, res) => {
-    if (err) return console.log('更新失败', err.message);
-    if (res.affectedRows === 1) {
-        console.log('更新成功');
-    }
-})
-```
-
-```js
-const people = {
-    id: 9,
-    name: '艾斯奥特曼',
-    age: '55555'
-}
-
-const sqlStr = 'UPDATE class_A SET ? WHERE id=?'
-
-db.query(sqlStr, [people, people.id], (err, res) => {
-    if (err) return console.log('更新失败', err.message);
-    if (res.affectedRows === 1) {
-        console.log('更新成功');
-    }
-})
-```
-
-
-
-### mysql模块删除数据
-
-建议使用唯一标识 **id** 来指定删除的数据
-
-1. 先声明要执行的SQL语句字符串，
-
-2. 然后通过SQL语句的 **? 占位符** 空出数据的具体值
-
-3. db.query() 调用SQL语句字符串，和**数组形式**的具体填充值
-
-   只有一个占位符时，数组可省略
-
-4. 根据 **res.affectedRows === 1** 判断是否数据插入成功
-
-```js
-const sqlStr = 'DELETE FROM 表名 WHERE id=?'
-
-db.query(sqlStr, ID数字, (err, res) => {
-    if (err) return console.log('删除失败', err.message);
-    if (res.affectedRows === 1) {
-        console.log('删除成功');
-    }
-})
-```
-
-如下：
-
-```js
-const sqlStr = 'DELETE FROM class_A WHERE id=?'
-
-db.query(sqlStr, 8, (err, res) => {
-    if (err) return console.log('删除失败', err.message);
-    if (res.affectedRows === 1) {
-        console.log('删除成功');
-    }
-})
-```
-
----
-
-#### 标记删除（重要）
-
-因为DELETE会直接从数据表中删除数据，不安全，无法恢复
-
-应该使用标记删除的方式模拟删除，而不是直接删除
-
-在数据表中设定一个**表示状态的字段**status，标记该行数据是否被删除，
-
-即，标记删除的实质是：**执行UPDATE语句修改status字段的值**
-
-> status字段的数据格式：
->
-> tinyint(1)：布尔值
->
-> ​	0：正常
->
-> ​	1：禁用
-
-```js
-db.query('UPDATE 表名 SET status=1 WHERE id=?', [1,ID数], (err, res) => {
-    if (err) return console.log('删除失败', err.message);
-    if (res.affectedRows === 1) {
-        console.log('标记删除成功');
-    }
-})
-```
-
-如下:
-
-```js
-db.query('UPDATE class_A SET status=1 WHERE id=?', [1,6], (err, res) => {
-    if (err) return console.log('删除失败', err.message);
-    if (res.affectedRows === 1) {
-        console.log('标记删除成功');
-    }
-})
-```
 
