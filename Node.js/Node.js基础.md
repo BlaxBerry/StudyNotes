@@ -1592,9 +1592,19 @@ console.log(module.exports === exports);
 
 ## Node.js的异步
 
+Node.js中的API有两种，一种是同步API，一种是异步API
+
+异步API的返回值需要通过回调函数来获取，
+
+若多个异步调用的结果存在依赖关系，就需要嵌套，
+
+会导致嵌套层数过多，就是**回调地狱**
+
+
+
 ### 异步嵌套（回调地狱）
 
-比如，依次读取A文件、B文件、C文件、D文件
+比如，fs模块依次读取A文件、B文件、C文件、D文件
 
 多个异步调用嵌套层数过多，会导致维护困难
 
@@ -1641,7 +1651,7 @@ function 第二个(){
 第一个()
 	.then(res=>{
   		// console.log(res)
-  		retuen 第二个
+  		retuen 第二个()
 		})
   .then(res=>{
   		// console.log(res)
@@ -1666,7 +1676,9 @@ function 第二个(){
 
 4. 调用函数（第一个Promise实例对象）
 
-   通过then()方法获取异步执行的结果，并return返回下一个函数（Promise实例对象）
+   通过then()方法获取异步执行的结果，
+
+   并return返回下一个函数的调用（Promise实例对象）
 
    链式编程依次调用函数
 
@@ -1767,13 +1779,13 @@ async function run(){
 
 #### util内置模块
 
-```js
-const promisify =  require('util').promisify
-```
-
 包装Node.js的API，使返回值为Promise对象
 
 然后才能支持异步函数的语法
+
+```js
+const promisify =  require('util').promisify
+```
 
 ```js
 const promisify =  require('util').promisify

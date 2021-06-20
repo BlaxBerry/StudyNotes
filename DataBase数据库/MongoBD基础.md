@@ -2,19 +2,37 @@
 
 ![](https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1290818458,1689762935&fm=26&gp=0.jpg)
 
-**NoSQL**(NoSQL = Not Only SQL )
+对前端友好：
 
-分布式
+- 开放的API使用JavaScript语法
 
-类似 JSON 的 BSON 格式
+- **NoSQL**(NoSQL = Not Only SQL )
+
+  数据采用JSON格式存储
 
 
 
 
 
-## brew安装 启动
+## 安装与初始化
 
-Mac可通过的 brew 来安装 mongodb
+### 安装
+
+- 数据库软件：**MongDB Community Server**
+
+- 可视化软件：**MongoDB Compass**
+
+  可以通过图形界面操作MongoDB
+
+---
+
+官网下载：
+
+```http
+https://www.mongodb.com/try/download/community
+```
+
+MAC brew下载：
 
 ```bash
 brew tap mongodb/brew
@@ -22,50 +40,93 @@ brew tap mongodb/brew
 brew install mongodb-community@4.4
 ```
 
-- 使用 brew 命令来**启动服务**
+---
+
+### 版本
 
 ```bash
-brew services start mongodb-community@4.4
+mongod --version 
+
+db version v4.4.5
+Build Info: {
+    "version": "4.4.5",
+    "gitVersion": "ff5cb77101b052fa02da43b8538093486cf9b3f7",
+    "modules": [],
+    "allocator": "system",
+    "environment": {
+        "distarch": "x86_64",
+        "target_arch": "x86_64"
+    }
+}
 ```
 
-- 使用 brew 命令来**关闭服务**
+---
+
+### 开启关闭
+
+brew 启动：
 
 ```bash
-brew services stop mongodb-community@4.4
+brew services start mongodb-community
 ```
 
-开启的**端口号：27017**
+brew 停止：
+
+```bash
+brew services stop mongodb-community
+```
+
+---
+
+### 浏览器访问
 
 ```http
-http://localhost:27017/
+http://127.0.0.1:27017/
 ```
 
-浏览器地址栏输入即可访问：
+页面显示：
 
-```html
-It looks like you are trying to access MongoDB over HTTP on the native driver port.
+> It looks like you are trying to access MongoDB over HTTP on the native driver port.
+
+---
+
+### 相关文件地址
+
+- 配置文件：**/usr/local/etc/mongod.conf**
+- 日志文件路径：**/usr/local/var/log/mongodb**
+- 数据存放路径：**/usr/local/var/mongodb**
+
+
+
+
+
+
+
+## 术语对比
+
+| 解释   |     SQL     |    MongoDB     | 解释                       |
+| ------ | :---------: | :------------: | -------------------------- |
+| 数据库 |  database   |  **database**  | **数据库**                 |
+| 数据表 |    table    | **collection** | **集合**（JS数组）         |
+| 数据行 |     row     |  **document**  | **文档**（JS对象）         |
+| 字段   |   column    |   **field**    | **字段**（JS对象属性）     |
+| 主键   | primary key |  primary key   | 主键，自动将id字段设为主键 |
+
+
+
+
+
+## 可视化工具
+
+![](https://cloud.ibm.com/docs-content/v1/content/eb4a20de9e4437ccdd0678de8678f1e0897dff68/nl/ja/databases-for-mongodb/images/getting-started-compass-page.png)
+
+
+
+
+
+## 数据库中导入数据文件
+
+```bash
+mongoimport -d 数据库名 -c 集合名 --file 要导入的数据文件
 ```
 
-
-
-## 创建日志、数据存放的目录
-
-使用brew安装好的MongoDB，默认会在如下位置创建相关文件
-
-- 配置文件（the configuration file）：
-
-  **/usr/local/etc/mongod.conf**
-
-- 日志文件路径（the log directory path ）：
-
-  **/usr/local/var/log/mongodb**
-
-- 数据存放路径（the data directory path ）：
-
-  **/usr/local/var/mongodb**
-
-
-
-查看数据库
-
-show databases
