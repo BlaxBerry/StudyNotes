@@ -1784,3 +1784,20 @@ app.listen(3000, () => {
     console.log('Server running at localhost:3000');
 })
 ```
+
+
+
+### JWT认证
+
+安装
+
+```bash
+npm i jsonwebtoken express-jwt
+```
+
+- jsonwebtoken：用于生成JWT字符串
+
+- express-jwt：用于将JWT字符串解析还原为JSON对象
+
+
+
