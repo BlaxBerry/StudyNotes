@@ -742,7 +742,7 @@ const html = template(views, {})
 
 
 
-## 模版配置
+## 模版的相关配置
 
 ### 导入模版变量
 
@@ -818,4 +818,69 @@ const html = template(views, {
 
 
 
+
+### 模版引擎目录
+
+通过模版引擎给多个模版（HTML页面）插入数据时，
+
+若逐个定义要插入数据的模版文件的地址，会导致代码冗余，如下：
+
+```js
+const template = require('art-template')
+const path = require('path')
+
+const views1 = path.join(__dirname, 'views', '01.art')
+const views2 = path.join(__dirname, 'views', '02.art')
+const views3 = path.join(__dirname, 'views', '03.art')
+const views4 = path.join(__dirname, 'views', '04.art')
+
+template(views1, {})
+template(views2, {})
+template(views3, {})
+template(views4, {})
+```
+
+可以通过设置**模版根目录**
+
+给模版插入数据时，不用再写完整的路径，只需写模版文件名
+
+模版引擎会自动从设定的根目录中找取指定模版文件
+
+```js
+const template = require('art-template')
+const path = require('path')
+
+// 配置模版根目录
+template.defauls.root =  path.join(__dirname, 'views')
+
+template('01.art', {})
+template('02.art', {})
+template('03.art', {})
+template('04.art', {})
+```
+
+
+
+
+
+### 配置模版后缀
+
+配置了模版后缀之后，
+
+在将数据插入模版时，就不需要再写文件后缀了
+
+```js
+const template = require('art-template')
+const path = require('path')
+
+template.defauls.root =  path.join(__dirname, 'views')
+
+// 配置模版默认后缀
+template.defauls.extname = '.art'
+
+template('01', {})
+template('02', {})
+template('03', {})
+template('04', {})
+```
 
