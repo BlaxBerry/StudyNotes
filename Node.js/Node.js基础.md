@@ -880,8 +880,6 @@ server.on('request', (req)=>{
 
 - req.on
 
-- req.end
-
   监听POST请求的参数的传递
 
   当有数据传递时便会触发req.on事件
@@ -894,6 +892,7 @@ server.on('request', (req)=>{
 
   最后可通过querystring内置模块将拼接的字符串转为对象形式获取POST参数
 
+
 ```js
 const querystring = require('querystring')
 
@@ -901,11 +900,11 @@ app.on('request', (req, res)=>{
   
   let postParams = ''
 
-	req.on('data', (chunk)=>{
+	req.on('data', (params)=>{
   	postParams += params
 	})
 
-	req.end('data', ()=>{
+	req.on('end', ()=>{
   	console.log('传输完成')
   	console.log(querystring.parse(postParams))
 	})

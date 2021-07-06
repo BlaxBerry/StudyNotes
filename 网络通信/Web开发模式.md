@@ -9,6 +9,8 @@
 
 ### 1. 服务器端渲染的Web开发模式
 
+**SSR** (**S**erver **S**ide **R**endering) 服务器端渲染
+
 在服务器端通过字符串拼接的方式，根据请求动态生成要发送给客户端的HTML页面
 
 客户端拿到的的是带有真是数据的完整页面
@@ -67,6 +69,8 @@ app.get('/index.html', (req, res)=>{
 
 
 ### 2. 前后端分离的Web开发模式
+
+**CSR** (**C**lient **S**ide **R**endering）客户端渲染
 
 依赖Ajax技术
 

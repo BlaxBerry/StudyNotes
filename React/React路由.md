@@ -1309,6 +1309,12 @@ export default class Home extends Component {
 
 #### params参数
 
+- 不仅是参数传递，必须在编写路由组件时就要给params参数预留占位
+
+  ` <Route path="/about/detail/:id/:title" component={Detail} />`
+
+- 通过 this.props.match.params接收
+
 ```react
 import React, { Component } from 'react'
 import { Route } from 'react-router-dom'

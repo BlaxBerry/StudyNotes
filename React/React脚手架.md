@@ -552,3 +552,18 @@ XXX
 |-config
 |-scripts
 ```
+
+
+
+
+
+## 打包项目
+
+```bash
+yarn build
+```
+
+会生成一个bulid文件夹
+
+
+

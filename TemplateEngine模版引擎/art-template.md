@@ -517,6 +517,47 @@ const html = template(views, {
 })
 ```
 
+---
+
+#### 循环嵌套
+
+```html
+{{ each students}}
+    <tr>
+      <th>{{ $index + 1 }}</th>
+      <th>{{ $value.id }}</th>
+      
+      <td>
+        {{ each $value.skills}}
+            <span> {{ $value }} </span>
+        {{ /each }}
+      </td>
+ 
+    </tr>
+{{ /each }}
+```
+
+---
+
+#### 动态设置标签属性
+
+直接在标签的属性中用插入数据即可
+
+```html
+{{ each students}}
+
+	<!--img的src属性-->
+	<img src="{{ $value.picsrc }}" alt="">
+
+ 	<!--a标签的href请求参数-->
+  <a href="/update?id={{$value.id}}" class="btn"> Update </a>
+  <a href="/delete?id={{$value.id}}" class="btn"> Delete </a>
+   
+{{ /each }}
+```
+
+
+
 
 
 
@@ -851,7 +892,7 @@ const template = require('art-template')
 const path = require('path')
 
 // 配置模版根目录
-template.defauls.root =  path.join(__dirname, 'views')
+template.defaults.root =  path.join(__dirname, 'views')
 
 template('01.art', {})
 template('02.art', {})
@@ -876,7 +917,7 @@ const path = require('path')
 template.defauls.root =  path.join(__dirname, 'views')
 
 // 配置模版默认后缀
-template.defauls.extname = '.art'
+template.defaults.extname = '.art'
 
 template('01', {})
 template('02', {})

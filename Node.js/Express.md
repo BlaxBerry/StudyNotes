@@ -85,6 +85,10 @@ app.post('请求的URL地址', (req, res)=>{
 
 #### req.query
 
+Express增加的属性，
+
+不再需要和原本Nod.js一样还要引用url模块来处理请求URL了
+
 可获取请求URL中**查询字符串**的形式 **GET请求参数**
 
 即，key=value&key=value形式的GET参数
@@ -268,6 +272,21 @@ app.listen(80, () => {
 
 ---
 
+#### res.status()
+
+设置响应状态码
+
+```js
+app.get('/no',(req,res)=>{
+    res.status(404)
+      .send('页面不存在')
+})
+```
+
+
+
+---
+
 #### res.send()方法
 
 通过res.send()将处理好的内容发送给客户端
@@ -297,9 +316,10 @@ app.listen(3000,()=>{
 })
 ```
 
+比底层Node.js的res.end( )更强大：
 
-
-
+- 自动检测响应内容的数据类型和编码
+- 自动设置HTTP状态码
 
 
 
@@ -316,7 +336,7 @@ app.listen(3000,()=>{
 **被托管的静态资源文件目录不会出现在访问的URL地址中**
 
 ```js
-app.use(express.static('静态资源文件夹'))
+app.use(express.static('静态资源文件夹的绝对路径'))
 ```
 
 如下：
@@ -340,9 +360,10 @@ app.use(express.static('静态资源文件夹'))
 ```js
 // 静态资源服务器
 const express = require('express')
+const path = require('path')
 const app = express()
 
-app.use(express.static('public'))
+app.use(express.static(path.join(__diname, 'public')))
 
 app.listen(3000,()=>{
     console.log('Server Running at localhost:3000');
@@ -446,7 +467,7 @@ http://localhost:3000/public/js/login.js
 
 Express中的路由是指
 
-**客户端的请求** 和 **服务器的处理函数** 之间的映射关系
+**客户端的请求URL** 和 **服务器的处理函数** 之间的映射关系
 
 
 
@@ -505,7 +526,9 @@ app.listen(3000,()=>{
 
 但是因为日后代码量会增多，
 
-**很少会直接将路由挂在到app上**
+很少会直接将路由挂在到app上，而是采取模块化路由，
+
+在单独的文件中管理路由API，入口文件只负责调用路由模块
 
 
 
@@ -519,11 +542,14 @@ app.listen(3000,()=>{
 
 ---
 
-#### 1. 创建路由模块
+#### 创建与导入步骤
+
+**1. 单独文件中创建路由模块**
 
 将路由都写在一个单独的JS文件中，方便管理维护
 
 1. 调用express.Router() 创建路由对象
+
 2. 将挂载到路由对象router上
 3. 使用moudule.exports对外暴露路由
 
@@ -548,9 +574,7 @@ router.post('/user/add', (req,res)=>{
 module.exports = router
 ```
 
----
-
-#### 2. 导入注册路由模块
+**2. 入口文件中导入注册路由模块**
 
 创建的单独的路由模块文件需要被导入服务器入口文件
 
@@ -571,6 +595,59 @@ app.listen(3000,()=>{
     console.log('Server Running at localhost:3000');
 })
 ```
+
+---
+
+#### 多个路由模块
+
+如下，分别创建了两个路由模块，然后分别在入口文件中导入挂载调用
+
+```js
+// 路由模块user
+const express = require('express')
+const user = express.Router();
+
+user.get('/user/list', (req,res)=>{
+    res.send('获得用户列表')
+})
+user.post('/user/add', (req,res)=>{
+    res.send('添加用户')
+})
+
+module.exports = user
+```
+
+```js
+// 路由模块products
+const express = require('express')
+const product = express.Router();
+
+product.get('/product/list', (req,res)=>{
+    res.send('获得商品列表')
+})
+product.post('/product/add', (req,res)=>{
+    res.send('添加商品')
+})
+
+module.exports = product
+```
+
+```js
+// main.js
+const express = require('express')
+const app = express()
+
+// 导入路由模块user
+const user = require('./routes/user.js')
+// 导入路由模块products
+const product = require('./routes/products.js')
+
+// 	调用路由
+app.use(user)
+app.use(product)
+```
+
+
 
 
 
@@ -631,6 +708,60 @@ http://localhost:3000/user/add
 // 添加路径前缀后
 http://localhost:3000/api/user/list
 http://localhost:3000/api/user/add
+```
+
+
+
+### 路由参数
+
+出来在请求URL结尾通过查询字符串传递参数，
+
+还可以通过路由参数传递
+
+---
+
+#### 传递与接收
+
+- **服务端设置路由地址和接收参数**
+
+在路由请求地址后通过  **: 参数** 设置路由参数
+
+相当一个占位符
+
+接收路由参数时通过req.parmas接收
+
+```js
+app.get('/search/:id', (req, res)=>{
+  res.send('OK')
+  console.log(req.parmas)
+})
+```
+
+- **客户端传递参数**
+
+不再用 ？在URL分割，而是直接接在URL后
+
+访问请求地址时必须写上完整的地址+ 参数
+
+```js
+localhost:3000/find/123
+localhost:3000/find/food
+```
+
+---
+
+#### 多个路由参数
+
+```js
+app.get('/search/:category/:type/:id', (req, res)=>{
+  res.send('OK')
+  console.log(req.parmas)
+})
+```
+
+```js
+localhost:3000/find/123
+localhost:3000/find/food
 ```
 
 
@@ -793,7 +924,50 @@ app.use(function(req, res, next){
 
 ---
 
-#### 全局中间件的作用
+#### 定义多个全局中间件
+
+可**使用app.use()连续定义**多个全局中间件
+
+客户端发来的请求会按照中间件定义先后顺序进行调用中间件
+
+如下：
+
+只要有请求发来服务器，就会按照顺序打印NO1,NO2,
+
+若是GET请求访问了根目录，就会按照顺序打印NO1,NO2,NO3
+
+```js
+const express = require('express')
+const app = express()
+
+
+app.use((req,res,next)=>{
+    console.log('NO1, 中间件第 1 次调用');
+    next()
+})
+app.use((req,res,next)=>{
+    console.log('NO2, 中间件第 2 次调用');
+    next()
+})
+app.get('/', (req,res)=>{
+    console.log('NO3, GET请求访问路由地址');
+  
+    res.send('GET请求访问了首页')
+})
+app.post('/', (req,res)=>{
+    console.log('NO3, POST请求访问路由地址');
+  
+    res.send('POST请求访问了首页')
+})
+
+app.listen(80,()=>{
+    console.log('server running at localhost:80');
+})
+```
+
+---
+
+#### 作用1 处理重复内容
 
 若每一个路由函数中，
 
@@ -859,46 +1033,83 @@ app.listen(80,()=>{
 
 ---
 
-#### 定义多个全局中间件
+#### 作用2 登陆验证
 
-可**使用app.use()连续定义**多个全局中间件
-
-客户端发来的请求会按照中间件定义先后顺序进行调用中间件
-
-如下：
-
-只要有请求发来服务器，就会按照顺序打印NO1,NO2,
-
-若是GET请求访问了根目录，就会按照顺序打印NO1,NO2,NO3
+app.use( )可在参数中设置URL请求地址，接收处理所有请求
 
 ```js
-const express = require('express')
-const app = express()
-
-
-app.use((req,res,next)=>{
-    console.log('NO1, 中间件第 1 次调用');
-    next()
-})
-app.use((req,res,next)=>{
-    console.log('NO2, 中间件第 2 次调用');
-    next()
-})
-app.get('/', (req,res)=>{
-    console.log('NO3, GET请求访问路由地址');
-  
-    res.send('GET请求访问了首页')
-})
-app.post('/', (req,res)=>{
-    console.log('NO3, POST请求访问路由地址');
-  
-    res.send('POST请求访问了首页')
-})
-
-app.listen(80,()=>{
-    console.log('server running at localhost:80');
+app.use('/请求地址', (req, res, next)=>{
+  xxxx
+  next()
 })
 ```
+
+可用于，必须要确认登陆后才能访问的地址请求的场合，
+
+可通过中间件拦截所有请求，进行**登陆状态验证**
+
+```js
+app.use('/login', (req, res, next)=>{
+  let isLogin = false
+  if(isLogin){
+    next()
+  }else{
+    res.send('还未登陆')
+  }
+})
+
+app.get('/login', (req, res)=>{
+  res.send('欢迎登陆')
+})
+```
+
+---
+
+#### 作用3 网站维护公告
+
+比如网站维护时，不希望用户访问
+
+可通过中间件拦截终止所有请求，不调用next( )
+
+```js
+app.use((req, res, next)=>{
+  res.send('网站维护中，无法访问')
+})
+
+app.get('/...', (req, res)=>{
+  xxx
+})
+app.get('/...', (req, res)=>{
+  xxx
+})
+```
+
+---
+
+#### 作用4 定义404页面
+
+中间件时从上到下逐一匹配，
+
+若请求地址和所有的路由都没匹配成功，即该请求不存在
+
+所以，404页面响应处理的中间件必须定义在所有路由之后
+
+```js
+app.get('/...', (req, res)=>{
+  xxx
+})
+app.get('/...', (req, res)=>{
+  xxx
+})
+...
+
+app.use((req, res, next)=>{
+  res.status(404)
+  	 .send('当前访问页面不存在')
+})
+```
+
+
 
 
 
@@ -1109,7 +1320,11 @@ router.use((req,res,next)=>{
 
 #### 错误级别中间件
 
-**专门用于捕获整个项目中发生的异常错误，防止项目异常崩溃**
+程序一旦出错就无法运行了（比如读取不到文件）
+
+可通过错误处理中间件，
+
+**捕获整个项目中发生的异常错误，统一处理，防止项目异常崩溃**
 
 若没有该中间件，会导致出现错误服后务器会崩溃掉
 
@@ -1124,6 +1339,9 @@ router.use((req,res,next)=>{
 ```js
 app.use((err, req, res, next)=>{
   xxxxx
+  res.status(500)
+  	 .send('发现了错误' + err.message)
+  
    console.log('发现了错误' + err.message);
 })
 ```
@@ -1155,6 +1373,30 @@ app.use((err, req, res, next) => {
 
 app.listen(80, () => {
     console.log('server running at localhost:80');
+})
+```
+
+再比如：
+
+异步的错误不能直接被错误处理中间件获取，
+
+需要通过给next（）传递参数，直接触发错误处理中间件
+
+```js
+app.get('/index', (req, res, next)=>{
+  fs.readFile('./index.txt', 'utf8', (err, res)=>{
+    if(err){
+      next(err)
+    }else{
+      res.send(res)
+    }
+  })
+})
+
+app.use((err, req, res, next)=>{
+  xxxxx
+  res.status(500)
+  	 .send('发现了错误' + err.message)
 })
 ```
 
@@ -1209,9 +1451,9 @@ npm i body-parser
 解析**x-www-form-urlencoded**健值对格式的POST请求参数
 
 ```js
-const parser = require('body-parser')
+const bodyparser = require('body-parser')
 
-app.use(parser.urlencoded({
+app.use(bodyparser.urlencoded({
     extended: false
 }))
 
@@ -1370,6 +1612,137 @@ app.post('/', (req, res)=>{
 ```
 
 
+
+
+
+### 捕获错误
+
+同步的错误可以被错误级别中间件捕获
+
+异步可以通过给next( )传递错误内容杂技节交给错误级别中间件处理
+
+异步还可通过Promise对象的API catch()获取
+
+```js
+app.get('/', async (req, res, next)=>{
+  try {
+    await User.find({_id: 'xxx0xxx'})
+  }catch(ex) {
+    next(ex)
+  }
+})
+```
+
+
+
+
+
+
+
+## 请求参数
+
+### 传递
+
+#### GET请求参数
+
+- 查询字符串
+
+```js
+localhost:3000/find?name=andy&id=28
+```
+
+- 路由参数
+
+```js
+localhost:3000/find/andy/28
+```
+
+#### POST请求参数
+
+- 请求体
+
+---
+
+### 接收
+
+#### GET请求参数
+
+- 查询字符串
+
+```js
+app.get('/index', (req, res)=>{
+  res.send(req.query)
+})
+```
+
+- 路由参数
+
+```js
+app.get('/index/:name/:id', (req, res)=>{
+  res.send(req.parmas)
+})
+```
+
+#### POST请求参数
+
+- body-parser使用：
+
+```bash
+npm i body-parser
+```
+
+解析**x-www-form-urlencoded**健值对格式的POST请求参数
+
+```js
+const bodyparser = require('body-parser')
+app.use(bodyparser.urlencoded({
+    extended: false
+}))
+
+app.post('/index', (req, res) => {
+    res.send(req.body)
+})
+```
+
+- **express.json()**
+
+```js
+//JSON格式的POST请求参数
+app.use(express.json())
+```
+
+```js
+const express = require('express')
+const app = express()
+
+app.use(express.json())
+
+app.post('/post',(req,res)=>{
+    res.send(req.body)
+})
+```
+
+- **express.urlencoded()**
+
+```js
+// **x-www-form-urlencoded**健值对格式的POST请求参数
+app.use(express.urlencoded({ 
+  extended: false
+}))
+```
+
+```js
+const express = require('express')
+const app = express()
+
+app.use(express.urlencoded({ 
+  extended: false
+}))
+
+app.post('/post',(req,res)=>{
+    res.send(req.body)
+})
+```
 
 
 
@@ -1659,6 +2032,148 @@ $('#jsonp').on('click', function () {
 
 
 
+## 模版引擎 express-art-template
+
+### 基础设置
+
+以art-template为例子
+
+还需要下载转为express封装的 express-art-templat
+
+```bash
+npm i art-template express-art-template
+```
+
+```js
+const express = require('express')
+const path = require('path')
+const app = express()
+
+
+// 1.设置存放模版的目录
+app.set('views', path.join(__dirname, 'views'))
+
+// 2.设置模版的默认后缀
+app.set('view engine', 'art')
+
+// 3.设置使用哪个模版引擎去渲染后缀为art模版
+app.engine('art', require('express-art-template'))
+
+
+// 4. 处理请求
+app.get('/home', (req, res)=>{
+  // 渲染模版
+  res.render('home', {
+    msg: '要渲染的数据'
+  })
+})
+
+
+app.listen(3000, () => {
+    console.log('Running at localhost:3000');
+})
+```
+
+```js
+xxx
+|- public
+|- routes
+|- views
+		|- home.art
+|- index.js
+```
+
+```html
+<!--home.art-->
+<h1>
+  {{msg}}
+</h1>
+```
+
+
+
+### app.locals对象
+
+不同模版中的若在相同数据的场合
+
+若在渲染模版时，在所有模版中都去查询相同的部分，会造成代码重复冗余
+
+可以通过将相同数据写在app.locals对象下的自定义属性只，
+
+只调用一次数据，就可以在所以模版中使用
+
+```js
+const express = require('express')
+const path = require('path')
+const app = express()
+
+// 模版引擎配置
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'art')
+app.engine('art', require('express-art-template'))
+
+// 相同数据
+app.locals.users = [
+  {
+  	name:'andy',
+  	age:28
+	},
+  {
+  	name:'tom',
+  	age:28
+	}  
+]
+
+// 处理请求
+app.get('/home', (req, res)=>{
+  // 渲染模版
+  res.render('home')
+})
+
+
+app.listen(3000, () => {
+    console.log('Running at localhost:3000');
+})
+```
+
+```html
+<!--home.art-->
+<ul>
+  {{each users}}
+  	<li>
+  			{{$valu.name}}
+        {{$valu.age}}
+  	</li>
+  {{/each}}
+</ul>
+```
+
+
+
+### 模版中的外链资源路径
+
+```html
+<link rel="stylesheet" href="./common.css" />
+```
+
+模版中的外链资源路径是相对路径，
+
+是相对于浏览器请求URL地址的
+
+需要改为绝对路径，避免出错
+
+模版中通过  **/** 表示绝对路径
+
+```html
+<link rel="stylesheet" href="/静态资源目录下路径" />
+
+<link rel="stylesheet" href="./admin/common.css" />
+```
+
+
+
+
+
 ## 身份认证
 
 ### Session认证
@@ -1798,6 +2313,10 @@ npm i jsonwebtoken express-jwt
 - jsonwebtoken：用于生成JWT字符串
 
 - express-jwt：用于将JWT字符串解析还原为JSON对象
+
+
+
+
 
 
 
