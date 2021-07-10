@@ -766,6 +766,58 @@ localhost:3000/find/food
 
 
 
+### 路由重定向
+
+```js
+res.redirect('/地址')
+```
+
+```js
+admin.post('/login', async (req, res) => {
+    // get client form vale
+    const { email, password } = req.body
+
+    // server side form value validation
+    if (email.trim().length == 0 || password.trim().length == 0) {
+        return res.status(400).render('admin/error', {
+            status: 400,
+            msg: 'Email Address or Password is WRONG,  will back to login page in 2s'
+        });
+    }
+
+    // according to email to check unique user info
+    let user = await User.findOne({ email })
+    // if there is that unique one, user is  an obj,or a {}
+    if (user) {
+        // bcrypt compare password
+        const isEqual = await bcrypt.compare(password, user.password)
+        if (isEqual) {
+            // 储存登陆用户的信息到session中
+            req.session.username = user.username
+						// 重定向
+            res.redirect('/admin/users');
+            // art-template 公用变量（用户名显示在右上角）
+            req.app.locals.userInfo = user;
+        } else {
+            // wrong password
+            res.status(400).render('admin/error', {
+                status: 400,
+                msg: 'Email Address or Password is WRONG,  will back to login page in 2s'
+            });
+        }
+    } else {
+        // no such email
+        res.status(400).render('admin/error', {
+            status: 400,
+            msg: 'Cannot find such user,  will back to login page in 2s'
+        });
+    }
+
+})
+```
+
+
+
 
 
 
@@ -2174,56 +2226,161 @@ app.listen(3000, () => {
 
 
 
+
+
+## 密码加密 bcrypt
+
+将明文密码HASH加密，并插入随机字符串增加破译难度
+
+- windows环境安装
+
+```bash
+# 1. 安装python
+
+# 2. node-gyp
+npm i -g node-gyp
+
+# 3. if Windows System
+npm i -g windows-build-tools
+```
+
+### 导入、加密
+
+```js
+// 导入
+const bcrypt = require('bcrypt')
+
+// 生成随机字符串（Salt盐）
+let salt = await bcrypt.genSalt(10)
+
+// 使用随机字符串加密密码
+let pass = await bcrypt.hash('明文密码', salt)
+```
+
+### 密码比对
+
+```js
+let isEqual = await bcrypt.compare('明文密码'，'加密后密码')
+
+if(isEqual){
+  '比对成功密码一致'
+}else {
+  '比对失败密码不一致'
+}
+```
+
+
+
+
+
+
+
 ## 身份认证
+
+相见笔记 [身份认证](https://github.com/BlaxBerry/StudyNotes/blob/master/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81.md)
+
+- **服务器端渲染**的开发模式
+
+  推荐 **Session认证机制**
+
+- **前后端分离**的开发模式
+
+  推荐 **JWT认证机制**
+
+  
 
 ### Session认证
 
-#### 记录用户信息
-
 通过express-session中间件在项目中使用Session认证
 
-下载中间件：
+#### 1. 安装
 
 ```bash
 npm i express-session
 ```
 
-配置中间件：
+
+
+#### 2. 导入+ 配置中间件
+
+ 通过secret设置密钥，虽然客户端能查看Cookie但是没有密钥看到的是一堆加密字符串
 
 ```js
-const sesion = require('express-session')
+// 导入
+const session = require('express-session')
 
+// 使用中间件
 app.use(session({
-  secret: '任意字符串',
+  // 设置密钥，任意字符串
+  secret:'secret key'
   resave: false,
   saveUninitialized: true
 }))
 ```
 
-向Session中存数据：
+
+
+#### 3. 向Session对象中存数据
 
 在express-session中间件配置成功后，
 
-可通过 **req.session**了访问使用session对象，从而储存用户信息和登陆状态
+可通过 **req.session** 访问使用session对象，
+
+并通过 **req.session.自定义属性** 来储存 **用户信息和登陆状态**
 
 ```js
 app.post('/post', (req, res)=>{
-  
-  // 用户信息
+  // 储存用户信息
   req.session.userInfo = req.body
-  // 用户登陆状态
+  // 储存用户登陆状态
   req.session.islogin = true
   
   res.send({
-    status: 0,
+    status: 200,
     msg: '登陆成功'
   })
 })
 ```
 
----
+再比如：链接了MongoDB的场合
 
-#### 从session中获取数据
+```js
+router.post('/login', async (req, res) => {
+    // 获取请求参数
+    const { email, password } = req.body;
+  	// 判断登陆邮箱是否存在于数据库中
+    let user = await User.findOne({ email })
+    if (user) {
+        // bcrypt匹配加密后的密码
+        const isEqual = await bcrypt.compare(password, user.password)
+        if (isEqual) {
+          
+            // 储存登陆用户的信息到session中
+            req.session.username = user.username
+          
+            res.send('登陆成功')
+        } else {
+            res.status(400).render('admin/error', {msg: '密码错误'});
+        }
+    } else {
+        res.status(400).render('admin/error', {msg: '该邮箱不存在'});
+    }
+})
+```
+
+
+
+#### 4. 检查Cookie
+
+后面返回给浏览器的Cookie为加密字符串
+
+<img src="https://pbs.twimg.com/media/E57DJOcVoAAnTJL?format=jpg&name=medium" style="zoom:50%;" />
+
+
+
+
+
+#### 4. 从session中获取数据
 
 ```js
 const express = require('express')
@@ -2261,9 +2418,9 @@ app.listen(3000, () => {
 })
 ```
 
----
 
-#### 清空Session
+
+#### 5. 清空Session
 
 比如用户退出登陆时，需要清空Session
 
@@ -2299,6 +2456,8 @@ app.listen(3000, () => {
     console.log('Server running at localhost:3000');
 })
 ```
+
+
 
 
 
