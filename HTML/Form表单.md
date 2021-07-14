@@ -65,7 +65,15 @@ http://xxxxxx?key=value&key=value
 
   不对自负进行编码
 
-  文件上传时，必须
+  文件上传时，必须通过此属性将上传数据转为二进制
+
+```html
+<form action="http://???" method="POST" enctype="multipart/form-data">
+  
+</form>
+```
+
+
 
 
 

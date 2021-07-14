@@ -266,6 +266,50 @@ app.listen(80, () => {
 
 
 
+#### req.app.locals
+
+课通过在 req.app.locals 对象下挂载一个全局可用的属性
+
+```js
+req.app.locals.自定义属性 = '自定义内容'
+```
+
+可用来做路由标记，让前端可以区分相关联的页面：
+
+```js
+app.get('/articles'(req, res) => {
+    // 添加标识，当前是aritcles页面
+    req.app.locals.nowPage = 'articles'
+    
+    res.render('articles.art')
+})
+```
+
+比如，在art-template中根据页面路由的不同增加或去除class类名：
+
+```html
+<div class="col-sm-3 text-center text-white bg-dark pt-5 px-0">
+  <nav class="nav flex-column">
+    <a
+      href="/admin/users"
+      class="{{ nowPage == 'users' ? 'bg-primary' : '' }}"
+      >Users List</a
+    >
+    <a
+      href="/admin/articles"
+      class="{{ nowPage == 'articles' ? 'bg-primary' : '' }}"
+      >Articles List</a
+    >
+  </nav>
+</div>
+```
+
+
+
+
+
+
+
 ### res响应对象
 
 包含与响应相关的数据和属性
@@ -769,7 +813,7 @@ localhost:3000/find/food
 ### 路由重定向
 
 ```js
-res.redirect('/地址')
+res.redirect('完整路由地址')
 ```
 
 ```js
@@ -815,6 +859,50 @@ admin.post('/login', async (req, res) => {
 
 })
 ```
+
+
+
+### 路由拦截/登陆拦截
+
+路由拦截，是指在访问路由地址前先进行某种判断，符合后才能访问
+
+是个通过app.use( ) 使用的中间件，必须写在所有路由的前面
+
+条件符合的话才能执行访问其余路由，通过next() 开放请求的向下传递
+
+```js
+app.use('路由',(req, res, next)=>{
+  if(){
+     // 重定向
+     res.redirect('路由')
+  }else {
+    next()
+  }
+})
+```
+
+如下：登陆验证的路由拦截：
+
+- 判断地址是否是 /admin/login 页面进行的跳转 
+- 且服务器的session对象中是否存有用户信息（即用户是否登陆过）
+
+若直接从地址栏请求访问 /admin/xxxxxx 路由地址时，且用户未login登陆过服务器，则直接重定向会login页面
+
+```js
+app.use('/admin', (req, res, next) => {
+    if (req.url != '/login' && !req.session.username) {
+      // 重定向到 /admin/login
+        res.redirect('/admin/login')
+    } else {
+      // 继续执行其余路由
+        next();
+    }
+})
+
+Routes....
+```
+
+
 
 
 
@@ -2337,7 +2425,11 @@ app.post('/post', (req, res)=>{
   
   res.send({
     status: 200,
-    msg: '登陆成功'
+    msg: '登陆成功',
+    data: {
+      username: req.session.userInfo.username,
+      email: req.session.userInfo.email
+    }
   })
 })
 ```
@@ -2378,84 +2470,33 @@ router.post('/login', async (req, res) => {
 
 
 
-
-
-#### 4. 从session中获取数据
-
-```js
-const express = require('express')
-const app = express()
-
-app.use(express.urlencoded())
-
-const session = require('express-session')
-app.use(session({
-  secret: '任意字符串',
-  resave: false,
-  saveUninitialized: true
-}))
-
-
-app.post('/post', (req, res) => {
-    // 用户信息
-    req.session.userInfo = req.body
-    // 用户登陆状态
-    req.session.islogin = true
-
-    res.send({
-        status: 0,
-        msg: '登陆成功',
-        data: {
-            username: req.session.userInfo.username,
-            password: req.session.userInfo.password
-        }
-    })
-})
-
-
-app.listen(3000, () => {
-    console.log('Server running at localhost:3000');
-})
-```
-
-
-
 #### 5. 清空Session
 
 比如用户退出登陆时，需要清空Session
 
-通过req.sessino.destroy()实现清空服务器保存的sessin信息
+通过**req.sessino.destroy()**实现清空服务器保存的sessin信息
 
 清空的只是请求退出的当前用户的Session，不会清除其他人的
 
+如下：
+
+清除关于该用户的session和cookie，并且重定向回 login页面
+
 ```js
-const express = require('express')
-const app = express()
-app.use(express.urlencoded())
-
-
-const session = require('express-session')
-
-app.use(session({
-    secret: '任意字符串',
-    resave: false,
-    saveUninitialized: true
-}))
-
-
-app.post('/logout', (req, res) => { 
-    req.session.destroy()
-    res.send({
-        status:1,
-        msg:'退出登陆成功'
+app.post('/logout', (req, res) => {
+    // clear session
+    req.session.destroy(() => {
+        // clear cookie (express-session默认名)
+        res.clearCookie('connect.sid');
+        // 重定向
+        res.redirect('/admin/login')
     })
-})
-
-
-app.listen(3000, () => {
-    console.log('Server running at localhost:3000');
-})
+}
 ```
+
+
+
+
 
 
 

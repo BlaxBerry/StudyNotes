@@ -130,3 +130,77 @@ http://127.0.0.1:27017/
 mongoimport -d 数据库名 -c 集合名 --file 要导入的数据文件
 ```
 
+
+
+
+
+
+
+## 命令行
+
+### 链接MongoDB
+
+```bash
+mongo
+```
+
+exit / ctrl + c 退出链接
+
+
+
+### 查看数据库
+
+链接MongoDB状态下查看数据库
+
+```bash
+show dbs
+
+---
+> show dbs
+admin   0.000GB
+blog    0.000GB
+config  0.000GB
+local   0.000GB
+>
+```
+
+
+
+### 进入/切换数据库
+
+链接MongoDB状态下
+
+```bash
+use 数据库名
+```
+
+```bash
+> use admin
+switched to ad admin
+>
+```
+
+
+
+### 创建超级管理员账号
+
+只有先创建了超级管理员账号才能创建其他的账号
+
+进入admin数据库然后创建账号
+
+```bash
+use admin
+db.createUser({user:'root',pwd:'root',roles:['root']})
+```
+
+
+
+### 创建普通账号
+
+对哪一个数据库创建账号就要进入哪个数据库
+
+```bash
+use 数据库
+db.createUser({user:'自定义',pwd:'自定义',roles:['readWrite'])
+```
+
