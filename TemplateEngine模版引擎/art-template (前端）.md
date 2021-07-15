@@ -61,7 +61,7 @@
 </body>
 
 <!-- art-template -->
-  <script type="text/html" id="art">
+  <script type="text/html" id="artTemp">
     <h1>{{name}} {{age}}</h1>
     <h2>name: {{name}}</h2>
     <h2>age: {{age + 2}}</h2>
@@ -71,11 +71,11 @@
 <script>  
   $(function () {
     
-    var artTemp = template("art", {
+    var artHTML = template("artTemp", {
       name: "andy",
       age: 28,
     });
-    $('.user').html(artTemp)
+    $('.user').html(artHTML)
     
   });
 </script>
@@ -104,7 +104,7 @@
 模版必须单独定义到<script\>标签中，且需要添加一个**id**
 
 ```html
-<script type="text/html" id="art">
+<script type="text/html" id="artTemp">
 	
 </script>
 ```
@@ -127,13 +127,13 @@ template('模版ID'，{数据})
 
 ```html
 <!--模版-->
-<script type="text/html" id='art'>
+<script type="text/html" id='artTemp'>
 
 </script>
 
 <!--绑定模版与数据-->
 <script>
- 	template('art', {
+ 	template('artTemp', {
       name: 'Andy',
     	age: 28
   })
@@ -147,7 +147,7 @@ template('模版ID'，{数据})
 通过 **{{ }}** 将数据写入模版
 
 ```html
-<script type="text/html" id="art">
+<script type="text/html" id="artTemp">
 
 		<div> {{name}} {{age}} </div>
     <div> name: {{name}} </div>
@@ -170,13 +170,13 @@ template函数返回的是解析后的HTML结构，所以需要将其放入页�
 
 <script>
 	// 获取template函数返回的HTML
-  var atrTemp = template('art', {
+  var atrHTML = template('artTemp', {
       name: 'Andy',
     	age: 28
   });
   
   // 渲染到页面
-  document.getElementById('targetBOX').innerHTML = atrTemp；
+  document.getElementById('targetBOX').innerHTML = atrHTML；
   
 </script>
 ```
@@ -198,17 +198,17 @@ template函数返回的是解析后的HTML结构，所以需要将其放入页�
   <div id="targetBOX"></div>
   
   
-  <script type="text/html" id="art">
+  <script type="text/html" id="artTemp">
   		<div>  </div>
   		<div></div>
   		<div class="active"></div>
   </script>
   <script>
-  	var artTemp = template('art', {
+  	var artHTML = template('artTemp', {
         name: 'andy',
         age: 28
       });
-    document.getElementById('targetBOX').innerHTML = artTemp;
+    document.getElementById('targetBOX').innerHTML = artHTML;
   </script>
 </body>
 ```
@@ -265,18 +265,17 @@ template函数返回的是解析后的HTML结构，所以需要将其放入页�
   <div class="user"></div>
 </body>
 
-<script type="text/html" id='art'>
+<script type="text/html" id='artTemp'>
 	{{ui}}
 	{{@ui}}
 </script>
 
 <script>
-  var data = {
-    ui: '<h1>HELLO</h1>'
-  }
 	$(function(){
-    var art = template('art', data)
-    $('.user').html(art)
+    var artHTML = template('artTemp', {
+    	ui: '<h1>HELLO</h1>'
+    });
+    $('.user').html(artHTML)
     
   })
 </script>
@@ -295,7 +294,7 @@ template函数返回的是解析后的HTML结构，所以需要将其放入页�
 ```
 
 ```html
-  <script type="text/html" id="art">
+  <script type="text/html" id="artTemp">
     <div>{{if flag}} flag是true {{/if}}</div>
     <div>{{if num===1}}num是1{{/if]}}</div>
     <div>{{if num!==0}}num不是0{{/if]}}</div>
@@ -334,7 +333,7 @@ template函数返回的是解析后的HTML结构，所以需要将其放入页�
   </div>
 </body>
 
-<script type="text/html" id="art">
+<script type="text/html" id="artTemp">
     <ul>
       {{each skills}}
       <li>{{$index}}---{{$value}}</li>
@@ -343,13 +342,12 @@ template函数返回的是解析后的HTML结构，所以需要将其放入页�
   </script>
 
 <script>
-  var data = {
-      skills: ["Vue", "react", "jQuery"],
-  };
   
 	$(function(){
-    var art = template('art', data)
-    $('.user').html(art)
+    var artHTML = template('art', {
+      skills: ["Vue", "react", "jQuery"]
+    });
+    $('.user').html(artHTML)
     
   })
 </script>
@@ -393,7 +391,7 @@ template.defaults.imports.过滤器函数名 = function(数据){
   </div>
 </body>
 
-<script type="text/html" id="art">
+<script type="text/html" id="artTemp">
   <div>
     <span>注册时间：</span>
     <div>{{time}}</div>
@@ -417,8 +415,8 @@ template.defaults.imports.过滤器函数名 = function(数据){
 
   $(function () {
 
-    var art = template("art", data);
-    $(".user").html(art);
+    var artHTML = template("artTemp", data);
+    $(".user").html(artHTML);
     
   }
 </script>   
