@@ -1047,7 +1047,7 @@ module.exports = {
   
   // 设置引用模块
   // webpack默认不知道那些文件可以作为模块被引用
-  reslove:{
+  resolve:{
     // 设定.ts和.js结尾的文件可以作为模块被引用
     extensions: ['.ts','.js']   
   }
@@ -1256,7 +1256,7 @@ const path = require('path');
 // html-webpack-plugin
 const htmlWebpackPlugin = require('html-webpack-plugin')
 // clean-webpack-plugin
-const cleanWebpackPlugin = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
 
@@ -1289,7 +1289,7 @@ module.exports = {
     // 配置webpack插件
     plugins:[
       	// clean-webpack-plugin
-				new cleanWebpackPlugin()
+				new CleanWebpackPlugin(),
       
       	//html-webpack-plugin
         new htmlWebpackPlugin({
@@ -2110,3 +2110,18 @@ console.log(p.age); // 报错
 
 
 ## 泛型
+
+在定义函数、类的时候，若类型不明确，也不要定义为any
+
+不然会关闭TS的类型判断，也就失去了TS的意义
+
+此时可使用泛型
+
+```ts
+function fn<T>(a: T):T{
+  return a;
+}
+
+fn<string>(a:'hello')
+```
+
